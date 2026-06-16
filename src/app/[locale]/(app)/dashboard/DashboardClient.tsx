@@ -53,7 +53,7 @@ export default function DashboardClient({
 
   const [tasks, setTasks] = useState<TaskWithActions[]>(initialTasks)
   const [energy, setEnergy] = useState<EnergyLevel | null>(todayEnergy)
-  const [activeTab, setActiveTab] = useState<'today' | 'progress'>('today')
+  const [activeTab, setActiveTab] = useState<'today' | 'all' | 'progress'>('today')
   const [focusTask, setFocusTask] = useState<TaskWithActions | null>(null)
   const [timerSeconds, setTimerSeconds] = useState(600)
   const [timerRunning, setTimerRunning] = useState(false)
@@ -64,6 +64,7 @@ export default function DashboardClient({
   const [addingIn, setAddingIn] = useState<Category | null>(null)
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [focusSessions, setFocusSessions] = useState(0)
+  const [energyMenuOpen, setEnergyMenuOpen] = useState(false)
 
   const t = {
     catName: locale === 'en'
@@ -74,6 +75,12 @@ export default function DashboardClient({
     startNow: locale === 'en' ? 'Start now →' : 'Iniciar agora →',
     today: locale === 'en' ? 'Today' : 'Hoje',
     progress: locale === 'en' ? 'Progress' : 'Progresso',
+    allTasks: locale === 'en' ? 'All tasks' : 'Todas as tarefas',
+    allTasksTitle: locale === 'en' ? 'All quadrants' : 'Todos os quadrantes',
+    allTasksSubtitle: locale === 'en'
+      ? 'Viewing every task, regardless of today’s energy.'
+      : 'Visualizando todas as tarefas, sem filtro de energia.',
+    changeEnergy: locale === 'en' ? 'Change energy' : 'Alterar energia',
     startFocus: locale === 'en' ? '🎯 Start focus' : '🎯 Iniciar foco',
     complete: locale === 'en' ? '✓ Complete' : '✓ Concluir',
     delete: locale === 'en' ? 'Delete' : 'Excluir',
@@ -124,11 +131,13 @@ export default function DashboardClient({
     return () => { supabase.removeChannel(channel) }
   }, [supabase, userId, router])
 
-  const getFilteredTasks = useCallback((cat: Category): TaskWithActions[] => {
-    if (!energy) return []
-    const allowed = ENERGY_FILTER[energy]
-    return tasks
-      .filter(t => t.category === cat && t.status !== 'done' && allowed.includes(t.energy_level))
+  const getTasksForCategory = useCallback((cat: Category, includeAllEnergy = false): TaskWithActions[] => {
+    const categoryTasks = tasks.filter(t => t.category === cat && t.status !== 'done')
+    const visibleTasks = includeAllEnergy || !energy
+      ? categoryTasks
+      : categoryTasks.filter(t => ENERGY_FILTER[energy].includes(t.energy_level))
+
+    return visibleTasks
       .sort((a, b) => {
         if (a.priority !== b.priority) return a.priority - b.priority
         return b.created_at.localeCompare(a.created_at)
@@ -140,11 +149,11 @@ export default function DashboardClient({
     if (!energy) return null
     const cats: Category[] = ['produzir', 'decidir', 'resolver', 'delegar']
     for (const cat of cats) {
-      const filtered = getFilteredTasks(cat)
+      const filtered = getTasksForCategory(cat)
       if (filtered.length > 0) return filtered[0]
     }
     return null
-  }, [getFilteredTasks, energy])
+  }, [getTasksForCategory, energy])
 
   async function saveEnergy(level: EnergyLevel) {
     setEnergy(level)
@@ -366,12 +375,43 @@ export default function DashboardClient({
         <div className="text-[15px] font-semibold text-white tracking-tight">
           Hyper<span className="text-violet-400">Foco</span>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#17171c] border border-white/[0.07] text-xs text-white/50">
-            <div className="w-1.5 h-1.5 rounded-full"
-              style={{ background: energy === 'high' ? '#2dd4a0' : energy === 'mid' ? '#f0a030' : '#55556a' }}/>
+        <div className="relative flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setEnergyMenuOpen(open => !open)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#17171c] border border-white/[0.07] text-xs text-white/50 hover:text-white/80 hover:border-white/15 transition-all"
+          >
+            <div
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: energy === 'high' ? '#2dd4a0' : energy === 'mid' ? '#f0a030' : '#55556a' }}
+            />
             {t.energyLabels[energy]}
-          </div>
+            <span className="text-[10px] text-white/25">▾</span>
+          </button>
+          {energyMenuOpen && (
+            <div className="absolute right-0 top-10 z-20 w-56 rounded-xl border border-white/[0.08] bg-[#17171c] shadow-2xl shadow-black/40 p-2">
+              <div className="px-2 pt-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/25">
+                {t.changeEnergy}
+              </div>
+              {(['high', 'mid', 'low'] as EnergyLevel[]).map(level => (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={async () => {
+                    await saveEnergy(level)
+                    setEnergyMenuOpen(false)
+                  }}
+                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                    energy === level ? 'bg-white/[0.06] text-white' : 'text-white/70 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <span className="text-base">{level === 'high' ? '⚡' : level === 'mid' ? '☕' : '🌙'}</span>
+                  <span className="flex-1">{t.energyLabels[level]}</span>
+                  {energy === level && <span className="text-[10px] text-violet-400">●</span>}
+                </button>
+              ))}
+            </div>
+          )}
           <button
             onClick={handleLogout}
             className="text-xs text-white/30 hover:text-white/60 transition-colors"
@@ -383,8 +423,8 @@ export default function DashboardClient({
 
       <main className="max-w-3xl mx-auto px-4 py-6">
         {/* Tabs */}
-        <div className="flex gap-1 mb-6">
-          {(['today', 'progress'] as const).map(tab => (
+        <div className="flex flex-wrap gap-1 mb-6">
+          {(['today', 'all', 'progress'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -394,7 +434,7 @@ export default function DashboardClient({
                   : 'text-white/40 hover:text-white/70'
               }`}
             >
-              {tab === 'today' ? t.today : t.progress}
+              {tab === 'today' ? t.today : tab === 'all' ? t.allTasks : t.progress}
             </button>
           ))}
         </div>
@@ -423,7 +463,7 @@ export default function DashboardClient({
             {/* Quadrantes */}
             <div className="grid grid-cols-2 gap-4">
               {(['produzir', 'decidir', 'resolver', 'delegar'] as Category[]).map(cat => {
-                const catTasks = getFilteredTasks(cat)
+                const catTasks = getTasksForCategory(cat)
                 return (
                   <div key={cat} className="bg-[#17171c] border border-white/[0.06] rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
@@ -479,6 +519,54 @@ export default function DashboardClient({
                           + {locale === 'en' ? 'Add task' : 'Adicionar tarefa'}
                         </button>
                       )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {activeTab === 'all' && (
+          <>
+            <div className="mb-3">
+              <div className="text-[11px] font-semibold tracking-widest uppercase text-white/30 mb-2">{t.allTasksTitle}</div>
+              <div className="bg-[#17171c] border border-white/[0.06] rounded-xl p-4 text-sm text-white/45">
+                {t.allTasksSubtitle}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {(['produzir', 'decidir', 'resolver', 'delegar'] as Category[]).map(cat => {
+                const catTasks = getTasksForCategory(cat, true)
+                return (
+                  <div key={cat} className="bg-[#17171c] border border-white/[0.06] rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: CAT_COLORS[cat] }}/>
+                        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: CAT_COLORS[cat] }}>
+                          {t.catName[cat]}
+                        </span>
+                      </div>
+                      <span className="text-xs text-white/25 font-mono">
+                        {cat === 'delegar' ? catTasks.length : `${catTasks.length}/${CAT_LIMITS[cat]}`}
+                      </span>
+                    </div>
+                    <div>
+                      {catTasks.map(task => (
+                        <div
+                          key={task.id}
+                          onClick={() => setDetailTask(task)}
+                          className="group flex items-start gap-2.5 px-4 py-2.5 hover:bg-white/[0.03] cursor-pointer transition-colors"
+                        >
+                          <div className="w-3.5 h-3.5 rounded border border-white/20 flex-shrink-0 mt-0.5 group-hover:border-violet-400 transition-colors"/>
+                          <span className="text-xs text-white/70 flex-1 leading-snug">{task.title}</span>
+                          <button
+                            onClick={e => { e.stopPropagation(); deleteTask(task) }}
+                            className="opacity-0 group-hover:opacity-100 text-white/25 hover:text-red-400 text-xs transition-all flex-shrink-0"
+                          >✕</button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )
@@ -555,6 +643,15 @@ export default function DashboardClient({
             </div>
           </div>
         </div>
+      )}
+
+      {energyMenuOpen && (
+        <button
+          type="button"
+          aria-label="Close energy menu"
+          className="fixed inset-0 z-10 cursor-default"
+          onClick={() => setEnergyMenuOpen(false)}
+        />
       )}
 
       {/* Task detail modal */}
