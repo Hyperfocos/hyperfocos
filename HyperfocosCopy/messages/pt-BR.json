@@ -1,0 +1,102 @@
+{
+  "common": {
+    "appName": "HyperFoco",
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "or": "ou"
+  },
+  "auth": {
+    "login": "Entrar",
+    "signup": "Criar conta",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "name": "Seu nome",
+    "loginTitle": "Bem-vindo de volta",
+    "loginSubtitle": "Entre para continuar no HyperFoco",
+    "signupTitle": "Crie sua conta",
+    "signupSubtitle": "Comece a transformar intenção em ação",
+    "continueWithGoogle": "Continuar com Google",
+    "noAccount": "Não tem conta?",
+    "hasAccount": "Já tem conta?",
+    "forgotPassword": "Esqueci minha senha",
+    "checkEmail": "Verifique seu e-mail",
+    "checkEmailDesc": "Enviamos um link de confirmação para "
+  },
+  "energy": {
+    "title": "Como está sua energia agora?",
+    "high": "Alta energia",
+    "highDesc": "Pronto para foco profundo",
+    "mid": "Energia média",
+    "midDesc": "Funciona bem, sem esforço extra",
+    "low": "Baixa energia",
+    "lowDesc": "Só tarefas rápidas hoje",
+    "skip": "Pular por hoje"
+  },
+  "categories": {
+    "produzir": "Produzir",
+    "decidir": "Decidir",
+    "resolver": "Resolver",
+    "delegar": "Delegar"
+  },
+  "dashboard": {
+    "mission": "Missão do dia",
+    "missionCta": "Iniciar agora →",
+    "startFocus": "Iniciar foco",
+    "complete": "Concluir",
+    "delete": "Excluir",
+    "close": "Fechar",
+    "addTask": "Adicionar tarefa",
+    "nextAction": "Próxima ação física",
+    "today": "Hoje",
+    "progress": "Progresso"
+  },
+  "focus": {
+    "pause": "Pausar",
+    "resume": "Retomar",
+    "continue": "Continuar (+10min)",
+    "done": "Concluir ✓",
+    "snooze": "Adiar",
+    "minutes": "minutos"
+  },
+  "capture": {
+    "title": "Despeje tudo da sua cabeça",
+    "subtitle": "Escreva qualquer coisa — tarefas, preocupações, ideias. A IA organiza depois.",
+    "placeholder": "Ex: ligar pro banco, responder o João, decidir sobre o fornecedor...",
+    "hint": "A IA vai classificar automaticamente",
+    "organize": "Organizar com IA ✦",
+    "triage": "Confirmar categoria",
+    "aiSuggestion": "IA sugere: "
+  },
+  "pricing": {
+    "title": "Simples e direto",
+    "subtitle": "Um preço por ano. Sem surpresas.",
+    "yearly": "por ano",
+    "basic": "Basic",
+    "pro": "Pro",
+    "mostPopular": "Mais popular",
+    "subscribe": "Assinar agora",
+    "features": {
+      "tasks20": "Até 20 tarefas ativas",
+      "tasksUnlimited": "Tarefas ilimitadas",
+      "aiCapture5": "5 capturas com IA por dia",
+      "aiCaptureUnlimited": "Capturas com IA ilimitadas",
+      "focusSessions": "Sessões de foco ilimitadas",
+      "basicDashboard": "Dashboard básico",
+      "fullDashboard": "Dashboard completo",
+      "emailSupport": "Suporte por e-mail",
+      "prioritySupport": "Suporte prioritário",
+      "english": "Inglês e Português"
+    }
+  },
+  "landing": {
+    "hero": "Pare de travar. Comece a fazer.",
+    "heroSub": "O único app de tarefas feito para o cérebro com TDAH. Uma missão por vez, foco de 10 minutos, zero paralisia.",
+    "cta": "Começar agora",
+    "ctaSub": "Sem cartão de crédito"
+  }
+}

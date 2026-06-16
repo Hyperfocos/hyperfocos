@@ -1,0 +1,102 @@
+{
+  "common": {
+    "appName": "HyperFoco",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "or": "or"
+  },
+  "auth": {
+    "login": "Sign in",
+    "signup": "Create account",
+    "logout": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "name": "Your name",
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Sign in to continue on HyperFoco",
+    "signupTitle": "Create your account",
+    "signupSubtitle": "Start turning intention into action",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "forgotPassword": "Forgot password",
+    "checkEmail": "Check your email",
+    "checkEmailDesc": "We sent a confirmation link to "
+  },
+  "energy": {
+    "title": "How's your energy right now?",
+    "high": "High energy",
+    "highDesc": "Ready for deep focus",
+    "mid": "Medium energy",
+    "midDesc": "Functioning well, no extra effort",
+    "low": "Low energy",
+    "lowDesc": "Quick tasks only today",
+    "skip": "Skip for now"
+  },
+  "categories": {
+    "produzir": "Create",
+    "decidir": "Decide",
+    "resolver": "Resolve",
+    "delegar": "Delegate"
+  },
+  "dashboard": {
+    "mission": "Mission of the day",
+    "missionCta": "Start now →",
+    "startFocus": "Start focus",
+    "complete": "Complete",
+    "delete": "Delete",
+    "close": "Close",
+    "addTask": "Add task",
+    "nextAction": "Next physical action",
+    "today": "Today",
+    "progress": "Progress"
+  },
+  "focus": {
+    "pause": "Pause",
+    "resume": "Resume",
+    "continue": "Continue (+10min)",
+    "done": "Complete ✓",
+    "snooze": "Snooze",
+    "minutes": "minutes"
+  },
+  "capture": {
+    "title": "Clear your head",
+    "subtitle": "Write anything — tasks, worries, ideas. AI organizes it after.",
+    "placeholder": "Ex: call the bank, reply to John, decide on supplier...",
+    "hint": "AI will classify automatically",
+    "organize": "Organize with AI ✦",
+    "triage": "Confirm category",
+    "aiSuggestion": "AI suggests: "
+  },
+  "pricing": {
+    "title": "Simple and straightforward",
+    "subtitle": "One price per year. No surprises.",
+    "yearly": "per year",
+    "basic": "Basic",
+    "pro": "Pro",
+    "mostPopular": "Most popular",
+    "subscribe": "Subscribe now",
+    "features": {
+      "tasks20": "Up to 20 active tasks",
+      "tasksUnlimited": "Unlimited tasks",
+      "aiCapture5": "5 AI captures per day",
+      "aiCaptureUnlimited": "Unlimited AI captures",
+      "focusSessions": "Unlimited focus sessions",
+      "basicDashboard": "Basic dashboard",
+      "fullDashboard": "Full dashboard",
+      "emailSupport": "Email support",
+      "prioritySupport": "Priority support",
+      "english": "English & Portuguese"
+    }
+  },
+  "landing": {
+    "hero": "Stop freezing. Start doing.",
+    "heroSub": "The only task app built for the ADHD brain. One mission at a time, 10-minute focus, zero paralysis.",
+    "cta": "Get started",
+    "ctaSub": "No credit card required"
+  }
+}
