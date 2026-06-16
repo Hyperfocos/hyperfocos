@@ -129,6 +129,10 @@ export default function DashboardClient({
     const allowed = ENERGY_FILTER[energy]
     return tasks
       .filter(t => t.category === cat && t.status !== 'done' && allowed.includes(t.energy_level))
+      .sort((a, b) => {
+        if (a.priority !== b.priority) return a.priority - b.priority
+        return b.created_at.localeCompare(a.created_at)
+      })
       .slice(0, CAT_LIMITS[cat])
   }, [tasks, energy])
 
