@@ -13,16 +13,19 @@ type NavItem = {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: '▣' },
-  { label: 'CRM / Leads', href: '/leads', icon: '⟳' },
-  { label: 'Clientes', href: '/clientes', icon: '👤' },
-  { label: 'Propostas', href: '/propostas', icon: '📄' },
-  { label: 'Contratos', href: '/contratos', icon: '📋' },
-  { label: 'Financeiro', href: '/financeiro', icon: '💰' },
-  { label: 'Projetos', href: '/projetos', icon: '📐' },
-  { label: 'Compras', href: '/compras', icon: '🛒' },
-  { label: 'Obras', href: '/obras', icon: '🔧' },
-  { label: 'Configurações', href: '/configuracoes', icon: '⚙' },
+  { label: 'Dashboard',           href: '/dashboard',         icon: '▣' },
+  { label: 'CRM / Leads',         href: '/leads',             icon: '⟳' },
+  { label: 'Clientes',            href: '/clientes',          icon: '👤' },
+  { label: 'Contratos',           href: '/contratos',         icon: '📋' },
+  { label: 'Financeiro',          href: '/financeiro',        icon: '💰' },
+  { label: 'Projetos',            href: '/projetos',          icon: '📐' },
+  { label: 'Compras',             href: '/compras',           icon: '🛒' },
+  { label: 'Comissões',           href: '/comissoes',         icon: '💵' },
+  { label: 'Entrega do Material', href: '/entrega-material',  icon: '📦' },
+  { label: 'Obra',                href: '/obra',              icon: '🔧' },
+  { label: 'Entrega da Obra',     href: '/entrega-obra',      icon: '✅' },
+  { label: 'Pós Obra',            href: '/pos-obra',          icon: '⭐' },
+  { label: 'Configurações',       href: '/configuracoes',     icon: '⚙' },
 ]
 
 interface SidebarProps {
