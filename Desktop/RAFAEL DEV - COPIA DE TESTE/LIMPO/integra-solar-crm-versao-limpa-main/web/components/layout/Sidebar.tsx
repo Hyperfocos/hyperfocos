@@ -5,27 +5,40 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from '@/lib/auth/actions'
 import type { CurrentUserData } from '@/lib/org/queries'
+import {
+  LayoutDashboard, Users, UserCheck, FileText, DollarSign,
+  Ruler, ShoppingCart, Banknote, Package, Wrench,
+  CheckSquare, Star, Settings, BarChart2, GraduationCap,
+  Archive, LogOut,
+} from 'lucide-react'
 
 type NavItem = {
   label: string
   href: string
-  icon: string
+  icon: React.ElementType
+  moduleKey?: string
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard',           href: '/dashboard',         icon: '▣' },
-  { label: 'CRM / Leads',         href: '/leads',             icon: '⟳' },
-  { label: 'Clientes',            href: '/clientes',          icon: '👤' },
-  { label: 'Contratos',           href: '/contratos',         icon: '📋' },
-  { label: 'Financeiro',          href: '/financeiro',        icon: '💰' },
-  { label: 'Projetos',            href: '/projetos',          icon: '📐' },
-  { label: 'Compras',             href: '/compras',           icon: '🛒' },
-  { label: 'Comissões',           href: '/comissoes',         icon: '💵' },
-  { label: 'Entrega do Material', href: '/entrega-material',  icon: '📦' },
-  { label: 'Obra',                href: '/obra',              icon: '🔧' },
-  { label: 'Entrega da Obra',     href: '/entrega-obra',      icon: '✅' },
-  { label: 'Pós Obra',            href: '/pos-obra',          icon: '⭐' },
-  { label: 'Configurações',       href: '/configuracoes',     icon: '⚙' },
+const PIPELINE_ITEMS: NavItem[] = [
+  { label: 'Dashboard',           href: '/dashboard',        icon: LayoutDashboard, moduleKey: 'dashboard' },
+  { label: 'CRM / Leads',         href: '/leads',            icon: Users,           moduleKey: 'leads' },
+  { label: 'Clientes',            href: '/clientes',         icon: UserCheck,       moduleKey: 'clientes' },
+  { label: 'Contratos',           href: '/contratos',        icon: FileText,        moduleKey: 'contratos' },
+  { label: 'Financeiro',          href: '/financeiro',       icon: DollarSign,      moduleKey: 'financeiro' },
+  { label: 'Projetos',            href: '/projetos',         icon: Ruler,           moduleKey: 'projetos' },
+  { label: 'Compras',             href: '/compras',          icon: ShoppingCart,    moduleKey: 'compras' },
+  { label: 'Comissões',           href: '/comissoes',        icon: Banknote,        moduleKey: 'comissoes' },
+  { label: 'Entrega do Material', href: '/entrega-material', icon: Package,         moduleKey: 'entrega_material' },
+  { label: 'Obra',                href: '/obra',             icon: Wrench,          moduleKey: 'obra' },
+  { label: 'Entrega da Obra',     href: '/entrega-obra',     icon: CheckSquare,     moduleKey: 'entrega_obra' },
+  { label: 'Pós Obra',            href: '/pos-obra',         icon: Star,            moduleKey: 'pos_obra' },
+]
+
+const SUPPORT_ITEMS: NavItem[] = [
+  { label: 'Estoque',       href: '/estoque',       icon: Archive,       moduleKey: 'estoque' },
+  { label: 'Relatórios',    href: '/relatorios',    icon: BarChart2,     moduleKey: 'relatorios' },
+  { label: 'Treinamento',   href: '/treinamento',   icon: GraduationCap, moduleKey: 'treinamento' },
+  { label: 'Configurações', href: '/configuracoes', icon: Settings,      moduleKey: 'configuracoes' },
 ]
 
 interface SidebarProps {
@@ -50,30 +63,35 @@ export function Sidebar({ user }: SidebarProps) {
     user: 'Usuário',
   }
 
-  const MODULE_KEYS: Record<string, string> = {
-    '/dashboard': 'dashboard',
-    '/leads': 'leads',
-    '/clientes': 'clientes',
-    '/contratos': 'contratos',
-    '/financeiro': 'financeiro',
-    '/projetos': 'projetos',
-    '/compras': 'compras',
-    '/comissoes': 'comissoes',
-    '/entrega-material': 'entrega_material',
-    '/obra': 'obra',
-    '/entrega-obra': 'entrega_obra',
-    '/pos-obra': 'pos_obra',
-    '/configuracoes': 'configuracoes',
+  const isAdmin = ['owner', 'admin'].includes(user.membership?.role ?? '')
+
+  function filterItems(items: NavItem[]) {
+    if (isAdmin) return items
+    return items.filter((item) => {
+      if (!item.moduleKey) return true
+      return user.membership?.permissions?.[item.moduleKey]?.access === true
+    })
   }
 
-  const isAdmin = ['owner', 'admin'].includes(user.membership?.role ?? '')
-  const visibleItems = isAdmin
-    ? NAV_ITEMS
-    : NAV_ITEMS.filter((item) => {
-        const key = MODULE_KEYS[item.href]
-        if (!key) return true
-        return user.membership?.permissions?.[key]?.access === true
-      })
+  function renderItem(item: NavItem) {
+    const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+    const Icon = item.icon
+    const color = isActive ? '#FFD080' : 'rgba(255,255,255,0.4)'
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-medium my-0.5 transition-all"
+        style={isActive ? { color: '#FFD080', background: 'rgba(255,200,100,0.08)', fontWeight: 600 } : undefined}
+      >
+        <Icon size={15} style={{ color, flexShrink: 0 }} />
+        <span style={{ color }}>{item.label}</span>
+      </Link>
+    )
+  }
+
+  const pipelineVisible = filterItems(PIPELINE_ITEMS)
+  const supportVisible = filterItems(SUPPORT_ITEMS)
 
   return (
     <aside
@@ -101,35 +119,18 @@ export function Sidebar({ user }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2 px-2">
-        {visibleItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-medium my-0.5 transition-all"
-              style={
-                isActive
-                  ? {
-                      color: '#FFD080',
-                      background: 'rgba(255,200,100,0.08)',
-                      fontWeight: 600,
-                    }
-                  : undefined
-              }
-            >
-              <span
-                className="w-4 text-center text-sm flex-shrink-0"
-                style={{ color: isActive ? '#FFD080' : 'rgba(255,255,255,0.4)' }}
-              >
-                {item.icon}
-              </span>
-              <span style={{ color: isActive ? '#FFD080' : 'rgba(255,255,255,0.4)' }}>
-                {item.label}
-              </span>
-            </Link>
-          )
-        })}
+        {pipelineVisible.map(renderItem)}
+
+        {/* Separador */}
+        <div className="mx-3 my-2 flex items-center gap-2">
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <span className="text-[9px] font-semibold tracking-widest" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            OUTROS
+          </span>
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+        </div>
+
+        {supportVisible.map(renderItem)}
       </nav>
 
       {/* User area */}
@@ -158,7 +159,7 @@ export function Sidebar({ user }: SidebarProps) {
               title="Sair"
               className="transition-colors p-1 rounded text-white/25 hover:text-red-400"
             >
-              ↩
+              <LogOut size={14} />
             </button>
           </form>
         </div>
