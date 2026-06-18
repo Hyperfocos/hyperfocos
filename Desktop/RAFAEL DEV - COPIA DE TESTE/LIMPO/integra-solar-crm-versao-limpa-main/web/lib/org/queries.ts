@@ -1,5 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 
+export type ModulePermission = {
+  access: boolean
+  view_all: boolean
+  add: boolean
+  edit: boolean
+  delete: boolean
+}
+
 export type CurrentUserData = {
   profile: {
     id: string
@@ -7,7 +15,9 @@ export type CurrentUserData = {
     full_name: string | null
   }
   membership: {
-    role: 'owner' | 'admin' | 'manager' | 'user'
+    id: string
+    role: string
+    permissions: Record<string, ModulePermission>
     organization: {
       id: string
       name: string
@@ -33,23 +43,25 @@ export async function getCurrentUserData(): Promise<CurrentUserData | null> {
 
   if (!profile) return null
 
-  const { data: membership } = await supabase
+  const { data: membership } = await (supabase as any)
     .from('organization_members')
     .select(`
+      id,
       role,
+      permissions,
       organization:organizations(id, name, plan, status)
     `)
     .eq('user_id', user.id)
     .single()
 
-  type MembershipData = NonNullable<CurrentUserData['membership']>
-
   return {
     profile,
     membership: membership
       ? {
-          role: membership.role as MembershipData['role'],
-          organization: membership.organization as MembershipData['organization'],
+          id: membership.id as string,
+          role: membership.role as string,
+          permissions: (membership.permissions ?? {}) as Record<string, ModulePermission>,
+          organization: membership.organization as { id: string; name: string; plan: string; status: string },
         }
       : null,
   }

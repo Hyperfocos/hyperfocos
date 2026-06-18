@@ -42,9 +42,38 @@ export function Sidebar({ user }: SidebarProps) {
   const roleLabel: Record<string, string> = {
     owner: 'Proprietário',
     admin: 'Administrador',
+    gerente: 'Gerente',
+    vendedor: 'Vendedor',
+    instalador: 'Instalador',
+    projetista: 'Projetista',
     manager: 'Gerente',
     user: 'Usuário',
   }
+
+  const MODULE_KEYS: Record<string, string> = {
+    '/dashboard': 'dashboard',
+    '/leads': 'leads',
+    '/clientes': 'clientes',
+    '/contratos': 'contratos',
+    '/financeiro': 'financeiro',
+    '/projetos': 'projetos',
+    '/compras': 'compras',
+    '/comissoes': 'comissoes',
+    '/entrega-material': 'entrega_material',
+    '/obra': 'obra',
+    '/entrega-obra': 'entrega_obra',
+    '/pos-obra': 'pos_obra',
+    '/configuracoes': 'configuracoes',
+  }
+
+  const isAdmin = ['owner', 'admin'].includes(user.membership?.role ?? '')
+  const visibleItems = isAdmin
+    ? NAV_ITEMS
+    : NAV_ITEMS.filter((item) => {
+        const key = MODULE_KEYS[item.href]
+        if (!key) return true
+        return user.membership?.permissions?.[key]?.access === true
+      })
 
   return (
     <aside
@@ -72,7 +101,7 @@ export function Sidebar({ user }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2 px-2">
-        {NAV_ITEMS.map((item) => {
+        {visibleItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
             <Link
