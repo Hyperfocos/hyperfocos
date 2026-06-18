@@ -1,6 +1,7 @@
 // web/app/(dashboard)/compras/page.tsx
 import Link from 'next/link'
 import { getCompras } from '@/lib/compras/queries'
+import { formatCurrency, formatDate } from '@/lib/format'
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
@@ -19,11 +20,6 @@ function StatusBadge({ status }: { status: string }) {
       {labels[status] ?? status}
     </span>
   )
-}
-
-function formatCurrency(val: number | null) {
-  if (val == null) return '—'
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
 }
 
 export default async function ComprasPage() {
@@ -63,9 +59,7 @@ export default async function ComprasPage() {
                 <td className="px-4 py-3 text-white/60">{c.fornecedor ?? '—'}</td>
                 <td className="px-4 py-3 text-white/60">{formatCurrency(c.valor)}</td>
                 <td className="px-4 py-3 text-white/60">
-                  {c.data_prevista
-                    ? new Date(c.data_prevista + 'T00:00:00').toLocaleDateString('pt-BR')
-                    : '—'}
+                  {c.data_prevista ? formatDate(c.data_prevista) : '—'}
                 </td>
                 <td className="px-4 py-3 text-white/60">
                   {c.contract_max_days

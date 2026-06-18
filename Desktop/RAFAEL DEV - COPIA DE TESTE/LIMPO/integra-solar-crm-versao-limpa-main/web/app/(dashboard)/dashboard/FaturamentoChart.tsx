@@ -41,7 +41,7 @@ export default function FaturamentoChart({ data }: { data: FaturamentoMes[] }) {
           <XAxis dataKey="label" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }} axisLine={false} tickLine={false} />
           <YAxis tickFormatter={formatCurrency} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} axisLine={false} tickLine={false} width={60} />
           <Tooltip
-            formatter={(value: number) => [formatCurrency(value), '']}
+            formatter={(value) => [formatCurrency(Number(value)), '']}
             contentStyle={{ background: '#0a0e1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'white' }}
             labelStyle={{ color: 'rgba(255,255,255,0.7)' }}
           />

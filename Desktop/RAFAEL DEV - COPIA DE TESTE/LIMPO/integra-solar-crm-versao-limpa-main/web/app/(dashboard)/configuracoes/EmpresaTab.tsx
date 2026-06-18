@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import type { OrgConfig, LeadOrigin } from '@/lib/configuracoes/queries'
 import { saveOrgConfig, addLeadOrigin, removeLeadOrigin } from '@/lib/configuracoes/actions'
+import { CpfCnpjInput, PhoneInput, CepInput, CurrencyInput } from '@/components/ui/inputs'
 
 const inputCls =
   'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
@@ -73,7 +74,7 @@ export default function EmpresaTab({
   const [bancoResult, setBancoResult] = useState<{ error?: string; success?: string } | null>(null)
 
   // ── Section 4: Meta Anual ─────────────────────────────────────────────────
-  const [meta, setMeta] = useState(config.meta_anual?.toString() ?? '')
+  const [meta, setMeta] = useState<number>(config.meta_anual ?? 0)
   const [metaPending, startMeta] = useTransition()
   const [metaResult, setMetaResult] = useState<{ error?: string; success?: string } | null>(null)
 
@@ -124,7 +125,7 @@ export default function EmpresaTab({
   function handleSaveMeta() {
     setMetaResult(null)
     startMeta(async () => {
-      const res = await saveOrgConfig({ meta_anual: toNum(meta) })
+      const res = await saveOrgConfig({ meta_anual: meta || null })
       setMetaResult(res)
     })
   }
@@ -150,7 +151,7 @@ export default function EmpresaTab({
     })
   }
 
-  const metaNum = parseFloat(meta.replace(',', '.')) || 0
+  const metaNum = meta || 0
 
   return (
     <div className="space-y-6">
@@ -176,11 +177,10 @@ export default function EmpresaTab({
             />
           </div>
           <div>
-            <label className={labelCls}>CNPJ</label>
-            <input
-              className={inputCls}
+            <CpfCnpjInput
+              label="CNPJ"
               value={empresa.cnpj}
-              onChange={(e) => setEmpresa((p) => ({ ...p, cnpj: e.target.value }))}
+              onChange={(v) => setEmpresa((p) => ({ ...p, cnpj: v }))}
             />
           </div>
           <div>
@@ -193,19 +193,17 @@ export default function EmpresaTab({
             />
           </div>
           <div>
-            <label className={labelCls}>Telefone</label>
-            <input
-              className={inputCls}
+            <PhoneInput
+              label="Telefone"
               value={empresa.telefone}
-              onChange={(e) => setEmpresa((p) => ({ ...p, telefone: e.target.value }))}
+              onChange={(v) => setEmpresa((p) => ({ ...p, telefone: v }))}
             />
           </div>
           <div>
-            <label className={labelCls}>CEP</label>
-            <input
-              className={inputCls}
+            <CepInput
+              label="CEP"
               value={empresa.cep}
-              onChange={(e) => setEmpresa((p) => ({ ...p, cep: e.target.value }))}
+              onChange={(v) => setEmpresa((p) => ({ ...p, cep: v }))}
             />
           </div>
           <div>
@@ -385,13 +383,10 @@ export default function EmpresaTab({
         <h2 className="text-base font-semibold text-white">Meta Anual</h2>
 
         <div className="max-w-xs">
-          <label className={labelCls}>Meta anual (R$)</label>
-          <input
-            className={inputCls}
-            type="number"
-            step="0.01"
+          <CurrencyInput
+            label="Meta anual (R$)"
             value={meta}
-            onChange={(e) => setMeta(e.target.value)}
+            onChange={(v) => setMeta(v)}
           />
         </div>
 

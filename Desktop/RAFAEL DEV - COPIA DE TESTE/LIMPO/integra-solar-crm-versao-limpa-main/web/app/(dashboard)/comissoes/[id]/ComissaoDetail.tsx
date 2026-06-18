@@ -5,10 +5,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { ComissaoItem } from '@/lib/comissoes/queries'
 import { markCommissionPaid } from '@/lib/comissoes/actions'
-
-function formatCurrency(val: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
-}
+import { formatCurrency, formatDate } from '@/lib/format'
 
 export default function ComissaoDetail({ comissao }: { comissao: ComissaoItem }) {
   const router = useRouter()
@@ -70,16 +67,12 @@ export default function ComissaoDetail({ comissao }: { comissao: ComissaoItem })
           </div>
           <div>
             <p className={labelCls}>Criada em</p>
-            <p className={valueCls}>
-              {new Date(comissao.created_at).toLocaleDateString('pt-BR')}
-            </p>
+            <p className={valueCls}>{formatDate(comissao.created_at)}</p>
           </div>
           {comissao.status === 'paga' && comissao.paid_at && (
             <div>
               <p className={labelCls}>Paga em</p>
-              <p className={valueCls}>
-                {new Date(comissao.paid_at).toLocaleDateString('pt-BR')}
-              </p>
+              <p className={valueCls}>{formatDate(comissao.paid_at)}</p>
             </div>
           )}
         </div>

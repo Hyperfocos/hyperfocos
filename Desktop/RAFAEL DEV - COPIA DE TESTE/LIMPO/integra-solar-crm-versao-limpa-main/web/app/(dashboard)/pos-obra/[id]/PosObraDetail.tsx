@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { PosObraClient } from '@/lib/pos-obra/queries'
 import { upsertPosObra } from '@/lib/pos-obra/actions'
+import { DatePicker } from '@/components/ui/inputs'
 
 export default function PosObraDetail({
   posObra,
@@ -70,13 +71,7 @@ export default function PosObraDetail({
         <h2 className="text-sm font-semibold text-white/70">Dados do Pós-Obra</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelCls}>Data de contato</label>
-            <input
-              type="date"
-              value={form.data_contato}
-              onChange={(e) => setForm((f) => ({ ...f, data_contato: e.target.value }))}
-              className={inputCls}
-            />
+            <DatePicker label="Data de contato" value={form.data_contato || null} onChange={(iso) => setForm((f) => ({ ...f, data_contato: iso }))} />
           </div>
           <div>
             <label className={labelCls}>NPS (0-10)</label>

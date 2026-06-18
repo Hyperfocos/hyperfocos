@@ -4,6 +4,7 @@ import { getContratos } from '@/lib/contratos/queries'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { ContratoClient } from '@/lib/contratos/queries'
+import { formatDate } from '@/lib/format'
 
 const STATUS_LABELS: Record<string, string> = {
   aguardando_assinatura: 'Aguardando assinatura',
@@ -45,7 +46,7 @@ function ContratoRow({ client }: { client: ContratoClient }) {
         <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>
           {client.city ?? '—'}
           {client.contract_date
-            ? ` · Contrato: ${new Date(client.contract_date).toLocaleDateString('pt-BR')}`
+            ? ` · Contrato: ${formatDate(client.contract_date)}`
             : ''}
         </p>
       </div>

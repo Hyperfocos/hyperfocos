@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { ProjetoClient, ProjetoMember } from '@/lib/projetos/queries'
 import { upsertProject } from '@/lib/projetos/actions'
+import { DatePicker } from '@/components/ui/inputs'
 
 const STATUS_OPTIONS = [
   { value: 'pendente', label: 'Pendente' },
@@ -178,42 +179,16 @@ export default function ProjetoDetail({
           </div>
           <div />
           <div>
-            <label className={labelCls}>Data de protocolo</label>
-            <input
-              type="date"
-              value={form.data_protocolo}
-              onChange={(e) => setForm((f) => ({ ...f, data_protocolo: e.target.value }))}
-              className={inputCls}
-            />
+            <DatePicker label="Data de protocolo" value={form.data_protocolo || null} onChange={(iso) => setForm((f) => ({ ...f, data_protocolo: iso }))} />
           </div>
           <div>
-            <label className={labelCls}>Prazo do protocolo</label>
-            <input
-              type="date"
-              value={form.prazo_protocolo}
-              onChange={(e) => setForm((f) => ({ ...f, prazo_protocolo: e.target.value }))}
-              className={inputCls}
-            />
+            <DatePicker label="Prazo do protocolo" value={form.prazo_protocolo || null} onChange={(iso) => setForm((f) => ({ ...f, prazo_protocolo: iso }))} />
           </div>
           <div>
-            <label className={labelCls}>Data de solicitação de vistoria</label>
-            <input
-              type="date"
-              value={form.data_solicitacao_vistoria}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, data_solicitacao_vistoria: e.target.value }))
-              }
-              className={inputCls}
-            />
+            <DatePicker label="Data de solicitação de vistoria" value={form.data_solicitacao_vistoria || null} onChange={(iso) => setForm((f) => ({ ...f, data_solicitacao_vistoria: iso }))} />
           </div>
           <div>
-            <label className={labelCls}>Prazo da vistoria</label>
-            <input
-              type="date"
-              value={form.prazo_vistoria}
-              onChange={(e) => setForm((f) => ({ ...f, prazo_vistoria: e.target.value }))}
-              className={inputCls}
-            />
+            <DatePicker label="Prazo da vistoria" value={form.prazo_vistoria || null} onChange={(iso) => setForm((f) => ({ ...f, prazo_vistoria: iso }))} />
           </div>
         </div>
       </div>

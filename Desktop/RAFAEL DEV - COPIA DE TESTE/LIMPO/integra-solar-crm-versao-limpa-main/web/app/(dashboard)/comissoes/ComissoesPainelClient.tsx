@@ -4,10 +4,7 @@
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import type { ComissoesPainel, ComissaoMember } from '@/lib/comissoes/queries'
-
-function formatCurrency(val: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
-}
+import { formatCurrency } from '@/lib/format'
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {

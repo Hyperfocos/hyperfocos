@@ -3,10 +3,8 @@
 import { useState, useTransition } from 'react'
 import type { StockItem } from '@/lib/estoque/queries'
 import { createStockItem, updateStockItem, deleteStockItem } from '@/lib/estoque/actions'
-
-function formatCurrency(v: number) {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
+import { formatCurrency } from '@/lib/format'
+import { CurrencyInput } from '@/components/ui/inputs'
 
 type FormData = {
   name: string
@@ -205,16 +203,10 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 mb-1 block">Valor Unitário (R$)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}
-                    value={form.unit_value}
-                    onChange={(e) => setForm({ ...form, unit_value: e.target.value })}
-                    placeholder="0,00"
+                  <CurrencyInput
+                    label="Valor Unitário (R$)"
+                    value={form.unit_value ? parseFloat(form.unit_value) : null}
+                    onChange={(v) => setForm({ ...form, unit_value: v.toFixed(2) })}
                   />
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { FormError } from '@/components/ui/FormError'
+import { CpfCnpjInput, PhoneInput, CepInput } from '@/components/ui/inputs'
 import { updateTab1 } from '@/lib/clients/actions'
 import type { Client, ActionResult } from '@/lib/clients/types'
 
@@ -44,9 +45,9 @@ export function Tab1DadosPessoais({ client }: { client: Client }) {
       </div>
 
       <Input name="name" label="Nome *" defaultValue={client.name} required />
-      <Input name="cpf_cnpj" label="CPF / CNPJ" defaultValue={client.cpf_cnpj ?? ''} placeholder="000.000.000-00" />
+      <CpfCnpjInput name="cpf_cnpj" label="CPF / CNPJ" value={client.cpf_cnpj ?? ''} />
       <Input name="email" label="Email" type="email" defaultValue={client.email ?? ''} />
-      <Input name="phone" label="Telefone" defaultValue={client.phone ?? ''} placeholder="(11) 99999-9999" />
+      <PhoneInput name="phone" label="Telefone" value={client.phone ?? ''} />
 
       <div className="grid grid-cols-3 gap-3">
         <div className="col-span-2">
@@ -56,7 +57,7 @@ export function Tab1DadosPessoais({ client }: { client: Client }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <Input name="neighborhood" label="Bairro" defaultValue={client.neighborhood ?? ''} />
-        <Input name="zip" label="CEP" defaultValue={client.zip ?? ''} />
+        <CepInput name="zip" label="CEP" value={client.zip ?? ''} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <Input name="city" label="Cidade" defaultValue={client.city ?? ''} />

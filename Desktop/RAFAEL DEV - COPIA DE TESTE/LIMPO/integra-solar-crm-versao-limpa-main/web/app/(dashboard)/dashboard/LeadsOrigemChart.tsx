@@ -36,7 +36,7 @@ export default function LeadsOrigemChart({ data }: { data: LeadOrigemItem[] }) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number, name: string) => [value, name]}
+                formatter={(value, name) => [value, name]}
                 contentStyle={{ background: '#0a0e1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'white' }}
               />
             </PieChart>

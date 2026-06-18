@@ -1,16 +1,13 @@
 'use client'
 
 import type { KpiData } from '@/lib/dashboard/queries'
-
-function formatCurrency(v: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
-}
+import { formatCurrency, formatKwp } from '@/lib/format'
 
 export default function KpiCards({ kpi }: { kpi: KpiData }) {
   const cards = [
     { label: 'Qtd. Vendas', value: kpi.qtd_vendas.toString(), sub: 'no período', color: '#60a5fa' },
     { label: 'Valor Total', value: formatCurrency(kpi.valor_total), sub: 'no período', color: '#34d399' },
-    { label: 'Potência (kWp)', value: `${kpi.potencia_kwp.toFixed(2)} kWp`, sub: 'projetos vendidos', color: '#fbbf24' },
+    { label: 'Potência (kWp)', value: formatKwp(kpi.potencia_kwp), sub: 'projetos vendidos', color: '#fbbf24' },
     { label: 'Ticket Médio', value: formatCurrency(kpi.ticket_medio), sub: 'por projeto', color: '#FFD080' },
   ]
 

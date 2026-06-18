@@ -1,10 +1,7 @@
 'use client'
 
 import type { MetaData } from '@/lib/dashboard/queries'
-
-function formatCurrency(v: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v)
-}
+import { formatCurrency } from '@/lib/format'
 
 function ProgressBar({ value, max, color }: { value: number; max: number; color: string }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0

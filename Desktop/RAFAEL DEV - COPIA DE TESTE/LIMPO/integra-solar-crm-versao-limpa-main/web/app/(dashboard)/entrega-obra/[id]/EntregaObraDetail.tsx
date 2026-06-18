@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { EntregaObraClient } from '@/lib/entrega-obra/queries'
 import { upsertObraDelivery } from '@/lib/entrega-obra/actions'
+import { DatePicker } from '@/components/ui/inputs'
 
 export default function EntregaObraDetail({
   entrega,
@@ -90,8 +91,7 @@ export default function EntregaObraDetail({
         <h2 className="text-sm font-semibold text-white/70">Dados da Entrega</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelCls}>Data de entrega ao cliente</label>
-            <input type="date" value={form.data_entrega} onChange={(e) => setForm((f) => ({ ...f, data_entrega: e.target.value }))} className={inputCls} />
+            <DatePicker label="Data de entrega ao cliente" value={form.data_entrega || null} onChange={(iso) => setForm((f) => ({ ...f, data_entrega: iso }))} />
           </div>
           <div>
             <label className={labelCls}>Status</label>

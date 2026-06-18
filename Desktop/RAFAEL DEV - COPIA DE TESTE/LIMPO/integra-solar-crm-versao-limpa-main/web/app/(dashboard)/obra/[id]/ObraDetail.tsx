@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { ObraClient, ObraMember } from '@/lib/obra/queries'
 import { upsertObra } from '@/lib/obra/actions'
+import { DatePicker } from '@/components/ui/inputs'
 
 const STATUS_OPTIONS = [
   { value: 'aguardando', label: 'Aguardando' },
@@ -78,12 +79,10 @@ export default function ObraDetail({ obra, members, clientId }: { obra: ObraClie
         <h2 className="text-sm font-semibold text-white/70">Dados da Obra</h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={labelCls}>Data de início</label>
-            <input type="date" value={form.data_inicio} onChange={(e) => setForm((f) => ({ ...f, data_inicio: e.target.value }))} className={inputCls} />
+            <DatePicker label="Data de início" value={form.data_inicio || null} onChange={(iso) => setForm((f) => ({ ...f, data_inicio: iso }))} />
           </div>
           <div>
-            <label className={labelCls}>Data prevista de conclusão</label>
-            <input type="date" value={form.data_prevista} onChange={(e) => setForm((f) => ({ ...f, data_prevista: e.target.value }))} className={inputCls} />
+            <DatePicker label="Data prevista de conclusão" value={form.data_prevista || null} onChange={(iso) => setForm((f) => ({ ...f, data_prevista: iso }))} />
           </div>
           <div>
             <label className={labelCls}>Responsável pela instalação</label>

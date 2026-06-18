@@ -5,6 +5,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import type { CompraClient } from '@/lib/compras/queries'
 import { upsertPurchase } from '@/lib/compras/actions'
+import { CurrencyInput, DatePicker } from '@/components/ui/inputs'
 
 const STATUS_OPTIONS = [
   { value: 'aguardando', label: 'Aguardando' },
@@ -18,10 +19,6 @@ const STATUS_BADGE: Record<string, string> = {
   entregue: 'bg-green-500/20 text-green-300 border-green-500/40',
 }
 
-function formatCurrency(val: number | null) {
-  if (val == null) return '—'
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
-}
 
 export default function CompraDetail({
   compra,
@@ -121,24 +118,10 @@ export default function CompraDetail({
             />
           </div>
           <div>
-            <label className={labelCls}>Valor (R$)</label>
-            <input
-              type="number"
-              step="0.01"
-              value={form.valor}
-              onChange={(e) => setForm((f) => ({ ...f, valor: e.target.value }))}
-              className={inputCls}
-              placeholder="0,00"
-            />
+            <CurrencyInput label="Valor (R$)" value={form.valor ? parseFloat(form.valor) : null} onChange={(v) => setForm((f) => ({ ...f, valor: v.toFixed(2) }))} />
           </div>
           <div>
-            <label className={labelCls}>Data prevista de entrega</label>
-            <input
-              type="date"
-              value={form.data_prevista}
-              onChange={(e) => setForm((f) => ({ ...f, data_prevista: e.target.value }))}
-              className={inputCls}
-            />
+            <DatePicker label="Data prevista de entrega" value={form.data_prevista || null} onChange={(iso) => setForm((f) => ({ ...f, data_prevista: iso }))} />
           </div>
         </div>
       </div>

@@ -3,10 +3,10 @@
 
 import { useState } from 'react'
 import { useFormState } from 'react-dom'
-import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { FormError } from '@/components/ui/FormError'
+import { CurrencyInput, PercentInput, DatePicker } from '@/components/ui/inputs'
 import { updateTab3 } from '@/lib/clients/actions'
 import type { Client, ActionResult } from '@/lib/clients/types'
 
@@ -90,13 +90,10 @@ export function Tab3VendaFat({ client }: { client: Client }) {
         <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
           Dados da Venda
         </p>
-        <Input
+        <CurrencyInput
           name="sale_value"
           label="Valor total da venda (R$) *"
-          type="number"
-          step="0.01"
-          min="0"
-          defaultValue={client.sale?.sale_value.toString() ?? ''}
+          value={client.sale?.sale_value ?? null}
           required
         />
         <div className="flex flex-col gap-1.5">
@@ -111,14 +108,10 @@ export function Tab3VendaFat({ client }: { client: Client }) {
           </select>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Input
+          <PercentInput
             name="commission_pct"
             label="Comissão (%)"
-            type="number"
-            step="0.1"
-            min="0"
-            max="100"
-            defaultValue={client.sale?.commission_pct.toString() ?? '0'}
+            value={client.sale?.commission_pct ?? null}
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -166,28 +159,18 @@ export function Tab3VendaFat({ client }: { client: Client }) {
               )}
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex flex-col gap-1">
-                <label style={{ ...labelStyle, marginBottom: 3 }}>Vencimento</label>
-                <input
-                  type="date"
-                  value={inst.due_date}
-                  onChange={(e) => updateInstallment(idx, 'due_date', e.target.value)}
-                  style={selectStyle}
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label style={{ ...labelStyle, marginBottom: 3 }}>Valor (R$)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={inst.amount || ''}
-                  onChange={(e) => updateInstallment(idx, 'amount', Number(e.target.value))}
-                  style={selectStyle}
-                  required
-                />
-              </div>
+              <DatePicker
+                label="Vencimento"
+                value={inst.due_date || null}
+                onChange={(iso) => updateInstallment(idx, 'due_date', iso)}
+                required
+              />
+              <CurrencyInput
+                label="Valor (R$)"
+                value={inst.amount || null}
+                onChange={(v) => updateInstallment(idx, 'amount', v)}
+                required
+              />
             </div>
             <input
               type="text"

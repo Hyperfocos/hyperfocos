@@ -4,15 +4,12 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { FinanceiroPainel, FinanceiroMember, FinanceiroInstallment } from '@/lib/financeiro/queries'
+import { formatCurrency, formatDate } from '@/lib/format'
 
 const MONTHS = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
 ]
-
-function formatBRL(value: number) {
-  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-}
 
 function StatusBadge({ status }: { status: 'pendente' | 'confirmada' }) {
   const isConfirmed = status === 'confirmada'
@@ -40,7 +37,7 @@ function Card({ label, value, accent }: { label: string; value: number; accent?:
         {label}
       </p>
       <p className="text-xl font-semibold" style={{ color: accent ?? 'rgba(255,255,255,0.85)' }}>
-        {formatBRL(value)}
+        {formatCurrency(value)}
       </p>
     </div>
   )
@@ -58,11 +55,11 @@ function InstallmentRow({ inst }: { inst: FinanceiroInstallment }) {
         </p>
         <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
           {inst.position === 1 ? 'Entrada' : `Parcela ${inst.position}`} ·{' '}
-          {new Date(inst.due_date).toLocaleDateString('pt-BR')}
+          {formatDate(inst.due_date)}
         </p>
       </div>
       <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'rgba(255,255,255,0.75)' }}>
-        {formatBRL(inst.amount)}
+        {formatCurrency(inst.amount)}
       </p>
       <StatusBadge status={inst.status} />
       <Link
@@ -152,6 +149,7 @@ export function FinanceiroPainelClient({
         <Card label="Faturamento total" value={painel.faturamento_total} accent="#FFD080" />
         <Card label="A receber" value={painel.a_receber} accent="#3B82F6" />
         <Card label="Em atraso" value={painel.em_atraso} accent="#EF4444" />
+
       </div>
 
       {/* Lista de parcelas */}
