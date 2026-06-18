@@ -67,7 +67,7 @@ export async function upsertPurchase(
     .single()
 
   const currentFlags = (client?.pipeline_flags as Record<string, string>) ?? {}
-  const newFlags = { ...currentFlags, compras: data.status }
+  const newFlags: Record<string, string> = { ...currentFlags, compras: data.status }
 
   // If confirmed: activate comissoes
   if (data.status === 'confirmado' && !currentFlags.comissoes) {

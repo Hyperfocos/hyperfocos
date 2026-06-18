@@ -59,7 +59,7 @@ export async function getComissoesPainel(params: {
   if (error || !data) return { items: [], total_pendente: 0, total_pago: 0 }
 
   // Resolve vendedor names
-  const vendedorIds = [...new Set(data.map((r: any) => r.vendedor_id).filter(Boolean))] as string[]
+  const vendedorIds = Array.from(new Set(data.map((r: any) => r.vendedor_id).filter(Boolean))) as string[]
   const vendedorMap: Record<string, string> = {}
   if (vendedorIds.length > 0) {
     const { data: profiles } = await (supabase as any)
