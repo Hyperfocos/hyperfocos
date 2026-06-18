@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import './print.css'
 import {
   getComercialData, getLeadsData, getFinanceiroData, getTecnicoData,
-} from '@/lib/relatorios/queries'
+} from '@/lib/relatorios/actions'
 import type {
   ComercialSummary, LeadOrigemRow, RankingVendedorRow,
   ComissaoVendedorRow, TecnicoSummary, RelatorioFilter,
