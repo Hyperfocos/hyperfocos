@@ -306,6 +306,13 @@ export async function convertLeadToClient(leadId: string): Promise<{ clientId?: 
 
   if (clientError || !client) return { error: clientError?.message ?? 'Erro ao criar cliente.' }
 
+  // Marcar lead como convertido
+  await (supabase as any).from('leads').update({
+    converted: true,
+    converted_to_client_id: client.id,
+    updated_at: new Date().toISOString(),
+  }).eq('id', leadId)
+
   revalidatePath('/leads')
   redirect(`/clientes/${client.id}`)
 }
