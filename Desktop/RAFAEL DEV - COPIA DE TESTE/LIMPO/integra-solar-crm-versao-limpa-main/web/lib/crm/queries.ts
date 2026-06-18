@@ -12,7 +12,7 @@ export async function getFunnelStages(): Promise<FunnelStage[]> {
     .select('*')
     .eq('organization_id', user.membership.organization.id)
     .order('order', { ascending: true })
-  return (data as FunnelStage[]) ?? []
+  return (data as any as FunnelStage[]) ?? []
 }
 
 export async function getLeadSources(): Promise<LeadSource[]> {
@@ -24,7 +24,7 @@ export async function getLeadSources(): Promise<LeadSource[]> {
     .select('id, name')
     .eq('organization_id', user.membership.organization.id)
     .order('name')
-  return data ?? []
+  return (data as any) ?? []
 }
 
 export async function getOrgMembers() {
@@ -46,16 +46,16 @@ export async function getLeads(): Promise<Lead[]> {
     .from('leads')
     .select(`
       *,
-      stage:pipeline_stages(id, name, color, is_final_stage, order),
+      stage:pipeline_stages(id, name, color, is_final_stage, is_terminal_won, is_terminal_lost, order),
       assigned_user:profiles!assigned_to_user_id(id, full_name, email),
       lead_source:lead_sources(id, name),
+      notes:lead_notes(id, content, created_at, created_by, author:profiles!created_by(full_name, email)),
       followups:tasks!related_to_lead_id(id, title, description, due_date, completed_at, assigned_to_user_id)
     `)
     .eq('organization_id', user.membership.organization.id)
     .order('created_at', { ascending: false })
   const leads = (data ?? []) as any[]
-  // lead_notes not in DB types — fetch separately if needed; return empty array for now
-  return leads.map((l) => ({ ...l, notes: l.notes ?? [] })) as Lead[]
+  return leads.map((l) => ({ ...l, notes: l.notes ?? [], followups: l.followups ?? [] })) as Lead[]
 }
 
 export async function getLeadById(id: string): Promise<Lead | null> {
@@ -64,15 +64,17 @@ export async function getLeadById(id: string): Promise<Lead | null> {
     .from('leads')
     .select(`
       *,
-      stage:pipeline_stages(id, name, color, is_final_stage, order),
+      stage:pipeline_stages(id, name, color, is_final_stage, is_terminal_won, is_terminal_lost, order),
       assigned_user:profiles!assigned_to_user_id(id, full_name, email),
       lead_source:lead_sources(id, name),
+      notes:lead_notes(id, content, created_at, created_by, author:profiles!created_by(full_name, email)),
       followups:tasks!related_to_lead_id(id, title, description, due_date, completed_at, assigned_to_user_id)
     `)
     .eq('id', id)
     .single()
   if (!data) return null
-  return { ...(data as any), notes: [] } as Lead
+  const lead = data as any
+  return { ...lead, notes: lead.notes ?? [], followups: lead.followups ?? [] } as Lead
 }
 
 export async function getProposalsByLead(leadId: string): Promise<Proposal[]> {
@@ -82,7 +84,25 @@ export async function getProposalsByLead(leadId: string): Promise<Proposal[]> {
     .select(`*, supplier:suppliers(id, name)`)
     .eq('lead_id', leadId)
     .order('created_at', { ascending: false })
-  return (data as unknown as Proposal[]) ?? []
+  const proposals = (data ?? []) as any[]
+  // Map DB columns to our Proposal type (DB uses total_modules, module_power_wp, etc.)
+  return proposals.map((p) => ({
+    id: p.id,
+    lead_id: p.lead_id,
+    name: p.name ?? 'Proposta',
+    panel_qty: p.total_modules ?? 0,
+    panel_power_w: p.module_power_wp ?? 0,
+    panel_brand_model: p.panel_brand_model ?? null,
+    inverter_qty: p.total_inverters ?? 0,
+    inverter_power_w: p.inverter_power_w ?? 0,
+    inverter_brand_model: p.inverter_brand_model ?? null,
+    kit_value: p.kit_value ?? 0,
+    total_power_kwp: p.total_power_kwp ?? 0,
+    monthly_generation_kwh: p.monthly_generation_kwh ?? 0,
+    status: p.status ?? 'draft',
+    created_at: p.created_at,
+    supplier: p.supplier ?? null,
+  })) as Proposal[]
 }
 
 export async function getSuppliers(): Promise<Supplier[]> {
@@ -94,7 +114,7 @@ export async function getSuppliers(): Promise<Supplier[]> {
     .select('id, name')
     .eq('organization_id', user.membership.organization.id)
     .order('name')
-  return data ?? []
+  return (data as any) ?? []
 }
 
 // Retorna fator de geração da org (padrão 1.0 se não configurado)
@@ -124,10 +144,10 @@ export async function ensureDefaultStages(orgId: string): Promise<void> {
     { name: 'Em contato', order: 2, color: '#3B82F6' },
     { name: 'Visita agendada', order: 3, color: '#8B5CF6' },
     { name: 'Proposta enviada', order: 4, color: '#F59E0B' },
-    { name: 'Fechado', order: 5, color: '#10B981', is_final_stage: true },
-    { name: 'Perdido', order: 6, color: '#EF4444', is_final_stage: true },
+    { name: 'Fechado', order: 5, color: '#10B981', is_terminal_won: true },
+    { name: 'Perdido', order: 6, color: '#EF4444', is_terminal_lost: true },
   ]
   await supabase.from('pipeline_stages').insert(
-    defaults.map((d) => ({ ...d, organization_id: orgId }))
+    defaults.map((d) => ({ ...d, organization_id: orgId })) as any
   )
 }

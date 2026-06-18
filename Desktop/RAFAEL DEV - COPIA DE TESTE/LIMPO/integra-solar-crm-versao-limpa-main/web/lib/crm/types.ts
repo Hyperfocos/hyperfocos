@@ -7,6 +7,8 @@ export type FunnelStage = {
   order: number
   color: string
   is_final_stage: boolean
+  is_terminal_won: boolean
+  is_terminal_lost: boolean
 }
 
 export type LeadSource = {
@@ -42,18 +44,19 @@ export type Lead = {
   id: string
   organization_id: string
   name: string
-  phone: string
+  phone: string | null
   city: string | null
+  address: string | null
+  avg_kwh: number | null
+  installation_type: string | null
   observations: string | null
   next_action_date: string | null
-  system_type: string | null
-  estimated_kwp: number | null
-  estimated_value: number | null
+  converted: boolean
+  converted_to_client_id: string | null
   created_at: string
   updated_at: string
   current_stage_id: string
   assigned_to_user_id: string | null
-  lead_source_id: string | null
   stage: FunnelStage | null
   assigned_user: LeadUser | null
   lead_source: LeadSource | null
@@ -68,21 +71,19 @@ export type Supplier = {
 
 export type Proposal = {
   id: string
-  organization_id: string
-  client_id: string
   lead_id: string | null
-  version_number: number
-  total_modules: number
-  module_power_wp: number
-  total_inverters: number
+  name: string
+  panel_qty: number
+  panel_power_w: number
+  panel_brand_model: string | null
+  inverter_qty: number
   inverter_power_w: number
+  inverter_brand_model: string | null
   kit_value: number
   total_power_kwp: number
   monthly_generation_kwh: number
-  final_value: number
   status: 'draft' | 'sent' | 'approved' | 'rejected' | 'cancelled'
   created_at: string
-  supplier_id: string | null
   supplier: Supplier | null
 }
 
