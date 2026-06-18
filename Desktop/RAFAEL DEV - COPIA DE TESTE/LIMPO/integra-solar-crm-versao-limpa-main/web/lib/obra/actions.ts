@@ -63,23 +63,22 @@ export async function upsertObra(
   const currentFlags = (client?.pipeline_flags as Record<string, string>) ?? {}
   const newFlags: Record<string, string> = { ...currentFlags, obra: data.status }
 
-  if (!currentFlags.entrega_obra) {
-    newFlags.entrega_obra = 'pendente'
+  newFlags.entrega_obra = 'pendente'
 
-    const { data: existingObraDelivery } = await (supabase as any)
-      .from('client_obra_deliveries')
-      .select('id')
-      .eq('client_id', clientId)
-      .maybeSingle()
+  const { data: existingObraDelivery } = await (supabase as any)
+    .from('client_obra_deliveries')
+    .select('id')
+    .eq('client_id', clientId)
+    .maybeSingle()
 
-    if (!existingObraDelivery) {
-      await (supabase as any).from('client_obra_deliveries').insert({
-        client_id: clientId,
-        organization_id: orgId,
-        status: 'pendente',
-        checklist: { limpeza: false, manuais: false, orientacao_uso: false },
-      })
-    }
+  if (!existingObraDelivery) {
+    const { error: insertErr } = await (supabase as any).from('client_obra_deliveries').insert({
+      client_id: clientId,
+      organization_id: orgId,
+      status: 'pendente',
+      checklist: { vistoria: false, fotos: false, cliente_ok: false },
+    })
+    if (insertErr) return { error: insertErr.message }
   }
 
   await (supabase as any)
