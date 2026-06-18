@@ -106,6 +106,26 @@ export async function upsertPurchase(
     })
   }
 
+  // If entregue: activate entrega_material
+  if (data.status === 'entregue' && !currentFlags.entrega_material) {
+    newFlags.entrega_material = 'pendente'
+
+    const { data: existingDelivery } = await (supabase as any)
+      .from('client_deliveries')
+      .select('id')
+      .eq('client_id', clientId)
+      .maybeSingle()
+
+    if (!existingDelivery) {
+      await (supabase as any).from('client_deliveries').insert({
+        client_id: clientId,
+        organization_id: orgId,
+        status: 'pendente',
+        checklist: { limpeza: false, manuais: false, orientacao_uso: false },
+      })
+    }
+  }
+
   await (supabase as any)
     .from('clients')
     .update({
