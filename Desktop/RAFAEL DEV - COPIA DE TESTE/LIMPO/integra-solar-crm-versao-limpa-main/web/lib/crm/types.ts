@@ -49,6 +49,10 @@ export type Lead = {
   address: string | null
   avg_kwh: number | null
   installation_type: string | null
+  // Pre-existing DB fields (kept for completeness)
+  system_type: string | null
+  estimated_kwp: number | null
+  estimated_value: number | null
   observations: string | null
   next_action_date: string | null
   converted: boolean

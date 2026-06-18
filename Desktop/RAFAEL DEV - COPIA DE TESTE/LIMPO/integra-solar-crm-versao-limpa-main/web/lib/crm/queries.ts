@@ -59,6 +59,8 @@ export async function getLeads(): Promise<Lead[]> {
 }
 
 export async function getLeadById(id: string): Promise<Lead | null> {
+  const user = await getCurrentUserData()
+  if (!user?.membership) return null
   const supabase = await createClient()
   const { data } = await supabase
     .from('leads')
@@ -71,6 +73,7 @@ export async function getLeadById(id: string): Promise<Lead | null> {
       followups:tasks!related_to_lead_id(id, title, description, due_date, completed_at, assigned_to_user_id)
     `)
     .eq('id', id)
+    .eq('organization_id', user.membership.organization.id)
     .single()
   if (!data) return null
   const lead = data as any

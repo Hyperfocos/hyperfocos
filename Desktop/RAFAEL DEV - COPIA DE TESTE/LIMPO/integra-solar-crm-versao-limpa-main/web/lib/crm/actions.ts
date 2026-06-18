@@ -15,11 +15,6 @@ async function getOrgId(): Promise<string | null> {
   return user?.membership?.organization.id ?? null
 }
 
-async function getUserId(): Promise<string | null> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.id ?? null
-}
 
 // ── Lead Actions ──────────────────────────────────────────────────
 
@@ -66,6 +61,9 @@ export async function updateLead(
   _prev: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
+  const orgId = await getOrgId()
+  if (!orgId) return { error: 'Sem organização ativa.' }
+
   const parsed = leadSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
@@ -79,7 +77,7 @@ export async function updateLead(
     assigned_to_user_id: assigned_to_user_id || null,
     lead_source_id: lead_source_id || null,
     updated_at: new Date().toISOString(),
-  }).eq('id', leadId)
+  }).eq('id', leadId).eq('organization_id', orgId)
 
   if (error) return { error: error.message }
   revalidatePath('/leads')
@@ -87,19 +85,24 @@ export async function updateLead(
 }
 
 export async function deleteLead(leadId: string): Promise<ActionResult> {
+  const orgId = await getOrgId()
+  if (!orgId) return { error: 'Sem organização ativa.' }
   const supabase = await createClient()
-  const { error } = await supabase.from('leads').delete().eq('id', leadId)
+  const { error } = await supabase.from('leads').delete().eq('id', leadId).eq('organization_id', orgId)
   if (error) return { error: error.message }
   revalidatePath('/leads')
   return { success: 'Lead excluído.' }
 }
 
 export async function moveLeadStage(leadId: string, stageId: string): Promise<ActionResult> {
+  const orgId = await getOrgId()
+  if (!orgId) return { error: 'Sem organização ativa.' }
   const supabase = await createClient()
   const { error } = await supabase
     .from('leads')
     .update({ current_stage_id: stageId, updated_at: new Date().toISOString() })
     .eq('id', leadId)
+    .eq('organization_id', orgId)
   if (error) return { error: error.message }
   revalidatePath('/leads')
   return { success: 'Etapa atualizada.' }
@@ -109,8 +112,9 @@ export async function moveLeadStage(leadId: string, stageId: string): Promise<Ac
 // lead_notes table is not yet in the generated DB types; using `any` cast to avoid tsc errors.
 
 export async function createNote(leadId: string, content: string): Promise<ActionResult> {
-  const orgId = await getOrgId()
-  const userId = await getUserId()
+  const user = await getCurrentUserData()
+  const orgId = user?.membership?.organization.id ?? null
+  const userId = user?.profile.id ?? null
   if (!orgId) return { error: 'Sem organização ativa.' }
   if (!content.trim()) return { error: 'Anotação não pode ser vazia.' }
 
@@ -127,6 +131,7 @@ export async function createNote(leadId: string, content: string): Promise<Actio
 }
 
 export async function deleteNote(noteId: string): Promise<ActionResult> {
+  // RLS policy 'lead_notes_org_isolation' scopes this to the current user's org
   const supabase = await createClient()
   const { error } = await (supabase as any).from('lead_notes').delete().eq('id', noteId)
   if (error) return { error: (error as any).message }
@@ -147,8 +152,9 @@ export async function createFollowUp(
   _prev: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
-  const orgId = await getOrgId()
-  const userId = await getUserId()
+  const user = await getCurrentUserData()
+  const orgId = user?.membership?.organization.id ?? null
+  const userId = user?.profile.id ?? null
   if (!orgId) return { error: 'Sem organização ativa.' }
 
   const parsed = followUpSchema.safeParse(Object.fromEntries(formData))
@@ -169,6 +175,7 @@ export async function createFollowUp(
 }
 
 export async function toggleFollowUp(taskId: string, done: boolean): Promise<ActionResult> {
+  // RLS policy 'tasks_org_isolation' scopes this to the current user's org
   const supabase = await createClient()
   const { error } = await supabase
     .from('tasks')
@@ -199,8 +206,9 @@ export async function createProposal(
   _prev: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
-  const orgId = await getOrgId()
-  const userId = await getUserId()
+  const user = await getCurrentUserData()
+  const orgId = user?.membership?.organization.id ?? null
+  const userId = user?.profile.id ?? null
   if (!orgId) return { error: 'Sem organização ativa.' }
 
   const parsed = proposalSchema.safeParse(Object.fromEntries(formData))
@@ -222,6 +230,7 @@ export async function createProposal(
 }
 
 export async function deleteProposal(proposalId: string): Promise<ActionResult> {
+  // RLS policy 'proposals_org_isolation' scopes this to the current user's org
   const supabase = await createClient()
   const { error } = await supabase.from('proposals').delete().eq('id', proposalId)
   if (error) return { error: error.message }
@@ -258,6 +267,7 @@ export async function updateFunnelStage(
 }
 
 export async function deleteFunnelStage(stageId: string, moveTo: string): Promise<ActionResult> {
+  // RLS policy 'pipeline_stages_org_isolation' scopes this to the current user's org
   const supabase = await createClient()
   // Move leads para outra etapa antes de excluir
   await supabase.from('leads').update({ current_stage_id: moveTo }).eq('current_stage_id', stageId)
@@ -307,11 +317,17 @@ export async function convertLeadToClient(leadId: string): Promise<{ clientId?: 
   if (clientError || !client) return { error: clientError?.message ?? 'Erro ao criar cliente.' }
 
   // Marcar lead como convertido
-  await (supabase as any).from('leads').update({
+  const { error: updateError } = await (supabase as any).from('leads').update({
     converted: true,
     converted_to_client_id: client.id,
     updated_at: new Date().toISOString(),
   }).eq('id', leadId)
+
+  if (updateError) {
+    // Rollback: excluir o cliente criado para evitar dado inconsistente
+    await supabase.from('clients').delete().eq('id', client.id)
+    return { error: 'Erro ao marcar lead como convertido: ' + updateError.message }
+  }
 
   revalidatePath('/leads')
   redirect(`/clientes/${client.id}`)
