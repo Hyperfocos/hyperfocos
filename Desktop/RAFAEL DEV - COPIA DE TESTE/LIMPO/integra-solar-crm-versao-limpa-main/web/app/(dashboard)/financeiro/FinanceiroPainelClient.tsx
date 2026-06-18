@@ -1,0 +1,174 @@
+// web/app/(dashboard)/financeiro/FinanceiroPainelClient.tsx
+'use client'
+
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import type { FinanceiroPainel, FinanceiroMember, FinanceiroInstallment } from '@/lib/financeiro/queries'
+
+const MONTHS = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+]
+
+function formatBRL(value: number) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function StatusBadge({ status }: { status: 'pendente' | 'confirmada' }) {
+  const isConfirmed = status === 'confirmada'
+  return (
+    <span
+      className="text-xs px-2 py-0.5 rounded-full"
+      style={{
+        background: isConfirmed ? 'rgba(16,185,129,0.10)' : 'rgba(245,158,11,0.10)',
+        color: isConfirmed ? '#10B981' : '#F59E0B',
+        border: `1px solid ${isConfirmed ? 'rgba(16,185,129,0.25)' : 'rgba(245,158,11,0.25)'}`,
+      }}
+    >
+      {isConfirmed ? 'Confirmada' : 'Pendente'}
+    </span>
+  )
+}
+
+function Card({ label, value, accent }: { label: string; value: number; accent?: string }) {
+  return (
+    <div
+      className="flex flex-col gap-1.5 p-4 rounded-xl"
+      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        {label}
+      </p>
+      <p className="text-xl font-semibold" style={{ color: accent ?? 'rgba(255,255,255,0.85)' }}>
+        {formatBRL(value)}
+      </p>
+    </div>
+  )
+}
+
+function InstallmentRow({ inst }: { inst: FinanceiroInstallment }) {
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-xl"
+      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+    >
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.80)' }}>
+          {inst.client_name}
+        </p>
+        <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          {inst.position === 1 ? 'Entrada' : `Parcela ${inst.position}`} ·{' '}
+          {new Date(inst.due_date).toLocaleDateString('pt-BR')}
+        </p>
+      </div>
+      <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'rgba(255,255,255,0.75)' }}>
+        {formatBRL(inst.amount)}
+      </p>
+      <StatusBadge status={inst.status} />
+      <Link
+        href={`/financeiro/${inst.client_id}`}
+        className="text-xs flex-shrink-0"
+        style={{ color: '#3B82F6' }}
+      >
+        ver →
+      </Link>
+    </div>
+  )
+}
+
+export function FinanceiroPainelClient({
+  painel,
+  members,
+  month,
+  year,
+  vendedorId,
+}: {
+  painel: FinanceiroPainel
+  members: FinanceiroMember[]
+  month: number
+  year: number
+  vendedorId: string
+}) {
+  const router = useRouter()
+
+  const selectStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.10)',
+    color: '#E0E8F0',
+    borderRadius: 10,
+    padding: '7px 12px',
+    fontSize: 13,
+    outline: 'none',
+  }
+
+  function applyFilter(params: { month?: number; year?: number; vendedor?: string }) {
+    const newMonth = params.month ?? month
+    const newYear = params.year ?? year
+    const newVendedor = params.vendedor !== undefined ? params.vendedor : vendedorId
+    const qs = new URLSearchParams({ month: String(newMonth), year: String(newYear) })
+    if (newVendedor) qs.set('vendedor', newVendedor)
+    router.push(`/financeiro?${qs.toString()}`)
+  }
+
+  const currentYear = new Date().getFullYear()
+  const years = [currentYear - 1, currentYear, currentYear + 1]
+
+  return (
+    <div className="flex flex-col flex-1 overflow-auto px-6 py-5 gap-5">
+      {/* Filtros */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <select
+          value={month}
+          onChange={(e) => applyFilter({ month: Number(e.target.value) })}
+          style={selectStyle}
+        >
+          {MONTHS.map((m, i) => (
+            <option key={i + 1} value={i + 1}>{m}</option>
+          ))}
+        </select>
+        <select
+          value={year}
+          onChange={(e) => applyFilter({ year: Number(e.target.value) })}
+          style={selectStyle}
+        >
+          {years.map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+        <select
+          value={vendedorId}
+          onChange={(e) => applyFilter({ vendedor: e.target.value })}
+          style={selectStyle}
+        >
+          <option value="">Todos os vendedores</option>
+          {members.map((m) => (
+            <option key={m.id} value={m.id}>{m.full_name ?? m.email}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-3 gap-3">
+        <Card label="Faturamento total" value={painel.faturamento_total} accent="#FFD080" />
+        <Card label="A receber" value={painel.a_receber} accent="#3B82F6" />
+        <Card label="Em atraso" value={painel.em_atraso} accent="#EF4444" />
+      </div>
+
+      {/* Lista de parcelas */}
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          Parcelas do período ({painel.installments.length})
+        </p>
+        {painel.installments.length === 0 ? (
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            Nenhuma parcela no período selecionado.
+          </p>
+        ) : (
+          painel.installments.map((inst) => (
+            <InstallmentRow key={inst.id} inst={inst} />
+          ))
+        )}
+      </div>
+    </div>
+  )
+}
