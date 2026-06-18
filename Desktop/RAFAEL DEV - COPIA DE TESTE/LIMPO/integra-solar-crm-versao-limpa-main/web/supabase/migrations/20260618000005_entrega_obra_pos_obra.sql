@@ -42,7 +42,8 @@ create table public.client_obra_deliveries (
   organization_id uuid not null,
   data_entrega date,
   termo_url text,
-  checklist jsonb not null default '{"limpeza": false, "manuais": false, "orientacao_uso": false}',
+  observacoes text,
+  checklist jsonb not null default '{"vistoria": false, "fotos": false, "cliente_ok": false}',
   status text not null default 'pendente',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -57,10 +58,9 @@ create table public.client_pos_obra (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references public.clients(id) on delete cascade,
   organization_id uuid not null,
-  data_ativacao date,
-  parecer_url text,
-  ocorrencias text,
-  monitoramento jsonb,
+  data_contato date,
+  nps integer,
+  observacoes text,
   status text not null default 'pendente',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
