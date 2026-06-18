@@ -1,0 +1,111 @@
+'use client'
+
+import { useState, useTransition } from 'react'
+import { useFormState } from 'react-dom'
+import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
+import { FormError } from '@/components/ui/FormError'
+import { SubmitButton } from '@/components/ui/SubmitButton'
+import { createFollowUp, toggleFollowUp } from '@/lib/crm/actions'
+import type { ActionResult, Lead } from '@/lib/crm/types'
+
+export function FollowUpsList({ lead }: { lead: Lead }) {
+  const [showForm, setShowForm] = useState(false)
+  const [isPending, startTransition] = useTransition()
+
+  const boundCreate = createFollowUp.bind(null, lead.id)
+  const [state, formAction] = useFormState(
+    async (prev: ActionResult, formData: FormData) => {
+      const result = await boundCreate(prev, formData)
+      if (result.success) setShowForm(false)
+      return result
+    },
+    {} as ActionResult
+  )
+
+  const pending = lead.followups.filter((f) => !f.completed_at)
+  const done = lead.followups.filter((f) => !!f.completed_at)
+
+  return (
+    <div className="flex flex-col gap-4">
+      {!showForm ? (
+        <Button className="self-start text-xs py-1.5 px-4" onClick={() => setShowForm(true)}>
+          + Agendar follow-up
+        </Button>
+      ) : (
+        <form
+          action={formAction}
+          className="flex flex-col gap-3 p-3 rounded-xl"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <Input name="title" label="Título *" placeholder="Ex: Ligar para o cliente" required />
+          <Input name="description" label="Descrição" placeholder="Detalhes..." />
+          <Input name="due_date" label="Data *" type="datetime-local" required />
+          <FormError message={state?.error} />
+          <div className="flex gap-2">
+            <SubmitButton className="flex-1 text-xs">Agendar</SubmitButton>
+            <Button variant="ghost" className="text-xs" onClick={() => setShowForm(false)} type="button">
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      )}
+
+      {pending.length === 0 && done.length === 0 && (
+        <p className="text-sm text-center py-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          Nenhum follow-up agendado.
+        </p>
+      )}
+
+      {pending.map((f) => (
+        <div
+          key={f.id}
+          className="flex items-start gap-3 p-3 rounded-xl"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <input
+            type="checkbox"
+            checked={false}
+            onChange={() => startTransition(() => { void toggleFollowUp(f.id, true) })}
+            className="mt-0.5 cursor-pointer"
+            disabled={isPending}
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.80)' }}>{f.title}</p>
+            {f.description && (
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>{f.description}</p>
+            )}
+            {f.due_date && (
+              <p className="text-xs mt-1" style={{ color: '#FFD080' }}>
+                {new Date(f.due_date).toLocaleString('pt-BR')}
+              </p>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {done.length > 0 && (
+        <>
+          <p className="text-xs uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            Concluídos
+          </p>
+          {done.map((f) => (
+            <div
+              key={f.id}
+              className="flex items-start gap-3 p-3 rounded-xl opacity-50"
+              style={{ background: 'rgba(255,255,255,0.02)' }}
+            >
+              <input
+                type="checkbox"
+                checked={true}
+                onChange={() => startTransition(() => { void toggleFollowUp(f.id, false) })}
+                className="mt-0.5 cursor-pointer"
+              />
+              <p className="text-sm line-through" style={{ color: 'rgba(255,255,255,0.50)' }}>{f.title}</p>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  )
+}
