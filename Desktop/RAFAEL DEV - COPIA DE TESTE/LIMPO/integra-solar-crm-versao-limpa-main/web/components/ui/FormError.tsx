@@ -5,7 +5,14 @@ interface FormErrorProps {
 export function FormError({ message }: FormErrorProps) {
   if (!message) return null
   return (
-    <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+    <div
+      className="rounded-xl px-4 py-3 text-sm"
+      style={{
+        background: 'rgba(255,80,80,0.10)',
+        border: '1px solid rgba(255,80,80,0.20)',
+        color: '#FF9090',
+      }}
+    >
       {message}
     </div>
   )

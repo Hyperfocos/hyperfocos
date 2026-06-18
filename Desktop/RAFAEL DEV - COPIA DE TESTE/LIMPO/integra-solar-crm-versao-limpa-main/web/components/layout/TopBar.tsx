@@ -4,8 +4,16 @@ interface TopBarProps {
 
 export function TopBar({ title }: TopBarProps) {
   return (
-    <header className="fixed left-56 right-0 top-0 h-14 bg-white border-b border-[#DDE3EB] flex items-center px-5 z-40 shadow-sm">
-      <h1 className="text-[15px] font-bold text-[#1A2B3C]">{title}</h1>
+    <header
+      className="fixed left-56 right-0 top-0 h-14 flex items-center px-6 z-40"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}
+    >
+      <h1 className="text-[15px] font-bold text-white/90">{title}</h1>
     </header>
   )
 }

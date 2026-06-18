@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from '@/lib/auth/actions'
@@ -43,51 +44,76 @@ export function Sidebar({ user }: SidebarProps) {
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-56 bg-[#0E2236] flex flex-col z-50">
+    <aside
+      className="fixed left-0 top-0 bottom-0 w-56 flex flex-col z-50"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+      }}
+    >
       {/* Logo */}
-      <div className="h-14 flex items-center gap-2.5 px-4 border-b border-white/[0.06]">
-        <div className="w-7 h-7 rounded-lg bg-[#4AABDB] flex items-center justify-center text-white text-xs font-black">
-          IS
-        </div>
-        <div className="flex flex-col leading-tight">
-          <span className="text-[12.5px] font-extrabold text-white tracking-[0.3px]">
-            Integra <span className="text-[#4AABDB]">Solar</span>
-          </span>
-          <span className="text-[8px] font-semibold text-white/30 uppercase tracking-[0.12em]">
-            CRM
-          </span>
-        </div>
+      <div
+        className="h-14 flex items-center gap-2.5 px-4"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <Image
+          src="/Logo integra solar - sem nome.png"
+          alt="Integra Solar"
+          width={36}
+          height={36}
+          className="object-contain"
+        />
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-1.5 px-1.5">
+      <nav className="flex-1 overflow-y-auto py-2 px-2">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-2 px-2.5 py-2 rounded-md text-[12.5px] font-medium my-0.5 transition-all ${
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-medium my-0.5 transition-all"
+              style={
                 isActive
-                  ? 'bg-[#4AABDB]/15 text-white border-l-2 border-[#4AABDB]'
-                  : 'text-white/55 hover:bg-white/[0.06] hover:text-white/85'
-              }`}
+                  ? {
+                      color: '#FFD080',
+                      background: 'rgba(255,200,100,0.08)',
+                      fontWeight: 600,
+                    }
+                  : undefined
+              }
             >
-              <span className="w-4 text-center text-sm flex-shrink-0">{item.icon}</span>
-              {item.label}
+              <span
+                className="w-4 text-center text-sm flex-shrink-0"
+                style={{ color: isActive ? '#FFD080' : 'rgba(255,255,255,0.4)' }}
+              >
+                {item.icon}
+              </span>
+              <span style={{ color: isActive ? '#FFD080' : 'rgba(255,255,255,0.4)' }}>
+                {item.label}
+              </span>
             </Link>
           )
         })}
       </nav>
 
       {/* User area */}
-      <div className="p-2.5 border-t border-white/[0.06]">
-        <div className="flex items-center gap-2 p-2 rounded-md bg-white/[0.05]">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4AABDB] to-[#1A3A5C] flex items-center justify-center text-[11px] font-black text-white flex-shrink-0">
+      <div className="p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div
+          className="flex items-center gap-2 p-2 rounded-xl"
+          style={{ background: 'rgba(255,255,255,0.05)' }}
+        >
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black text-[#1A1A1A] flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, #FFD080, #FF9F40)' }}
+          >
             {initials}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-bold text-white truncate">
+            <p className="text-[12px] font-semibold text-white truncate">
               {user.profile.full_name ?? user.profile.email.split('@')[0]}
             </p>
             <p className="text-[10px] text-white/30">
@@ -98,7 +124,7 @@ export function Sidebar({ user }: SidebarProps) {
             <button
               type="submit"
               title="Sair"
-              className="text-white/25 hover:text-red-400 transition-colors p-1 rounded"
+              className="transition-colors p-1 rounded text-white/25 hover:text-red-400"
             >
               ↩
             </button>

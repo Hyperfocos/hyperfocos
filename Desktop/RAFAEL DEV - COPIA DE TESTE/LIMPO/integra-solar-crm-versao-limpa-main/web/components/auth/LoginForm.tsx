@@ -1,6 +1,7 @@
 'use client'
 
 import { useFormState } from 'react-dom'
+import Image from 'next/image'
 import Link from 'next/link'
 import { signIn } from '@/lib/auth/actions'
 import { Input } from '@/components/ui/Input'
@@ -15,12 +16,16 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md rounded-2xl bg-white p-10 shadow-[0_32px_80px_rgba(10,22,34,.35)]">
       {/* Logo */}
-      <div className="mb-8 flex flex-col items-center gap-2">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1A3A5C] text-white text-xl font-black">
-          IS
-        </div>
-        <h1 className="text-xl font-bold text-[#1A2B3C]">Integra Solar</h1>
-        <p className="text-sm text-[#7A90A4]">Plataforma de Gestão</p>
+      <div className="mb-8 flex flex-col items-center">
+        <Image
+          src="/Logo integra solar - Com nome.png"
+          alt="Integra Solar"
+          width={200}
+          height={80}
+          className="object-contain"
+          priority
+        />
+        <p className="mt-2 text-sm text-[#7A90A4]">Plataforma de Gestão</p>
       </div>
 
       <form action={action} className="flex flex-col gap-4">

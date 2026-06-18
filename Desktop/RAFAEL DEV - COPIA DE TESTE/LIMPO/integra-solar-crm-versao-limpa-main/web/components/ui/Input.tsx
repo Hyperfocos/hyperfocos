@@ -7,13 +7,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, ...props }, ref) => {
+  ({ className, label, error, id, style, ...props }, ref) => {
     return (
       <div className="flex flex-col gap-1.5">
         {label ? (
           <label
             htmlFor={id}
-            className="text-xs font-bold uppercase tracking-wide text-[#3D5166]"
+            className="text-xs font-bold uppercase tracking-wide"
+            style={{ color: 'rgba(255,255,255,0.40)' }}
           >
             {label}
           </label>
@@ -22,13 +23,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={id}
           className={cn(
-            'w-full rounded-md border border-[#DDE3EB] bg-white px-3.5 py-2.5 text-sm text-[#1A2B3C] placeholder:text-[#A8BCCE] outline-none transition-all focus:border-[#1A3A5C] focus:ring-2 focus:ring-[#1A3A5C]/10',
-            { 'border-red-500 focus:border-red-500 focus:ring-red-500/10': !!error },
+            'w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all',
             className
           )}
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: error
+              ? '1px solid rgba(255,100,100,0.5)'
+              : '1px solid rgba(255,255,255,0.10)',
+            color: '#E0E8F0',
+            ...(style ?? {}),
+          }}
           {...props}
         />
-        {error ? <p className="text-xs text-red-600">{error}</p> : null}
+        {error ? (
+          <p className="text-xs" style={{ color: '#FF9090' }}>
+            {error}
+          </p>
+        ) : null}
       </div>
     )
   }
