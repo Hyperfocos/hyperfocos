@@ -67,7 +67,7 @@ export async function upsertObraDelivery(
   const currentFlags = (client?.pipeline_flags as Record<string, string>) ?? {}
   const newFlags: Record<string, string> = { ...currentFlags, entrega_obra: data.status }
 
-  if (data.termo_url && !currentFlags.pos_obra) {
+  if (!currentFlags.pos_obra) {
     newFlags.pos_obra = 'pendente'
 
     const { data: existingPosObra } = await (supabase as any)

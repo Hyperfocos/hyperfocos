@@ -202,7 +202,7 @@ export default function CompraDetail({
         className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50"
         style={{ background: '#FFD080', color: '#0a0e1a' }}
       >
-        {isPending ? 'Salvando…' : 'Salvar'}
+        {isPending ? 'Salvando…' : 'Salvar e liberar para Entrega de Material'}
       </button>
     </div>
   )

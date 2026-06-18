@@ -108,7 +108,7 @@ export default function ObraDetail({ obra, members, clientId }: { obra: ObraClie
       {error && <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">{error}</p>}
       {success && <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-2">{success}</p>}
       <button onClick={handleSave} disabled={isPending} className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50" style={{ background: '#FFD080', color: '#0a0e1a' }}>
-        {isPending ? 'Salvando…' : 'Salvar'}
+        {isPending ? 'Salvando…' : 'Salvar e liberar Entrega da Obra'}
       </button>
     </div>
   )

@@ -63,7 +63,7 @@ export async function upsertObra(
   const currentFlags = (client?.pipeline_flags as Record<string, string>) ?? {}
   const newFlags: Record<string, string> = { ...currentFlags, obra: data.status }
 
-  if (data.status === 'concluida' && !currentFlags.entrega_obra) {
+  if (!currentFlags.entrega_obra) {
     newFlags.entrega_obra = 'pendente'
 
     const { data: existingObraDelivery } = await (supabase as any)

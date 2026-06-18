@@ -65,8 +65,8 @@ export async function upsertDelivery(
   const currentFlags = (client?.pipeline_flags as Record<string, string>) ?? {}
   const newFlags: Record<string, string> = { ...currentFlags, entrega_material: data.status }
 
-  // If termo_url set and obra not yet activated → activate obra
-  if (data.termo_url && !currentFlags.obra) {
+  // Activate obra on save
+  if (!currentFlags.obra) {
     newFlags.obra = 'pendente'
 
     const { data: existingObra } = await (supabase as any)

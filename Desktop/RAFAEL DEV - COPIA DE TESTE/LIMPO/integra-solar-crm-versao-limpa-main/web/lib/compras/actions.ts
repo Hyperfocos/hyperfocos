@@ -106,8 +106,8 @@ export async function upsertPurchase(
     })
   }
 
-  // If entregue: activate entrega_material
-  if (data.status === 'entregue' && !currentFlags.entrega_material) {
+  // Activate entrega_material on save
+  if (!currentFlags.entrega_material) {
     newFlags.entrega_material = 'pendente'
 
     const { data: existingDelivery } = await (supabase as any)
