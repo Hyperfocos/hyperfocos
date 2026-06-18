@@ -27,17 +27,19 @@ export async function confirmInstallment(installmentId: string): Promise<ActionR
 
   if (error) return { error: error.message }
 
-  // If this is position 1, activate Projetos and Compras pipeline flags
+  // If this is position 1 (entrada), activate Projetos and Compras
   if (installment.position === 1) {
-    // Fetch current flags to avoid overwriting other flags
+    // Fetch client to get org_id and current flags
     const { data: client } = await (supabase as any)
       .from('clients')
-      .select('pipeline_flags')
+      .select('pipeline_flags, organization_id')
       .eq('id', installment.client_id)
       .single()
 
     const currentFlags = (client?.pipeline_flags as Record<string, string>) ?? {}
+    const orgId = client?.organization_id
 
+    // Update pipeline_flags
     await (supabase as any)
       .from('clients')
       .update({
@@ -49,6 +51,37 @@ export async function confirmInstallment(installmentId: string): Promise<ActionR
         updated_at: new Date().toISOString(),
       })
       .eq('id', installment.client_id)
+
+    // Create initial client_projects record if not exists
+    const { data: existingProject } = await (supabase as any)
+      .from('client_projects')
+      .select('id')
+      .eq('client_id', installment.client_id)
+      .maybeSingle()
+
+    if (!existingProject && orgId) {
+      await (supabase as any).from('client_projects').insert({
+        client_id: installment.client_id,
+        organization_id: orgId,
+        status: 'pendente',
+        checklist: { memorial_calculo: false, art: false, homologacao: false },
+      })
+    }
+
+    // Create initial client_purchases record if not exists
+    const { data: existingPurchase } = await (supabase as any)
+      .from('client_purchases')
+      .select('id')
+      .eq('client_id', installment.client_id)
+      .maybeSingle()
+
+    if (!existingPurchase && orgId) {
+      await (supabase as any).from('client_purchases').insert({
+        client_id: installment.client_id,
+        organization_id: orgId,
+        status: 'aguardando',
+      })
+    }
   }
 
   revalidatePath('/financeiro')
