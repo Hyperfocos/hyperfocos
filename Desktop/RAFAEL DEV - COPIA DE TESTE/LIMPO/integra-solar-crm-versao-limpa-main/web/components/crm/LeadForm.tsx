@@ -4,6 +4,7 @@ import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
 import { FormError } from '@/components/ui/FormError'
 import { SubmitButton } from '@/components/ui/SubmitButton'
+import { PhoneInput, DatePicker } from '@/components/ui/inputs'
 import { createLead, updateLead } from '@/lib/crm/actions'
 import type { Lead, FunnelStage, LeadSource, LeadUser, ActionResult } from '@/lib/crm/types'
 
@@ -59,11 +60,10 @@ export function LeadForm({ lead, stages, sources, members, onSuccess }: LeadForm
         placeholder="Nome do lead"
         required
       />
-      <Input
+      <PhoneInput
         name="phone"
         label="Telefone"
-        defaultValue={lead?.phone ?? ''}
-        placeholder="(11) 99999-9999"
+        value={lead?.phone ?? ''}
       />
       <Input
         name="city"
@@ -120,11 +120,10 @@ export function LeadForm({ lead, stages, sources, members, onSuccess }: LeadForm
         </select>
       </div>
 
-      <Input
+      <DatePicker
         name="next_action_date"
         label="Data da próxima ação"
-        type="date"
-        defaultValue={lead?.next_action_date ?? ''}
+        value={lead?.next_action_date ?? ''}
       />
 
       <div className="flex flex-col gap-1.5">

@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Lead } from '@/lib/crm/types'
+import { formatPhone } from '@/lib/format'
 
 interface LeadCardProps {
   lead: Lead
@@ -46,7 +47,7 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
         )}
         {lead.phone && (
           <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>
-            {lead.phone}
+            {formatPhone(lead.phone)}
           </p>
         )}
         {lead.assigned_user && (

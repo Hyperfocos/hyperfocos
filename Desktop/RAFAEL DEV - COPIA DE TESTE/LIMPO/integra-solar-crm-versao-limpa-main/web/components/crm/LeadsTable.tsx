@@ -2,6 +2,7 @@
 'use client'
 
 import type { Lead } from '@/lib/crm/types'
+import { formatPhone, formatDate } from '@/lib/format'
 
 interface LeadsTableProps {
   leads: Lead[]
@@ -54,7 +55,7 @@ export function LeadsTable({ leads, onLeadClick }: LeadsTableProps) {
                 {lead.name}
               </td>
               <td className="py-2.5 px-3" style={{ color: 'rgba(255,255,255,0.50)' }}>
-                {lead.phone ?? '—'}
+                {formatPhone(lead.phone)}
               </td>
               <td className="py-2.5 px-3" style={{ color: 'rgba(255,255,255,0.50)' }}>
                 {lead.city ?? '—'}
@@ -79,7 +80,7 @@ export function LeadsTable({ leads, onLeadClick }: LeadsTableProps) {
                 {lead.assigned_user?.full_name ?? lead.assigned_user?.email ?? '—'}
               </td>
               <td className="py-2.5 px-3 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                {formatDate(lead.created_at)}
               </td>
             </tr>
           ))}
