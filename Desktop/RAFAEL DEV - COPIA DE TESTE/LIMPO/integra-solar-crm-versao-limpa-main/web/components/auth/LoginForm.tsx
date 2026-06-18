@@ -1,0 +1,69 @@
+'use client'
+
+import { useFormState } from 'react-dom'
+import Link from 'next/link'
+import { signIn } from '@/lib/auth/actions'
+import { Input } from '@/components/ui/Input'
+import { FormError } from '@/components/ui/FormError'
+import { SubmitButton } from '@/components/ui/SubmitButton'
+
+const initialState = { error: undefined, success: undefined }
+
+export function LoginForm() {
+  const [state, action] = useFormState(signIn, initialState)
+
+  return (
+    <div className="w-full max-w-md rounded-2xl bg-white p-10 shadow-[0_32px_80px_rgba(10,22,34,.35)]">
+      {/* Logo */}
+      <div className="mb-8 flex flex-col items-center gap-2">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1A3A5C] text-white text-xl font-black">
+          IS
+        </div>
+        <h1 className="text-xl font-bold text-[#1A2B3C]">Integra Solar</h1>
+        <p className="text-sm text-[#7A90A4]">Plataforma de Gestão</p>
+      </div>
+
+      <form action={action} className="flex flex-col gap-4">
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          label="E-mail"
+          placeholder="seu@email.com"
+          autoComplete="email"
+          required
+        />
+
+        <div className="flex flex-col gap-1.5">
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            label="Senha"
+            placeholder="••••••••"
+            autoComplete="current-password"
+            required
+          />
+          <div className="flex justify-end">
+            <Link
+              href="/reset-password"
+              className="text-xs text-[#1A3A5C] font-semibold hover:underline"
+            >
+              Esqueci minha senha
+            </Link>
+          </div>
+        </div>
+
+        <FormError message={state?.error} />
+
+        <SubmitButton pendingLabel="Entrando..." className="mt-2 w-full py-3">
+          Entrar
+        </SubmitButton>
+      </form>
+
+      <p className="mt-8 text-center text-xs text-[#A8BCCE]">
+        Acesso por convite. Fale com seu administrador para obter acesso.
+      </p>
+    </div>
+  )
+}
