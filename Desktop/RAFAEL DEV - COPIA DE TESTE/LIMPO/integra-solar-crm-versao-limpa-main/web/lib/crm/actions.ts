@@ -303,13 +303,14 @@ export async function convertLeadToClient(leadId: string): Promise<{ clientId?: 
   if (!lead) return { error: 'Lead não encontrado.' }
 
   // Criar cliente básico
-  const { data: client, error: clientError } = await supabase
+  const { data: client, error: clientError } = await (supabase as any)
     .from('clients')
     .insert({
       organization_id: orgId,
       name: lead.name,
       phone: lead.phone,
       city: lead.city,
+      lead_id: leadId,
     })
     .select('id')
     .single()

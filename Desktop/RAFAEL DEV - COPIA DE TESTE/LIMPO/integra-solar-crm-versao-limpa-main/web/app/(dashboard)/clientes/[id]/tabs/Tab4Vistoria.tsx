@@ -1,0 +1,87 @@
+// web/app/(dashboard)/clientes/[id]/tabs/Tab4Vistoria.tsx
+'use client'
+
+import { useFormState } from 'react-dom'
+import { Input } from '@/components/ui/Input'
+import { SubmitButton } from '@/components/ui/SubmitButton'
+import { FormError } from '@/components/ui/FormError'
+import { updateTab4 } from '@/lib/clients/actions'
+import type { Client, ActionResult } from '@/lib/clients/types'
+
+const selectStyle: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.06)',
+  border: '1px solid rgba(255,255,255,0.10)',
+  color: '#E0E8F0',
+  borderRadius: 12,
+  padding: '10px 14px',
+  fontSize: 14,
+  width: '100%',
+  outline: 'none',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 700,
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+  color: 'rgba(255,255,255,0.40)',
+  marginBottom: 6,
+  display: 'block',
+}
+
+export function Tab4Vistoria({ client }: { client: Client }) {
+  const action = updateTab4.bind(null, client.id)
+  const [state, formAction] = useFormState(action, {} as ActionResult)
+
+  return (
+    <form action={formAction} className="flex flex-col gap-4 max-w-lg">
+      <label className="flex items-center gap-2.5 cursor-pointer">
+        <input type="checkbox" name="has_adaptation_works" defaultChecked={client.has_adaptation_works} className="w-4 h-4 rounded" />
+        <span className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>Possui obras de adaptação</span>
+      </label>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label style={labelStyle}>Tipo de telhado</label>
+          <select name="roof_type" defaultValue={client.roof_type ?? ''} style={selectStyle}>
+            <option value="">— Selecione —</option>
+            <option value="fibrocimento">Fibrocimento</option>
+            <option value="ceramica">Cerâmica</option>
+            <option value="metalica">Metálica</option>
+            <option value="laje">Laje</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <Input name="roof_orientation" label="Orientação do telhado" defaultValue={client.roof_orientation ?? ''} placeholder="Ex: Norte" />
+      </div>
+
+      <Input name="maps_coordinates" label="Coordenadas Google Maps" defaultValue={client.maps_coordinates ?? ''} placeholder="-23.5505, -46.6333" />
+
+      <div className="grid grid-cols-2 gap-3">
+        <Input name="entry_breaker" label="Disjuntor de entrada" defaultValue={client.entry_breaker ?? ''} placeholder="Ex: 63A" />
+        <Input name="entry_cable_mm" label="Cabo de entrada (mm²)" defaultValue={client.entry_cable_mm ?? ''} placeholder="Ex: 10mm²" />
+      </div>
+
+      <label className="flex items-center gap-2.5 cursor-pointer">
+        <input type="checkbox" name="inspection_done" defaultChecked={client.inspection_done} className="w-4 h-4 rounded" />
+        <span className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>Vistoria realizada</span>
+      </label>
+
+      <div className="flex flex-col gap-1.5">
+        <label style={labelStyle}>Observações do cliente</label>
+        <textarea name="client_notes" defaultValue={client.client_notes ?? ''} placeholder="Anotações da vistoria..." rows={3}
+          style={{ ...selectStyle, resize: 'vertical' }} />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label style={labelStyle}>Promessas extras</label>
+        <textarea name="extra_promises" defaultValue={client.extra_promises ?? ''} placeholder="Combinados extras com o cliente..." rows={2}
+          style={{ ...selectStyle, resize: 'vertical' }} />
+      </div>
+
+      <FormError message={state?.error} />
+      {state?.success && <p className="text-sm" style={{ color: '#10B981' }}>{state.success}</p>}
+      <SubmitButton className="self-start">Salvar Vistoria</SubmitButton>
+    </form>
+  )
+}
