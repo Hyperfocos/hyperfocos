@@ -18,7 +18,8 @@ create table public.client_projects (
 );
 alter table public.client_projects enable row level security;
 create policy "projetos_org_isolation" on public.client_projects
-  using (organization_id = any(get_my_org_ids()));
+  using (organization_id in (select get_my_org_ids()))
+  with check (organization_id in (select get_my_org_ids()));
 
 -- Compras
 create table public.client_purchases (
@@ -37,7 +38,8 @@ create table public.client_purchases (
 );
 alter table public.client_purchases enable row level security;
 create policy "purchases_org_isolation" on public.client_purchases
-  using (organization_id = any(get_my_org_ids()));
+  using (organization_id in (select get_my_org_ids()))
+  with check (organization_id in (select get_my_org_ids()));
 
 -- Comissões
 create table public.client_commissions (
@@ -54,4 +56,5 @@ create table public.client_commissions (
 );
 alter table public.client_commissions enable row level security;
 create policy "commissions_org_isolation" on public.client_commissions
-  using (organization_id = any(get_my_org_ids()));
+  using (organization_id in (select get_my_org_ids()))
+  with check (organization_id in (select get_my_org_ids()));
