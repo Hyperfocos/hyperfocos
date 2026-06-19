@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -24,6 +24,10 @@ interface KanbanBoardProps {
 export function KanbanBoard({ leads: initialLeads, stages, onLeadClick }: KanbanBoardProps) {
   const [leads, setLeads] = useState(initialLeads)
   const [activeLead, setActiveLead] = useState<Lead | null>(null)
+
+  useEffect(() => {
+    if (!activeLead) setLeads(initialLeads)
+  }, [initialLeads, activeLead])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
