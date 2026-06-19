@@ -109,6 +109,8 @@ const tab3Schema = z.object({
   payment_method: z.string().optional(),
   nf_notes: z.string().optional(),
   commission_pct: z.coerce.number().min(0).max(100).default(0),
+  commission_seller: z.string().optional(),
+  proposal_id: z.string().optional(),
   installments_json: z.string().min(1, 'Parcelas são obrigatórias'),
 })
 
@@ -145,6 +147,8 @@ export async function updateTab3(
       payment_method: parsed.data.payment_method ?? null,
       nf_notes: parsed.data.nf_notes ?? null,
       commission_pct: parsed.data.commission_pct,
+      commission_seller: parsed.data.commission_seller ?? null,
+      proposal_id: parsed.data.proposal_id || null,
       updated_at: new Date().toISOString(),
     }).eq('id', existingSale.id)
   } else {
@@ -155,6 +159,8 @@ export async function updateTab3(
       payment_method: parsed.data.payment_method ?? null,
       nf_notes: parsed.data.nf_notes ?? null,
       commission_pct: parsed.data.commission_pct,
+      commission_seller: parsed.data.commission_seller ?? null,
+      proposal_id: parsed.data.proposal_id || null,
     })
   }
 

@@ -51,6 +51,7 @@ export function Tab2EquVendidos({ client }: { client: Client }) {
           name="panel_power_w"
           label="Potência placa (W)"
           type="number"
+          step="0.01"
           defaultValue={client.panel_power_w?.toString() ?? ''}
           placeholder="Ex: 550"
         />
@@ -62,8 +63,9 @@ export function Tab2EquVendidos({ client }: { client: Client }) {
           name="inverter_power_w"
           label="Potência inversor (W)"
           type="number"
+          step="0.01"
           defaultValue={client.inverter_power_w?.toString() ?? ''}
-          placeholder="Ex: 5000"
+          placeholder="Ex: 7.5"
         />
       </div>
 
