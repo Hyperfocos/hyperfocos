@@ -3,6 +3,7 @@
 
 import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
+import { DatePicker } from '@/components/ui/inputs'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { FormError } from '@/components/ui/FormError'
 import { updateTab5 } from '@/lib/clients/actions'
@@ -15,11 +16,10 @@ export function Tab5Prazos({ client }: { client: Client }) {
   return (
     <form action={formAction} className="flex flex-col gap-4 max-w-lg">
       <div className="grid grid-cols-2 gap-3">
-        <Input
+        <DatePicker
           name="contract_date"
           label="Data do contrato"
-          type="date"
-          defaultValue={client.contract_date ?? ''}
+          value={client.contract_date ?? ''}
         />
         <Input
           name="contract_max_days"
@@ -30,11 +30,10 @@ export function Tab5Prazos({ client }: { client: Client }) {
           placeholder="Ex: 45"
         />
       </div>
-      <Input
+      <DatePicker
         name="delivery_start_date"
         label="Data de início do prazo"
-        type="date"
-        defaultValue={client.delivery_start_date ?? ''}
+        value={client.delivery_start_date ?? ''}
       />
 
       {client.contract_date && client.contract_max_days && (

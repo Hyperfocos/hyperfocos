@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useCallback } from 'react'
+import { DatePicker } from '@/components/ui/inputs'
 import './print.css'
 import {
   getComercialData, getLeadsData, getFinanceiroData, getTecnicoData,
@@ -27,25 +28,11 @@ function FilterBar({
 }) {
   return (
     <div className="no-print flex items-center gap-3 mb-6">
-      <div>
-        <label className="text-xs text-white/40 block mb-1">De</label>
-        <input
-          type="date"
-          className="px-3 py-2 rounded-xl text-sm text-white border border-white/10 outline-none"
-          style={{ background: 'rgba(255,255,255,0.06)' }}
-          value={dateFrom}
-          onChange={(e) => onChange(e.target.value, dateTo)}
-        />
+      <div style={{ minWidth: 160 }}>
+        <DatePicker label="De" value={dateFrom} onChange={(iso) => onChange(iso, dateTo)} />
       </div>
-      <div>
-        <label className="text-xs text-white/40 block mb-1">Até</label>
-        <input
-          type="date"
-          className="px-3 py-2 rounded-xl text-sm text-white border border-white/10 outline-none"
-          style={{ background: 'rgba(255,255,255,0.06)' }}
-          value={dateTo}
-          onChange={(e) => onChange(dateFrom, e.target.value)}
-        />
+      <div style={{ minWidth: 160 }}>
+        <DatePicker label="Até" value={dateTo} onChange={(iso) => onChange(dateFrom, iso)} />
       </div>
       <button
         onClick={onApply}

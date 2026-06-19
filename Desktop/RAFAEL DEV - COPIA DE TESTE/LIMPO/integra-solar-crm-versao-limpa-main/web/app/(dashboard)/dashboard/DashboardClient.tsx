@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { DatePicker } from '@/components/ui/inputs'
 import type { PipelineCard, FaturamentoMes, LeadOrigemItem, KpiData, MetaData } from '@/lib/dashboard/queries'
 import { getKpiData, getMetaData } from '@/lib/dashboard/actions'
 import PipelineCards from './PipelineCards'
@@ -66,20 +67,14 @@ export default function DashboardClient({
           <p className="text-white/50 text-sm mt-1">Visao geral operacional</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="text-white/50 text-sm">Periodo:</span>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            className={inputCls}
-          />
-          <span className="text-white/30 text-sm">ate</span>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            className={inputCls}
-          />
+          <span className="text-white/50 text-sm">Período:</span>
+          <div style={{ minWidth: 150 }}>
+            <DatePicker value={dateFrom} onChange={(iso) => setDateFrom(iso)} />
+          </div>
+          <span className="text-white/30 text-sm">até</span>
+          <div style={{ minWidth: 150 }}>
+            <DatePicker value={dateTo} onChange={(iso) => setDateTo(iso)} />
+          </div>
           <button
             onClick={handleFilter}
             disabled={isPending}

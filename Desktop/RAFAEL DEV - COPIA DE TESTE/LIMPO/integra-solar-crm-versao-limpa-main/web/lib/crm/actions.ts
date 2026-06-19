@@ -147,6 +147,7 @@ const followUpSchema = z.object({
   title: z.string().min(1, 'Título é obrigatório'),
   description: z.string().optional(),
   due_date: z.string().min(1, 'Data é obrigatória'),
+  due_time: z.string().optional(),
 })
 
 export async function createFollowUp(
@@ -169,7 +170,9 @@ export async function createFollowUp(
     assigned_to_user_id: userId,
     title: parsed.data.title,
     description: parsed.data.description ?? null,
-    due_date: parsed.data.due_date,
+    due_date: parsed.data.due_time
+      ? `${parsed.data.due_date}T${parsed.data.due_time}:00`
+      : parsed.data.due_date,
   })
   if (error) return { error: error.message }
   revalidatePath('/leads')

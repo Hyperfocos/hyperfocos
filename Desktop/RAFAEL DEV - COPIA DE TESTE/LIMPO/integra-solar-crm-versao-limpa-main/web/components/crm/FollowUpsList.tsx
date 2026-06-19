@@ -3,6 +3,7 @@
 import { useState, useEffect, useTransition } from 'react'
 import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
+import { DatePicker } from '@/components/ui/inputs'
 import { Button } from '@/components/ui/Button'
 import { FormError } from '@/components/ui/FormError'
 import { SubmitButton } from '@/components/ui/SubmitButton'
@@ -54,7 +55,10 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
         >
           <Input name="title" label="Título *" placeholder="Ex: Ligar para o cliente" required />
           <Input name="description" label="Descrição" placeholder="Detalhes..." />
-          <Input name="due_date" label="Data *" type="datetime-local" required />
+          <div className="grid grid-cols-2 gap-2">
+            <DatePicker name="due_date" label="Data *" required />
+            <Input name="due_time" label="Hora" type="time" defaultValue="09:00" />
+          </div>
           <FormError message={state?.error} />
           <div className="flex gap-2">
             <SubmitButton className="flex-1 text-xs">Agendar</SubmitButton>
