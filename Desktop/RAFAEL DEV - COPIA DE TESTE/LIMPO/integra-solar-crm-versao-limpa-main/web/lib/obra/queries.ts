@@ -39,6 +39,7 @@ export async function getObras(): Promise<ObraClient[]> {
         name,
         city,
         contract_max_days,
+        delivery_start_date,
         has_adaptation_works,
         adaptation_details,
         pipeline_flags
@@ -75,9 +76,9 @@ export async function getObras(): Promise<ObraClient[]> {
   }
 
   return data.map((r: any) => {
-    const confirmedAt = parcelaMap[r.client_id] ?? null
-    const diasUsados = confirmedAt
-      ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+    const startDate = r.clients.delivery_start_date ?? parcelaMap[r.client_id] ?? null
+    const diasUsados = startDate
+      ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
       : 0
     return {
       id: r.id,
@@ -115,6 +116,7 @@ export async function getObraById(clientId: string): Promise<ObraClient | null> 
         name,
         city,
         contract_max_days,
+        delivery_start_date,
         has_adaptation_works,
         adaptation_details
       )
@@ -124,17 +126,9 @@ export async function getObraById(clientId: string): Promise<ObraClient | null> 
 
   if (error || !data) return null
 
-  const { data: parcela } = await (supabase as any)
-    .from('client_installments')
-    .select('confirmed_at')
-    .eq('client_id', clientId)
-    .eq('position', 1)
-    .not('confirmed_at', 'is', null)
-    .maybeSingle()
-
-  const confirmedAt = parcela?.confirmed_at ?? null
-  const diasUsados = confirmedAt
-    ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+  const startDate = data.clients.delivery_start_date ?? null
+  const diasUsados = startDate
+    ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
 
   let responsavelName: string | null = null

@@ -1,5 +1,6 @@
 // web/lib/projetos/queries.ts
 import { createClient } from '@/lib/supabase/server'
+import { getCurrentUserData } from '@/lib/org/queries'
 
 export type ProjetoChecklist = {
   memorial_calculo: boolean
@@ -51,6 +52,7 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
         name,
         city,
         contract_max_days,
+        delivery_start_date,
         pipeline_flags
       )
     `)
@@ -73,10 +75,22 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
     parcelaMap[p.client_id] = p.confirmed_at
   }
 
+  const responsavelIds = Array.from(new Set(data.map((r: any) => r.responsavel_id).filter(Boolean))) as string[]
+  const responsavelMap: Record<string, string> = {}
+  if (responsavelIds.length > 0) {
+    const { data: profiles } = await (supabase as any)
+      .from('profiles')
+      .select('id, full_name')
+      .in('id', responsavelIds)
+    for (const p of profiles ?? []) {
+      responsavelMap[p.id] = p.full_name
+    }
+  }
+
   return data.map((r: any) => {
-    const confirmedAt = parcelaMap[r.client_id] ?? null
-    const diasUsados = confirmedAt
-      ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+    const startDate = r.clients.delivery_start_date ?? parcelaMap[r.client_id] ?? null
+    const diasUsados = startDate
+      ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
       : 0
 
     return {
@@ -85,7 +99,7 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       client_name: r.clients.name,
       client_city: r.clients.city ?? null,
       responsavel_id: r.responsavel_id ?? null,
-      responsavel_name: null, // loaded separately in detail
+      responsavel_name: r.responsavel_id ? (responsavelMap[r.responsavel_id] ?? null) : null,
       numero_processo: r.numero_processo ?? null,
       data_protocolo: r.data_protocolo ?? null,
       prazo_protocolo: r.prazo_protocolo ?? null,
@@ -95,7 +109,7 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       checklist: r.checklist ?? { memorial_calculo: false, art: false, homologacao: false },
       dias_usados: diasUsados,
       contract_max_days: r.clients.contract_max_days ?? null,
-      primeira_parcela_confirmed_at: confirmedAt,
+      primeira_parcela_confirmed_at: startDate,
     }
   })
 }
@@ -119,7 +133,8 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
       clients!inner (
         name,
         city,
-        contract_max_days
+        contract_max_days,
+        delivery_start_date
       )
     `)
     .eq('client_id', clientId)
@@ -127,17 +142,9 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
 
   if (error || !data) return null
 
-  const { data: parcela } = await (supabase as any)
-    .from('client_installments')
-    .select('confirmed_at')
-    .eq('client_id', clientId)
-    .eq('position', 1)
-    .not('confirmed_at', 'is', null)
-    .maybeSingle()
-
-  const confirmedAt = parcela?.confirmed_at ?? null
-  const diasUsados = confirmedAt
-    ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+  const startDate = data.clients.delivery_start_date ?? null
+  const diasUsados = startDate
+    ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
 
   // Resolve responsavel name
@@ -145,10 +152,10 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
   if (data.responsavel_id) {
     const { data: profile } = await (supabase as any)
       .from('profiles')
-      .select('name')
+      .select('full_name')
       .eq('id', data.responsavel_id)
       .single()
-    responsavelName = profile?.name ?? null
+    responsavelName = profile?.full_name ?? null
   }
 
   return {
@@ -167,15 +174,24 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
     checklist: data.checklist ?? { memorial_calculo: false, art: false, homologacao: false },
     dias_usados: diasUsados,
     contract_max_days: data.clients.contract_max_days ?? null,
-    primeira_parcela_confirmed_at: confirmedAt,
+    primeira_parcela_confirmed_at: startDate,
   }
 }
 
 export async function getProjetoMembers(): Promise<ProjetoMember[]> {
+  const user = await getCurrentUserData()
+  const orgId = user?.membership?.organization.id
+  if (!orgId) return []
+
   const supabase = await createClient()
   const { data } = await (supabase as any)
-    .from('profiles')
-    .select('id, name')
-    .order('name')
-  return (data ?? []).map((p: any) => ({ id: p.id, name: p.name }))
+    .from('organization_members')
+    .select('user_id, profiles!user_id(id, full_name)')
+    .eq('organization_id', orgId)
+    .eq('role', 'projetista')
+
+  return (data ?? []).map((m: any) => ({
+    id: m.profiles?.id ?? m.user_id,
+    name: m.profiles?.full_name ?? 'Projetista',
+  }))
 }

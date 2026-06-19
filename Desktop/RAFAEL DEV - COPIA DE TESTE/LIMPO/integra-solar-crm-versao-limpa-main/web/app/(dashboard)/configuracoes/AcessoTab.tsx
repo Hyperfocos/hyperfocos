@@ -116,6 +116,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
       if (res.success) {
         setForm({ full_name: '', email: '', password: '', role: 'vendedor' })
         setPermissions(defaultPermissions())
+        window.location.reload()
       }
     })
   }
