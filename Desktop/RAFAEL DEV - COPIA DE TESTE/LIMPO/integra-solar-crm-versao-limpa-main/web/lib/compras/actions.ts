@@ -137,3 +137,33 @@ export async function upsertPurchase(
   revalidatePath('/compras')
   return { success: 'Compra salva.' }
 }
+
+export async function uploadPurchaseDoc(
+  clientId: string,
+  docType: 'nf_equipamentos' | 'romaneio' | 'comprovante',
+  formData: FormData
+): Promise<ActionResult & { url?: string }> {
+  const file = formData.get('file') as File | null
+  if (!file || file.size === 0) return { error: 'Selecione um arquivo.' }
+
+  const supabase = await createClient()
+  const ext = file.name.split('.').pop() ?? 'pdf'
+  const filePath = `${clientId}/${docType}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('purchase-docs')
+    .upload(filePath, file, { upsert: true })
+
+  if (uploadError) return { error: 'Erro ao enviar: ' + uploadError.message }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+  const url = `${supabaseUrl}/storage/v1/object/public/purchase-docs/${filePath}`
+
+  await (supabase as any)
+    .from('client_purchases')
+    .update({ [`${docType}_url`]: url, updated_at: new Date().toISOString() })
+    .eq('client_id', clientId)
+
+  revalidatePath(`/compras/${clientId}`)
+  return { success: 'Documento anexado.', url }
+}

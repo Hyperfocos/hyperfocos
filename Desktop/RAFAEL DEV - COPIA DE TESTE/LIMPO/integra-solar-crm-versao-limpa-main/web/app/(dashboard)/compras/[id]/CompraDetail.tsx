@@ -1,11 +1,12 @@
 // web/app/(dashboard)/compras/[id]/CompraDetail.tsx
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { CompraClient } from '@/lib/compras/queries'
-import { upsertPurchase } from '@/lib/compras/actions'
+import { upsertPurchase, uploadPurchaseDoc } from '@/lib/compras/actions'
 import { CurrencyInput, DatePicker } from '@/components/ui/inputs'
+import { Paperclip, ExternalLink, FileText } from 'lucide-react'
 
 const STATUS_OPTIONS = [
   { value: 'aguardando', label: 'Aguardando' },
@@ -19,6 +20,91 @@ const STATUS_BADGE: Record<string, string> = {
   entregue: 'bg-green-500/20 text-green-300 border-green-500/40',
 }
 
+function DocUploadRow({
+  label,
+  url,
+  clientId,
+  docType,
+  onUploaded,
+  onMessage,
+}: {
+  label: string
+  url: string | null
+  clientId: string
+  docType: 'nf_equipamentos' | 'romaneio' | 'comprovante'
+  onUploaded: (url: string) => void
+  onMessage: (msg: { type: 'error' | 'success'; text: string }) => void
+}) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    const result = await uploadPurchaseDoc(clientId, docType, fd)
+    if (result.error) {
+      onMessage({ type: 'error', text: result.error })
+    } else {
+      onMessage({ type: 'success', text: result.success! })
+      if (result.url) onUploaded(result.url)
+    }
+    setUploading(false)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  return (
+    <div
+      className="flex items-center justify-between p-3 rounded-xl"
+      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+    >
+      <div className="flex items-center gap-2.5 min-w-0">
+        <FileText size={15} style={{ color: 'rgba(255,255,255,0.30)', flexShrink: 0 }} />
+        <span className="text-sm text-white/70 truncate">{label}</span>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {url ? (
+          <>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10"
+              style={{ color: '#FFD080' }}
+            >
+              <ExternalLink size={12} /> Ver documento
+            </a>
+            <input ref={fileRef} type="file" accept=".pdf,image/*" onChange={handleFile} className="hidden" />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="text-xs px-2 py-1.5 rounded-lg text-white/30 hover:text-white/60 transition-colors"
+            >
+              {uploading ? '...' : 'Substituir'}
+            </button>
+          </>
+        ) : (
+          <>
+            <input ref={fileRef} type="file" accept=".pdf,image/*" onChange={handleFile} className="hidden" />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10"
+              style={{ color: 'rgba(255,255,255,0.40)' }}
+            >
+              <Paperclip size={12} />
+              {uploading ? 'Enviando...' : 'Anexar'}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function CompraDetail({
   compra,
@@ -38,7 +124,12 @@ export default function CompraDetail({
     valor: compra.valor?.toString() ?? '',
     data_prevista: compra.data_prevista ?? '',
     status: compra.status,
-    nf_url: compra.nf_url ?? '',
+  })
+
+  const [docUrls, setDocUrls] = useState({
+    nf_equipamentos_url: (compra as any).nf_equipamentos_url ?? null as string | null,
+    romaneio_url: (compra as any).romaneio_url ?? null as string | null,
+    comprovante_url: compra.comprovante_url ?? null as string | null,
   })
 
   function handleSave() {
@@ -51,7 +142,6 @@ export default function CompraDetail({
         valor: form.valor ? parseFloat(form.valor) : null,
         data_prevista: form.data_prevista || null,
         status: form.status,
-        nf_url: form.nf_url || null,
       })
       if (result.error) {
         setError(result.error)
@@ -60,6 +150,11 @@ export default function CompraDetail({
         if (form.status === 'entregue') router.push('/compras')
       }
     })
+  }
+
+  function handleDocMessage(msg: { type: 'error' | 'success'; text: string }) {
+    if (msg.type === 'error') setError(msg.text)
+    else setSuccess(msg.text)
   }
 
   const inputCls =
@@ -126,58 +221,60 @@ export default function CompraDetail({
         </div>
       </div>
 
-      {/* Status + NF */}
+      {/* Status */}
       <div className={cardCls} style={cardStyle}>
-        <h2 className="text-sm font-semibold text-white/70">Status e Documentos</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={labelCls}>Status</label>
-            <select
-              value={form.status}
-              onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
-              className={inputCls}
-            >
-              {STATUS_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className={labelCls}>URL da NF / comprovante</label>
-            <input
-              type="url"
-              value={form.nf_url}
-              onChange={(e) => setForm((f) => ({ ...f, nf_url: e.target.value }))}
-              className={inputCls}
-              placeholder="https://..."
-            />
-          </div>
-        </div>
-        {compra.nf_url && (
-          <a
-            href={compra.nf_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs underline"
-            style={{ color: '#FFD080' }}
+        <h2 className="text-sm font-semibold text-white/70">Status</h2>
+        <div>
+          <label className={labelCls}>Status</label>
+          <select
+            value={form.status}
+            onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
+            className={inputCls}
           >
-            Ver NF atual
-          </a>
-        )}
+            {STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Documentos */}
+      <div className={cardCls} style={cardStyle}>
+        <h2 className="text-sm font-semibold text-white/70">Documentos</h2>
+        <div className="space-y-3">
+          <DocUploadRow
+            label="NF dos Equipamentos"
+            url={docUrls.nf_equipamentos_url}
+            clientId={clientId}
+            docType="nf_equipamentos"
+            onUploaded={(url) => setDocUrls((prev) => ({ ...prev, nf_equipamentos_url: url }))}
+            onMessage={handleDocMessage}
+          />
+          <DocUploadRow
+            label="Romaneio"
+            url={docUrls.romaneio_url}
+            clientId={clientId}
+            docType="romaneio"
+            onUploaded={(url) => setDocUrls((prev) => ({ ...prev, romaneio_url: url }))}
+            onMessage={handleDocMessage}
+          />
+          <DocUploadRow
+            label="Comprovante"
+            url={docUrls.comprovante_url}
+            clientId={clientId}
+            docType="comprovante"
+            onUploaded={(url) => setDocUrls((prev) => ({ ...prev, comprovante_url: url }))}
+            onMessage={handleDocMessage}
+          />
+        </div>
       </div>
 
       {/* Feedback + Salvar */}
       {error && (
-        <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">
-          {error}
-        </p>
+        <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">{error}</p>
       )}
       {success && (
-        <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-2">
-          {success}
-        </p>
+        <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-2">{success}</p>
       )}
       <button
         onClick={handleSave}
