@@ -3,8 +3,11 @@
 import { useState, useEffect, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { ProposalForm } from './ProposalForm'
+import { ProposalPricingReview } from './ProposalPricingReview'
 import { deleteProposal } from '@/lib/crm/actions'
-import type { Lead, Proposal, Supplier } from '@/lib/crm/types'
+import type { Lead, Proposal, Supplier, ProposalTemplate } from '@/lib/crm/types'
+import type { OrgConfig } from '@/lib/configuracoes/queries'
+import { formatCurrency } from '@/lib/format'
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Rascunho',
@@ -26,16 +29,21 @@ export function ProposalsList({ lead }: { lead: Lead }) {
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [generationFactor, setGenerationFactor] = useState(1.0)
+  const [orgConfig, setOrgConfig] = useState<OrgConfig | null>(null)
+  const [templates, setTemplates] = useState<ProposalTemplate[]>([])
   const [showForm, setShowForm] = useState(false)
+  const [reviewProposal, setReviewProposal] = useState<Proposal | null>(null)
   const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
     fetch(`/api/leads/${lead.id}/proposals`)
       .then((r) => r.json())
-      .then(({ proposals, suppliers, generationFactor }) => {
+      .then(({ proposals, suppliers, generationFactor, orgConfig, templates }) => {
         setProposals(proposals)
         setSuppliers(suppliers)
         setGenerationFactor(generationFactor)
+        if (orgConfig) setOrgConfig(orgConfig)
+        if (templates) setTemplates(templates)
       })
   }, [lead.id])
 
@@ -47,8 +55,25 @@ export function ProposalsList({ lead }: { lead: Lead }) {
     })
   }
 
+  function handleGenerated(proposalId: string, pdfUrl: string) {
+    setProposals((prev) =>
+      prev.map((p) => p.id === proposalId ? { ...p, pdf_url: pdfUrl } : p)
+    )
+    setReviewProposal(null)
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      {reviewProposal && orgConfig && (
+        <ProposalPricingReview
+          proposal={reviewProposal}
+          orgConfig={orgConfig}
+          templates={templates}
+          onClose={() => setReviewProposal(null)}
+          onGenerated={(url) => handleGenerated(reviewProposal.id, url)}
+        />
+      )}
+
       {!showForm ? (
         <Button className="self-start text-xs py-1.5 px-4" onClick={() => setShowForm(true)}>
           + Nova Proposta
@@ -97,27 +122,25 @@ export function ProposalsList({ lead }: { lead: Lead }) {
           </div>
           <div className="grid grid-cols-3 gap-2 mt-3">
             <div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                Sistema
-              </p>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Sistema</p>
               <p className="text-sm font-medium" style={{ color: '#FFD080' }}>
                 {p.total_power_kwp.toFixed(2)} kWp
               </p>
             </div>
             <div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                Geração/mês
-              </p>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Geração/mês</p>
               <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.70)' }}>
                 {p.monthly_generation_kwh.toFixed(0)} kWh
               </p>
             </div>
             <div>
               <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                Valor kit
+                {p.preco_total ? 'Preço Total' : 'Valor kit'}
               </p>
               <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.70)' }}>
-                {p.kit_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                {p.preco_total
+                  ? formatCurrency(p.preco_total)
+                  : p.kit_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
             </div>
           </div>
@@ -126,7 +149,27 @@ export function ProposalsList({ lead }: { lead: Lead }) {
               Fornecedor: {p.supplier.name}
             </p>
           )}
-          <div className="flex justify-end mt-3">
+          <div className="flex items-center justify-between mt-3">
+            <div className="flex items-center gap-2">
+              {p.pdf_url && (
+                <a
+                  href={p.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs px-3 py-1.5 rounded-lg font-semibold transition-all hover:opacity-90"
+                  style={{ background: 'rgba(255,208,128,0.15)', color: '#FFD080', border: '1px solid rgba(255,208,128,0.3)' }}
+                >
+                  ↓ PDF
+                </a>
+              )}
+              <button
+                onClick={() => setReviewProposal(p)}
+                className="text-xs px-3 py-1.5 rounded-lg text-white/60 hover:text-white transition-colors"
+                style={{ background: 'rgba(255,255,255,0.06)' }}
+              >
+                {p.pdf_url ? 'Regerar PDF' : 'Gerar PDF'}
+              </button>
+            </div>
             <button
               onClick={() => handleDelete(p.id)}
               disabled={isPending}
