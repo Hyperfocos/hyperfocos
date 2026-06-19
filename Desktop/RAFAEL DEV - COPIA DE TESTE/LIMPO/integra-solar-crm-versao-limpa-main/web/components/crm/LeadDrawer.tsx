@@ -50,7 +50,7 @@ export function LeadDrawer({ lead, isNew, stages, sources, members, onClose }: L
   ]
 
   return (
-    <Drawer open={isOpen} onClose={onClose} title={title} width={tab === 'propostas' ? 720 : 540}>
+    <Drawer open={isOpen} onClose={onClose} title={title} width="50vw">
       {!isNew && lead && (
         <>
           <div

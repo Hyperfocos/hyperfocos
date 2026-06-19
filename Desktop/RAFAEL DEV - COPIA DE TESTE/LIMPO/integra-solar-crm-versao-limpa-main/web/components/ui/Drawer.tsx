@@ -7,11 +7,11 @@ interface DrawerProps {
   open: boolean
   onClose: () => void
   title?: string
-  width?: number
+  width?: number | string
   children: React.ReactNode
 }
 
-export function Drawer({ open, onClose, title, width = 520, children }: DrawerProps) {
+export function Drawer({ open, onClose, title, width = '50vw', children }: DrawerProps) {
   // Fechar com ESC
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
