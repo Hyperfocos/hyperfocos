@@ -2,7 +2,6 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Lead, FunnelStage, LeadSource, LeadUser } from '@/lib/crm/types'
 import { LeadsTable } from '@/components/crm/LeadsTable'
@@ -19,15 +18,21 @@ interface LeadsClientProps {
 
 export function LeadsClient({ initialLeads, stages, sources, members }: LeadsClientProps) {
   const [view, setView] = useState<'kanban' | 'list'>('kanban')
+  const [leads, setLeads] = useState<Lead[]>(initialLeads)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [creatingNew, setCreatingNew] = useState(false)
-  const router = useRouter()
+
+  const refreshLeads = useCallback(() => {
+    fetch('/api/leads')
+      .then((r) => r.json())
+      .then((data) => { if (data.leads) setLeads(data.leads) })
+  }, [])
 
   const handleDrawerClose = useCallback(() => {
     setSelectedLead(null)
     setCreatingNew(false)
-    router.refresh()
-  }, [router])
+    refreshLeads()
+  }, [refreshLeads])
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
@@ -77,13 +82,13 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
       <div className="flex-1 overflow-hidden">
         {view === 'kanban' ? (
           <KanbanBoard
-            leads={initialLeads}
+            leads={leads}
             stages={stages}
             onLeadClick={setSelectedLead}
           />
         ) : (
           <LeadsTable
-            leads={initialLeads}
+            leads={leads}
             onLeadClick={setSelectedLead}
           />
         )}
