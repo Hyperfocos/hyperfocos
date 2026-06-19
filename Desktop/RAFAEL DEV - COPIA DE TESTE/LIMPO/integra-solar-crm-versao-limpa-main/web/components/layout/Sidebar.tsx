@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from '@/lib/auth/actions'
 import type { CurrentUserData } from '@/lib/org/queries'
+import { NotificationBell } from '@/components/notifications/NotificationBell'
 import {
   LayoutDashboard, Users, UserCheck, FileText, DollarSign,
   Ruler, ShoppingCart, Banknote, Package, Wrench,
@@ -43,9 +44,11 @@ const SUPPORT_ITEMS: NavItem[] = [
 
 interface SidebarProps {
   user: CurrentUserData
+  notificationCount?: number
+  onNotificationClick?: () => void
 }
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar({ user, notificationCount = 0, onNotificationClick }: SidebarProps) {
   const pathname = usePathname()
 
   const initials = (user.profile.full_name ?? user.profile.email)
@@ -105,7 +108,7 @@ export function Sidebar({ user }: SidebarProps) {
     >
       {/* Logo */}
       <div
-        className="h-14 flex items-center gap-2.5 px-4"
+        className="h-14 flex items-center justify-between px-4"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
       >
         <Image
@@ -115,6 +118,9 @@ export function Sidebar({ user }: SidebarProps) {
           height={36}
           className="object-contain"
         />
+        {onNotificationClick && (
+          <NotificationBell count={notificationCount} onClick={onNotificationClick} />
+        )}
       </div>
 
       {/* Navigation */}

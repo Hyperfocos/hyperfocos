@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { Sidebar } from '@/components/layout/Sidebar'
+import { DashboardShell } from '@/components/layout/DashboardShell'
 import { getCurrentUserData } from '@/lib/org/queries'
 
 export default async function DashboardLayout({
@@ -15,10 +15,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar user={user} />
-      <div className="flex-1 ml-56 overflow-y-auto pt-14 relative z-10">
-        {children}
-      </div>
+      <DashboardShell user={user}>{children}</DashboardShell>
     </div>
   )
 }
