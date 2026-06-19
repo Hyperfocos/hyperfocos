@@ -39,7 +39,7 @@ export async function createLead(_prev: ActionResult, formData: FormData): Promi
   const parsed = leadSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  const { assigned_to_user_id, lead_source_id, estimated_kwp, estimated_value, ...rest } = parsed.data
+  const { assigned_to_user_id, lead_source_id, estimated_kwp, estimated_value, next_action_date, ...rest } = parsed.data
   const supabase = await createClient()
 
   const { error } = await supabase.from('leads').insert({
@@ -48,6 +48,7 @@ export async function createLead(_prev: ActionResult, formData: FormData): Promi
     estimated_value: estimated_value ?? null,
     assigned_to_user_id: assigned_to_user_id || null,
     lead_source_id: lead_source_id || null,
+    next_action_date: next_action_date || null,
     organization_id: orgId,
   })
 
@@ -67,7 +68,7 @@ export async function updateLead(
   const parsed = leadSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  const { assigned_to_user_id, lead_source_id, estimated_kwp, estimated_value, ...rest } = parsed.data
+  const { assigned_to_user_id, lead_source_id, estimated_kwp, estimated_value, next_action_date, ...rest } = parsed.data
   const supabase = await createClient()
 
   const { error } = await supabase.from('leads').update({
@@ -76,6 +77,7 @@ export async function updateLead(
     estimated_value: estimated_value ?? null,
     assigned_to_user_id: assigned_to_user_id || null,
     lead_source_id: lead_source_id || null,
+    next_action_date: next_action_date || null,
     updated_at: new Date().toISOString(),
   }).eq('id', leadId).eq('organization_id', orgId)
 
@@ -189,16 +191,17 @@ export async function toggleFollowUp(taskId: string, done: boolean): Promise<Act
 // ── Proposal Actions ──────────────────────────────────────────────
 
 const proposalSchema = z.object({
-  total_modules: z.coerce.number().min(0),
-  module_power_wp: z.coerce.number().min(0),
-  total_inverters: z.coerce.number().min(0),
-  inverter_power_w: z.coerce.number().min(0),
+  name: z.string().min(1, 'Nome é obrigatório'),
+  panel_qty: z.coerce.number().min(0).optional(),
+  panel_power_w: z.coerce.number().min(0).optional(),
+  panel_brand_model: z.string().optional(),
+  inverter_qty: z.coerce.number().min(0).optional(),
+  inverter_power_w: z.coerce.number().min(0).optional(),
+  inverter_brand_model: z.string().optional(),
   kit_value: z.coerce.number().min(0),
-  supplier_id: z.string().uuid().optional().or(z.literal('')),
+  supplier_name: z.string().optional(),
   total_power_kwp: z.coerce.number().min(0),
   monthly_generation_kwh: z.coerce.number().min(0),
-  final_value: z.coerce.number().min(0),
-  client_id: z.string().uuid('Cliente inválido'),
 })
 
 export async function createProposal(
@@ -214,16 +217,25 @@ export async function createProposal(
   const parsed = proposalSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { error: parsed.error.issues[0].message }
 
-  const { supplier_id, ...rest } = parsed.data
+  const d = parsed.data
   const supabase = await createClient()
 
   const { error } = await supabase.from('proposals').insert({
-    ...rest,
-    supplier_id: supplier_id || null,
+    name: d.name,
+    total_modules: d.panel_qty ?? 0,
+    module_power_wp: d.panel_power_w ?? 0,
+    panel_brand_model: d.panel_brand_model || null,
+    total_inverters: d.inverter_qty ?? 0,
+    inverter_power_w: d.inverter_power_w ?? 0,
+    inverter_brand_model: d.inverter_brand_model || null,
+    kit_value: d.kit_value,
+    total_power_kwp: d.total_power_kwp,
+    monthly_generation_kwh: d.monthly_generation_kwh,
+    supplier_name: d.supplier_name || null,
     lead_id: leadId,
     organization_id: orgId,
     created_by_user_id: userId,
-  })
+  } as any)
   if (error) return { error: error.message }
   revalidatePath('/leads')
   return { success: 'Proposta criada.' }

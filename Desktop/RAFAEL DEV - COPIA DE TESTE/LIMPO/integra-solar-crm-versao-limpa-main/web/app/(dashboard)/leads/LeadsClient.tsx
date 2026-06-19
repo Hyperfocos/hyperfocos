@@ -1,7 +1,8 @@
 // web/app/(dashboard)/leads/LeadsClient.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Lead, FunnelStage, LeadSource, LeadUser } from '@/lib/crm/types'
 import { LeadsTable } from '@/components/crm/LeadsTable'
@@ -20,6 +21,13 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
   const [view, setView] = useState<'kanban' | 'list'>('kanban')
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [creatingNew, setCreatingNew] = useState(false)
+  const router = useRouter()
+
+  const handleDrawerClose = useCallback(() => {
+    setSelectedLead(null)
+    setCreatingNew(false)
+    router.refresh()
+  }, [router])
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
@@ -88,10 +96,7 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
         stages={stages}
         sources={sources}
         members={members}
-        onClose={() => {
-          setSelectedLead(null)
-          setCreatingNew(false)
-        }}
+        onClose={handleDrawerClose}
       />
     </div>
   )
