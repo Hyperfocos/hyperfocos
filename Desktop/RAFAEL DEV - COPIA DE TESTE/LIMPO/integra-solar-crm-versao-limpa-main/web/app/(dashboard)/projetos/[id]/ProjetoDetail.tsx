@@ -1,11 +1,12 @@
 // web/app/(dashboard)/projetos/[id]/ProjetoDetail.tsx
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { ProjetoClient, ProjetoMember } from '@/lib/projetos/queries'
-import { upsertProject } from '@/lib/projetos/actions'
+import { upsertProject, uploadProjectDoc } from '@/lib/projetos/actions'
 import { DatePicker } from '@/components/ui/inputs'
+import { Paperclip, ExternalLink, FileText } from 'lucide-react'
 
 const STATUS_OPTIONS = [
   { value: 'pendente', label: 'Pendente' },
@@ -21,6 +22,92 @@ const STATUS_BADGE: Record<string, string> = {
   aprovado: 'bg-green-500/20 text-green-300 border-green-500/40',
 }
 
+function DocUploadRow({
+  label,
+  url,
+  clientId,
+  docType,
+  onUploaded,
+  onMessage,
+}: {
+  label: string
+  url: string | null
+  clientId: string
+  docType: 'art' | 'projeto' | 'parecer_acesso'
+  onUploaded: (url: string) => void
+  onMessage: (msg: { type: 'error' | 'success'; text: string }) => void
+}) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    const result = await uploadProjectDoc(clientId, docType, fd)
+    if (result.error) {
+      onMessage({ type: 'error', text: result.error })
+    } else {
+      onMessage({ type: 'success', text: result.success! })
+      if (result.url) onUploaded(result.url)
+    }
+    setUploading(false)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  return (
+    <div
+      className="flex items-center justify-between p-3 rounded-xl"
+      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+    >
+      <div className="flex items-center gap-2.5 min-w-0">
+        <FileText size={15} style={{ color: 'rgba(255,255,255,0.30)', flexShrink: 0 }} />
+        <span className="text-sm text-white/70 truncate">{label}</span>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {url ? (
+          <>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10"
+              style={{ color: '#FFD080' }}
+            >
+              <ExternalLink size={12} /> Ver documento
+            </a>
+            <input ref={fileRef} type="file" accept=".pdf,image/*" onChange={handleFile} className="hidden" />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="text-xs px-2 py-1.5 rounded-lg text-white/30 hover:text-white/60 transition-colors"
+            >
+              {uploading ? '...' : 'Substituir'}
+            </button>
+          </>
+        ) : (
+          <>
+            <input ref={fileRef} type="file" accept=".pdf,image/*" onChange={handleFile} className="hidden" />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10"
+              style={{ color: 'rgba(255,255,255,0.40)' }}
+            >
+              <Paperclip size={12} />
+              {uploading ? 'Enviando...' : 'Anexar'}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function ProjetoDetail({
   projeto,
   members,
@@ -34,6 +121,12 @@ export default function ProjetoDetail({
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+
+  const [docUrls, setDocUrls] = useState({
+    art_url: projeto.art_url ?? null as string | null,
+    projeto_url: projeto.projeto_url ?? null as string | null,
+    parecer_acesso_url: projeto.parecer_acesso_url ?? null as string | null,
+  })
 
   const [form, setForm] = useState({
     responsavel_id: projeto.responsavel_id ?? '',
@@ -190,6 +283,31 @@ export default function ProjetoDetail({
           <div>
             <DatePicker label="Prazo da vistoria" value={form.prazo_vistoria || null} onChange={(iso) => setForm((f) => ({ ...f, prazo_vistoria: iso }))} />
           </div>
+        </div>
+      </div>
+
+      {/* Documentos */}
+      <div className={cardCls} style={cardStyle}>
+        <h2 className="text-sm font-semibold text-white/70">Documentos do Projeto</h2>
+        <div className="space-y-3">
+          {([
+            { key: 'art' as const, label: 'ART (Anotação de Responsabilidade Técnica)', urlKey: 'art_url' as const },
+            { key: 'projeto' as const, label: 'Projeto Elétrico', urlKey: 'projeto_url' as const },
+            { key: 'parecer_acesso' as const, label: 'Parecer de Acesso', urlKey: 'parecer_acesso_url' as const },
+          ]).map(({ key, label, urlKey }) => (
+            <DocUploadRow
+              key={key}
+              label={label}
+              url={docUrls[urlKey]}
+              clientId={clientId}
+              docType={key}
+              onUploaded={(url) => setDocUrls((prev) => ({ ...prev, [urlKey]: url }))}
+              onMessage={(msg) => {
+                if (msg.type === 'error') setError(msg.text)
+                else setSuccess(msg.text)
+              }}
+            />
+          ))}
         </div>
       </div>
 

@@ -25,6 +25,9 @@ export type ProjetoClient = {
   dias_usados: number
   contract_max_days: number | null
   primeira_parcela_confirmed_at: string | null
+  art_url: string | null
+  projeto_url: string | null
+  parecer_acesso_url: string | null
 }
 
 export type ProjetoMember = {
@@ -48,6 +51,9 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       prazo_vistoria,
       status,
       checklist,
+      art_url,
+      projeto_url,
+      parecer_acesso_url,
       clients!inner (
         name,
         city,
@@ -110,6 +116,9 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       dias_usados: diasUsados,
       contract_max_days: r.clients.contract_max_days ?? null,
       primeira_parcela_confirmed_at: startDate,
+      art_url: r.art_url ?? null,
+      projeto_url: r.projeto_url ?? null,
+      parecer_acesso_url: r.parecer_acesso_url ?? null,
     }
   })
 }
@@ -130,6 +139,9 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
       prazo_vistoria,
       status,
       checklist,
+      art_url,
+      projeto_url,
+      parecer_acesso_url,
       clients!inner (
         name,
         city,
@@ -175,6 +187,9 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
     dias_usados: diasUsados,
     contract_max_days: data.clients.contract_max_days ?? null,
     primeira_parcela_confirmed_at: startDate,
+    art_url: data.art_url ?? null,
+    projeto_url: data.projeto_url ?? null,
+    parecer_acesso_url: data.parecer_acesso_url ?? null,
   }
 }
 
