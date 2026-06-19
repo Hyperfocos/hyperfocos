@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { DayPicker } from 'react-day-picker'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { format, parse, isValid, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { format, parse, isValid } from 'date-fns'
-import 'react-day-picker/dist/style.css'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface DatePickerProps {
   label?: string
   name?: string
-  value?: string | null  // ISO: "2026-06-18"
+  value?: string | null
   onChange?: (iso: string) => void
   error?: string
   required?: boolean
@@ -17,18 +16,135 @@ interface DatePickerProps {
   disabled?: boolean
 }
 
-const inputStyle = {
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  color: '#E0E8F0',
+const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
+
+function CalendarGrid({
+  month,
+  selected,
+  onSelect,
+  onMonthChange,
+}: {
+  month: Date
+  selected: Date | undefined
+  onSelect: (day: Date) => void
+  onMonthChange: (d: Date) => void
+}) {
+  const today = useMemo(() => new Date(), [])
+
+  const days = useMemo(() => {
+    const start = startOfWeek(startOfMonth(month), { locale: ptBR })
+    const end = endOfWeek(endOfMonth(month), { locale: ptBR })
+    const result: Date[] = []
+    let d = start
+    while (d <= end) {
+      result.push(d)
+      d = addDays(d, 1)
+    }
+    return result
+  }, [month])
+
+  return (
+    <div style={{ width: 280, padding: '16px 14px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.85)', textTransform: 'capitalize' }}>
+          {format(month, 'MMMM yyyy', { locale: ptBR })}
+        </span>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <button
+            type="button"
+            onClick={() => onMonthChange(subMonths(month, 1))}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, color: 'rgba(255,255,255,0.35)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onMonthChange(addMonths(month, 1))}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, color: 'rgba(255,255,255,0.35)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Weekday headers */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: 6 }}>
+        {WEEKDAYS.map((d) => (
+          <span
+            key={d}
+            style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.5px', padding: '4px 0' }}
+          >
+            {d}
+          </span>
+        ))}
+      </div>
+
+      {/* Days */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', gap: 2 }}>
+        {days.map((day, i) => {
+          const isCurrentMonth = isSameMonth(day, month)
+          const isToday = isSameDay(day, today)
+          const isSelected = selected && isSameDay(day, selected)
+
+          let bg = 'transparent'
+          let color = isCurrentMonth ? 'rgba(255,255,255,0.70)' : 'rgba(255,255,255,0.15)'
+          let fontWeight: number = 400
+
+          if (isSelected) {
+            bg = '#FFD080'
+            color = '#0a0e1a'
+            fontWeight = 500
+          } else if (isToday) {
+            bg = 'rgba(255,255,255,0.12)'
+            color = 'rgba(255,255,255,0.90)'
+            fontWeight = 500
+          }
+
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onSelect(day)}
+              style={{
+                background: bg,
+                color,
+                fontWeight,
+                fontSize: 13,
+                padding: '7px 0',
+                borderRadius: 6,
+                border: 'none',
+                cursor: isCurrentMonth ? 'pointer' : 'default',
+                transition: 'background 0.12s',
+              }}
+              onMouseEnter={(e) => {
+                if (!isSelected && isCurrentMonth) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+              }}
+              onMouseLeave={(e) => {
+                if (!isSelected && !isToday) e.currentTarget.style.background = 'transparent'
+                else if (isToday && !isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.12)'
+              }}
+            >
+              {day.getDate()}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 export function DatePicker({
   label, name, value, onChange, error, required, placeholder = 'dd/mm/aaaa', disabled,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false)
-  const [inputVal, setInputVal] = useState<string>('')
+  const [inputVal, setInputVal] = useState('')
   const [selected, setSelected] = useState<Date | undefined>(undefined)
+  const [viewMonth, setViewMonth] = useState(new Date())
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -37,6 +153,7 @@ export function DatePicker({
       if (isValid(d)) {
         setSelected(d)
         setInputVal(format(d, 'dd/MM/yyyy'))
+        setViewMonth(startOfMonth(d))
       }
     } else {
       setSelected(undefined)
@@ -44,24 +161,19 @@ export function DatePicker({
     }
   }, [value])
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  function handleDaySelect(day: Date | undefined) {
+  function handleDaySelect(day: Date) {
     setSelected(day)
-    if (day && isValid(day)) {
-      const iso = format(day, 'yyyy-MM-dd')
-      setInputVal(format(day, 'dd/MM/yyyy'))
-      onChange?.(iso)
-    }
+    const iso = format(day, 'yyyy-MM-dd')
+    setInputVal(format(day, 'dd/MM/yyyy'))
+    onChange?.(iso)
     setOpen(false)
   }
 
@@ -72,6 +184,7 @@ export function DatePicker({
       const d = parse(v, 'dd/MM/yyyy', new Date())
       if (isValid(d)) {
         setSelected(d)
+        setViewMonth(startOfMonth(d))
         onChange?.(format(d, 'yyyy-MM-dd'))
       }
     }
@@ -96,8 +209,9 @@ export function DatePicker({
         disabled={disabled}
         className="w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all"
         style={{
-          ...inputStyle,
-          border: error ? '1px solid rgba(255,100,100,0.5)' : inputStyle.border,
+          background: 'rgba(255,255,255,0.06)',
+          border: error ? '1px solid rgba(255,100,100,0.5)' : '1px solid rgba(255,255,255,0.10)',
+          color: '#E0E8F0',
           cursor: disabled ? 'not-allowed' : 'text',
         }}
       />
@@ -106,15 +220,18 @@ export function DatePicker({
 
       {open && (
         <div
-          className="absolute z-50 top-full mt-1 rounded-xl border border-white/10 shadow-xl"
-          style={{ background: '#141826' }}
+          className="absolute z-50 top-full mt-1 rounded-xl overflow-hidden"
+          style={{
+            background: '#0f1424',
+            border: '1px solid rgba(255,255,255,0.10)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          }}
         >
-          <DayPicker
-            mode="single"
+          <CalendarGrid
+            month={viewMonth}
             selected={selected}
             onSelect={handleDaySelect}
-            locale={ptBR}
-            style={{ color: '#E0E8F0' }}
+            onMonthChange={setViewMonth}
           />
         </div>
       )}
