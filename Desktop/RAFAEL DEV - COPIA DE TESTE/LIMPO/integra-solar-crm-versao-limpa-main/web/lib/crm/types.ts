@@ -73,6 +73,17 @@ export type Supplier = {
   name: string
 }
 
+export type ProposalTemplate = {
+  id: string
+  org_id: string
+  name: string
+  category: string | null
+  file_path: string
+  is_default: boolean
+  is_active: boolean
+  created_at: string
+}
+
 export type Proposal = {
   id: string
   lead_id: string | null
@@ -89,6 +100,20 @@ export type Proposal = {
   status: 'draft' | 'sent' | 'approved' | 'rejected' | 'cancelled'
   created_at: string
   supplier: Supplier | null
+  // Campos financeiros
+  template_id: string | null
+  preco_total: number | null
+  custo_kit: number | null
+  custo_projeto: number | null
+  custo_instalacao: number | null
+  custo_km: number | null
+  custo_ca: number | null
+  valor_entrada: number | null
+  valor_parcelas: number | null
+  num_parcelas: number | null
+  pdf_url: string | null
+  docx_url: string | null
+  gerado_em: string | null
 }
 
 export type ActionResult = {
