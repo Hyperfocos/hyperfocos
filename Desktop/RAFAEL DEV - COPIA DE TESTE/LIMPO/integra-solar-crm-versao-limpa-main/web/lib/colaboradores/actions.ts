@@ -36,12 +36,16 @@ export async function createColaborador(data: CreateColaboradorData): Promise<Ac
   const newUserId = authData.user.id
 
   // Usar admin client para inserir profile (RLS bloqueia insert de outro user)
-  await (adminClient as any).from('profiles').upsert({
+  const { error: profileError } = await (adminClient as any).from('profiles').upsert({
     id: newUserId,
     email: data.email,
     full_name: data.full_name,
-    name: data.full_name,
   })
+
+  if (profileError) {
+    await adminClient.auth.admin.deleteUser(newUserId)
+    return { error: 'Erro ao criar perfil: ' + profileError.message }
+  }
 
   const supabase = await createClient()
   const { error: memberError } = await (supabase as any).from('organization_members').insert({

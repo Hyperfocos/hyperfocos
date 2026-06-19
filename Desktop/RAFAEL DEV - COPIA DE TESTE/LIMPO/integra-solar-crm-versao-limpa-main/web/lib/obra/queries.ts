@@ -162,5 +162,5 @@ export async function getObraById(clientId: string): Promise<ObraClient | null> 
 export async function getObraMembers(): Promise<ObraMember[]> {
   const supabase = await createClient()
   const { data } = await (supabase as any).from('profiles').select('id, full_name').order('full_name')
-  return (data ?? []).map((p: any) => ({ id: p.id, name: p.full_name ?? p.name }))
+  return (data ?? []).map((p: any) => ({ id: p.id, name: p.full_name ?? '—' }))
 }
