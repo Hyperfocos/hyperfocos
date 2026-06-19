@@ -44,6 +44,7 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       id,
       client_id,
       responsavel_id,
+      responsavel_nome,
       numero_processo,
       data_protocolo,
       prazo_protocolo,
@@ -105,7 +106,7 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       client_name: r.clients.name,
       client_city: r.clients.city ?? null,
       responsavel_id: r.responsavel_id ?? null,
-      responsavel_name: r.responsavel_id ? (responsavelMap[r.responsavel_id] ?? null) : null,
+      responsavel_name: r.responsavel_nome ?? null,
       numero_processo: r.numero_processo ?? null,
       data_protocolo: r.data_protocolo ?? null,
       prazo_protocolo: r.prazo_protocolo ?? null,
@@ -132,6 +133,7 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
       id,
       client_id,
       responsavel_id,
+      responsavel_nome,
       numero_processo,
       data_protocolo,
       prazo_protocolo,
@@ -159,24 +161,13 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
     ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
 
-  // Resolve responsavel name
-  let responsavelName: string | null = null
-  if (data.responsavel_id) {
-    const { data: profile } = await (supabase as any)
-      .from('profiles')
-      .select('full_name')
-      .eq('id', data.responsavel_id)
-      .single()
-    responsavelName = profile?.full_name ?? null
-  }
-
   return {
     id: data.id,
     client_id: data.client_id,
     client_name: data.clients.name,
     client_city: data.clients.city ?? null,
-    responsavel_id: data.responsavel_id ?? null,
-    responsavel_name: responsavelName,
+    responsavel_id: data.responsavel_nome ?? data.responsavel_id ?? null,
+    responsavel_name: data.responsavel_nome ?? null,
     numero_processo: data.numero_processo ?? null,
     data_protocolo: data.data_protocolo ?? null,
     prazo_protocolo: data.prazo_protocolo ?? null,

@@ -204,18 +204,13 @@ export default function ProjetoDetail({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={labelCls}>Responsável técnico</label>
-            <select
+            <input
+              type="text"
               value={form.responsavel_id}
               onChange={(e) => setForm((f) => ({ ...f, responsavel_id: e.target.value }))}
               className={inputCls}
-            >
-              <option value="">— Selecionar —</option>
-              {members.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
+              placeholder="Nome do responsável"
+            />
           </div>
           <div>
             <label className={labelCls}>Status</label>

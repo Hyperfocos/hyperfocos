@@ -41,7 +41,7 @@ export async function upsertProject(
   const projectData = {
     client_id: clientId,
     organization_id: orgId,
-    responsavel_id: data.responsavel_id ?? null,
+    responsavel_nome: data.responsavel_id ?? null,
     numero_processo: data.numero_processo ?? null,
     data_protocolo: data.data_protocolo ?? null,
     prazo_protocolo: data.prazo_protocolo ?? null,
