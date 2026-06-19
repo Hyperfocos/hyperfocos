@@ -88,7 +88,6 @@ export async function getProposalsByLead(leadId: string): Promise<Proposal[]> {
     .eq('lead_id', leadId)
     .order('created_at', { ascending: false })
   const proposals = (data ?? []) as any[]
-  // Map DB columns to our Proposal type (DB uses total_modules, module_power_wp, etc.)
   return proposals.map((p) => ({
     id: p.id,
     lead_id: p.lead_id,
@@ -105,6 +104,19 @@ export async function getProposalsByLead(leadId: string): Promise<Proposal[]> {
     status: p.status ?? 'draft',
     created_at: p.created_at,
     supplier: p.supplier ?? null,
+    template_id: p.template_id ?? null,
+    preco_total: p.preco_total ?? null,
+    custo_kit: p.custo_kit ?? null,
+    custo_projeto: p.custo_projeto ?? null,
+    custo_instalacao: p.custo_instalacao ?? null,
+    custo_km: p.custo_km ?? null,
+    custo_ca: p.custo_ca ?? null,
+    valor_entrada: p.valor_entrada ?? null,
+    valor_parcelas: p.valor_parcelas ?? null,
+    num_parcelas: p.num_parcelas ?? null,
+    pdf_url: p.pdf_url ?? null,
+    docx_url: p.docx_url ?? null,
+    gerado_em: p.gerado_em ?? null,
   })) as Proposal[]
 }
 
