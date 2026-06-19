@@ -4,13 +4,16 @@ import { useState } from 'react'
 import type { OrgConfig, LeadOrigin } from '@/lib/configuracoes/queries'
 import type { Colaborador } from '@/lib/colaboradores/queries'
 import type { AuditLog } from '@/lib/auditoria/queries'
+import type { ProposalTemplate } from '@/lib/crm/types'
 import EmpresaTab from './EmpresaTab'
 import AcessoTab from './AcessoTab'
 import AuditoriaTab from './AuditoriaTab'
+import TemplatesTab from './TemplatesTab'
 
 const TABS = [
   { key: 'empresa', label: 'Empresa' },
   { key: 'acesso', label: 'Acesso' },
+  { key: 'templates', label: 'Templates' },
   { key: 'auditoria', label: 'Auditoria' },
 ] as const
 
@@ -22,12 +25,14 @@ export default function ConfiguracoesClient({
   colaboradores,
   auditLogs,
   auditTotal,
+  proposalTemplates,
 }: {
   config: OrgConfig
   origins: LeadOrigin[]
   colaboradores: Colaborador[]
   auditLogs: AuditLog[]
   auditTotal: number
+  proposalTemplates: ProposalTemplate[]
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>('empresa')
 
@@ -59,8 +64,9 @@ export default function ConfiguracoesClient({
         ))}
       </div>
 
-      {activeTab === 'empresa' && <EmpresaTab config={config} origins={origins} />}
-      {activeTab === 'acesso' && <AcessoTab colaboradores={colaboradores} />}
+      {activeTab === 'empresa'   && <EmpresaTab config={config} origins={origins} />}
+      {activeTab === 'acesso'    && <AcessoTab colaboradores={colaboradores} />}
+      {activeTab === 'templates' && <TemplatesTab initialTemplates={proposalTemplates} />}
       {activeTab === 'auditoria' && <AuditoriaTab logs={auditLogs} total={auditTotal} />}
     </div>
   )
