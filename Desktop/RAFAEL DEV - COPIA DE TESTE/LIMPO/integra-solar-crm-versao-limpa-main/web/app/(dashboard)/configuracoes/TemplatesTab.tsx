@@ -138,6 +138,68 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
         </p>
       )}
 
+      {/* Placeholders disponíveis */}
+      <div
+        className="rounded-2xl p-5 border border-white/10 space-y-4"
+        style={{ background: 'rgba(255,255,255,0.03)' }}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-white">Placeholders Disponíveis</h3>
+          <p className="text-xs text-white/30">Use no template .docx com {'{{ }}'}</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-0.5">
+          {[
+            { group: 'Cliente', items: [
+              ['cliente_nome', 'Nome do lead/cliente'],
+              ['cliente_cidade', 'Cidade do lead'],
+              ['cliente_telefone', 'Telefone formatado'],
+            ]},
+            { group: 'Empresa', items: [
+              ['empresa_nome', 'Nome fantasia ou razão social'],
+              ['empresa_cnpj', 'CNPJ da empresa'],
+              ['empresa_telefone', 'Telefone da empresa'],
+            ]},
+            { group: 'Sistema Solar', items: [
+              ['paineis_qtd', 'Quantidade de painéis'],
+              ['paineis_potencia', 'Potência do painel (ex: 610W)'],
+              ['paineis_marca', 'Marca/modelo do painel'],
+              ['inversor_qtd', 'Quantidade de inversores'],
+              ['inversor_potencia', 'Potência do inversor'],
+              ['inversor_marca', 'Marca/modelo do inversor'],
+              ['total_kwp', 'Potência total (ex: 8.54 kWp)'],
+              ['geracao_mensal', 'Geração mensal estimada'],
+            ]},
+            { group: 'Valores', items: [
+              ['preco_total', 'Preço total formatado (R$)'],
+              ['valor_entrada', 'Valor de entrada (R$)'],
+              ['num_parcelas', 'Número de parcelas'],
+              ['valor_parcelas', 'Valor de cada parcela (R$)'],
+            ]},
+            { group: 'Datas', items: [
+              ['data_proposta', 'Data de emissão (dd/MM/yyyy)'],
+              ['validade_proposta', 'Validade — 15 dias após emissão'],
+            ]},
+          ].map(({ group, items }) => (
+            <div key={group} className="mb-3">
+              <p className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#FFD080' }}>
+                {group}
+              </p>
+              {items.map(([tag, desc]) => (
+                <div key={tag} className="flex items-baseline gap-2 py-0.5">
+                  <code
+                    className="text-xs px-1.5 py-0.5 rounded flex-shrink-0"
+                    style={{ background: 'rgba(255,208,128,0.1)', color: '#FFD080' }}
+                  >
+                    {`{{${tag}}}`}
+                  </code>
+                  <span className="text-xs text-white/40">{desc}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="space-y-3">
         {templates.map((t) => (
           <div
