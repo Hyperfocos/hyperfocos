@@ -35,6 +35,7 @@ export async function getCompras(): Promise<CompraClient[]> {
       clients!inner (
         name,
         contract_max_days,
+        delivery_start_date,
         pipeline_flags
       )
     `)
@@ -57,9 +58,9 @@ export async function getCompras(): Promise<CompraClient[]> {
   }
 
   return data.map((r: any) => {
-    const confirmedAt = parcelaMap[r.client_id] ?? null
-    const diasUsados = confirmedAt
-      ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+    const startDate = r.clients.delivery_start_date ?? parcelaMap[r.client_id] ?? null
+    const diasUsados = startDate
+      ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
       : 0
 
     return {
@@ -75,7 +76,7 @@ export async function getCompras(): Promise<CompraClient[]> {
       comprovante_url: r.comprovante_url ?? null,
       dias_usados: diasUsados,
       contract_max_days: r.clients.contract_max_days ?? null,
-      primeira_parcela_confirmed_at: confirmedAt,
+      primeira_parcela_confirmed_at: startDate,
     }
   })
 }
@@ -97,7 +98,8 @@ export async function getCompraById(clientId: string): Promise<CompraClient | nu
       comprovante_url,
       clients!inner (
         name,
-        contract_max_days
+        contract_max_days,
+        delivery_start_date
       )
     `)
     .eq('client_id', clientId)
@@ -105,17 +107,9 @@ export async function getCompraById(clientId: string): Promise<CompraClient | nu
 
   if (error || !data) return null
 
-  const { data: parcela } = await (supabase as any)
-    .from('client_installments')
-    .select('confirmed_at')
-    .eq('client_id', clientId)
-    .eq('position', 1)
-    .not('confirmed_at', 'is', null)
-    .maybeSingle()
-
-  const confirmedAt = parcela?.confirmed_at ?? null
-  const diasUsados = confirmedAt
-    ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+  const startDate = data.clients.delivery_start_date ?? null
+  const diasUsados = startDate
+    ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
 
   return {
@@ -131,6 +125,6 @@ export async function getCompraById(clientId: string): Promise<CompraClient | nu
     comprovante_url: data.comprovante_url ?? null,
     dias_usados: diasUsados,
     contract_max_days: data.clients.contract_max_days ?? null,
-    primeira_parcela_confirmed_at: confirmedAt,
+    primeira_parcela_confirmed_at: startDate,
   }
 }
