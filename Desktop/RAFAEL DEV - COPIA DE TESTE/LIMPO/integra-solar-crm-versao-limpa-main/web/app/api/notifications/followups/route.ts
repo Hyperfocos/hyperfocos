@@ -12,11 +12,12 @@ export async function GET() {
   const sevenDaysFromNow = new Date()
   sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
 
-  const { data, error } = await (supabase as any)
-    .from('lead_follow_ups')
-    .select('id, title, description, due_date, lead_id, leads(name)')
+  const { data, error } = await supabase
+    .from('tasks')
+    .select('id, title, description, due_date, related_to_lead_id, leads:related_to_lead_id(name)')
     .eq('organization_id', orgId)
     .is('completed_at', null)
+    .not('due_date', 'is', null)
     .lte('due_date', sevenDaysFromNow.toISOString())
     .order('due_date', { ascending: true })
 
@@ -30,7 +31,7 @@ export async function GET() {
     title: f.title,
     description: f.description,
     due_date: f.due_date,
-    lead_id: f.lead_id,
+    lead_id: f.related_to_lead_id,
     lead_name: f.leads?.name ?? 'Lead',
   }))
 

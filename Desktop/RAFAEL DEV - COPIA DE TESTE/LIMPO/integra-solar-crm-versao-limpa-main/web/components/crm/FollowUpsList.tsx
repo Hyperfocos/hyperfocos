@@ -1,30 +1,44 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { FormError } from '@/components/ui/FormError'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { createFollowUp, toggleFollowUp } from '@/lib/crm/actions'
-import type { ActionResult, Lead } from '@/lib/crm/types'
+import type { ActionResult, Lead, LeadFollowUp } from '@/lib/crm/types'
 
 export function FollowUpsList({ lead }: { lead: Lead }) {
+  const [followups, setFollowups] = useState<LeadFollowUp[]>(lead.followups)
   const [showForm, setShowForm] = useState(false)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    setFollowups(lead.followups)
+  }, [lead.followups])
+
+  function refreshFollowups() {
+    fetch(`/api/leads/${lead.id}/followups`)
+      .then((r) => r.json())
+      .then((data) => { if (data.followups) setFollowups(data.followups) })
+  }
 
   const boundCreate = createFollowUp.bind(null, lead.id)
   const [state, formAction] = useFormState(
     async (prev: ActionResult, formData: FormData) => {
       const result = await boundCreate(prev, formData)
-      if (result.success) setShowForm(false)
+      if (result.success) {
+        setShowForm(false)
+        refreshFollowups()
+      }
       return result
     },
     {} as ActionResult
   )
 
-  const pending = lead.followups.filter((f) => !f.completed_at)
-  const done = lead.followups.filter((f) => !!f.completed_at)
+  const pending = followups.filter((f) => !f.completed_at)
+  const done = followups.filter((f) => !!f.completed_at)
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,7 +65,7 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
         </form>
       )}
 
-      {pending.length === 0 && done.length === 0 && (
+      {pending.length === 0 && done.length === 0 && !showForm && (
         <p className="text-sm text-center py-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Nenhum follow-up agendado.
         </p>
@@ -66,7 +80,12 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
           <input
             type="checkbox"
             checked={false}
-            onChange={() => startTransition(() => { void toggleFollowUp(f.id, true) })}
+            onChange={() =>
+              startTransition(async () => {
+                await toggleFollowUp(f.id, true)
+                refreshFollowups()
+              })
+            }
             className="mt-0.5 cursor-pointer"
             disabled={isPending}
           />
@@ -98,7 +117,12 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
               <input
                 type="checkbox"
                 checked={true}
-                onChange={() => startTransition(() => { void toggleFollowUp(f.id, false) })}
+                onChange={() =>
+                  startTransition(async () => {
+                    await toggleFollowUp(f.id, false)
+                    refreshFollowups()
+                  })
+                }
                 className="mt-0.5 cursor-pointer"
               />
               <p className="text-sm line-through" style={{ color: 'rgba(255,255,255,0.50)' }}>{f.title}</p>
