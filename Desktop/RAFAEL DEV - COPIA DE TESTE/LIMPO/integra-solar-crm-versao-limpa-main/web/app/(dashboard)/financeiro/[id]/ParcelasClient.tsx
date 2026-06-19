@@ -1,13 +1,120 @@
 // web/app/(dashboard)/financeiro/[id]/ParcelasClient.tsx
 'use client'
 
-import { useTransition, useState } from 'react'
+import { useTransition, useState, useRef } from 'react'
 import { Button } from '@/components/ui/Button'
-import { confirmInstallment, advanceToProjects } from '@/lib/financeiro/actions'
+import { confirmInstallment, advanceToProjects, uploadReceipt } from '@/lib/financeiro/actions'
 import type { FinanceiroInstallment } from '@/lib/financeiro/queries'
+import { Paperclip, ExternalLink } from 'lucide-react'
 
 function formatBRL(value: number) {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function ParcelaRow({
+  p,
+  isPending,
+  onConfirm,
+  onMessage,
+}: {
+  p: FinanceiroInstallment
+  isPending: boolean
+  onConfirm: (id: string) => void
+  onMessage: (msg: { type: 'error' | 'success'; text: string }) => void
+}) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    const result = await uploadReceipt(p.id, fd)
+    if (result.error) onMessage({ type: 'error', text: result.error })
+    if (result.success) onMessage({ type: 'success', text: result.success })
+    setUploading(false)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  return (
+    <div
+      className="flex items-center gap-3 p-3 rounded-xl"
+      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+    >
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.80)' }}>
+          {p.position === 1 ? 'Entrada' : `Parcela ${p.position}`}
+        </p>
+        <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          Venc: {new Date(p.due_date).toLocaleDateString('pt-BR')}
+          {p.confirmed_at
+            ? ` · Pago em: ${new Date(p.confirmed_at).toLocaleDateString('pt-BR')}`
+            : ''}
+        </p>
+      </div>
+
+      <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'rgba(255,255,255,0.75)' }}>
+        {formatBRL(p.amount)}
+      </p>
+
+      {/* Comprovante */}
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        {p.receipt_url ? (
+          <a
+            href={p.receipt_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors hover:bg-white/10"
+            style={{ color: '#FFD080' }}
+            title="Ver comprovante"
+          >
+            <ExternalLink size={12} />
+            Comprovante
+          </a>
+        ) : (
+          <>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*,.pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors hover:bg-white/10"
+              style={{ color: 'rgba(255,255,255,0.35)' }}
+              title="Anexar comprovante"
+            >
+              <Paperclip size={12} />
+              {uploading ? 'Enviando...' : 'Anexar'}
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Status / Confirmar */}
+      {p.status === 'confirmada' ? (
+        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: 'rgba(16,185,129,0.10)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}>
+          ✓ Pago
+        </span>
+      ) : (
+        <Button
+          variant="secondary"
+          className="text-xs py-1 px-2.5 flex-shrink-0"
+          onClick={() => onConfirm(p.id)}
+          loading={isPending}
+          type="button"
+        >
+          Confirmar
+        </Button>
+      )}
+    </div>
+  )
 }
 
 export function ParcelasClient({
@@ -64,41 +171,13 @@ export function ParcelasClient({
       {/* Parcelas */}
       <div className="flex flex-col gap-2">
         {parcelas.map((p) => (
-          <div
+          <ParcelaRow
             key={p.id}
-            className="flex items-center gap-3 p-3 rounded-xl"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.80)' }}>
-                {p.position === 1 ? 'Entrada' : `Parcela ${p.position}`}
-              </p>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                Venc: {new Date(p.due_date).toLocaleDateString('pt-BR')}
-                {p.confirmed_at
-                  ? ` · Pago em: ${new Date(p.confirmed_at).toLocaleDateString('pt-BR')}`
-                  : ''}
-              </p>
-            </div>
-            <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'rgba(255,255,255,0.75)' }}>
-              {formatBRL(p.amount)}
-            </p>
-            {p.status === 'confirmada' ? (
-              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.10)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}>
-                ✓ Pago
-              </span>
-            ) : (
-              <Button
-                variant="secondary"
-                className="text-xs py-1 px-2.5"
-                onClick={() => handleConfirm(p.id)}
-                loading={isPending}
-                type="button"
-              >
-                Confirmar
-              </Button>
-            )}
-          </div>
+            p={p}
+            isPending={isPending}
+            onConfirm={handleConfirm}
+            onMessage={setMessage}
+          />
         ))}
       </div>
 

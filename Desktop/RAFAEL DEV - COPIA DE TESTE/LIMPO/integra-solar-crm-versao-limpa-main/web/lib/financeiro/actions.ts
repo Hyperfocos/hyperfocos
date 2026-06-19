@@ -88,6 +88,41 @@ export async function confirmInstallment(installmentId: string): Promise<ActionR
   return { success: 'Pagamento confirmado.' }
 }
 
+export async function uploadReceipt(installmentId: string, formData: FormData): Promise<ActionResult> {
+  const file = formData.get('file') as File | null
+  if (!file || file.size === 0) return { error: 'Selecione um arquivo.' }
+
+  const supabase = await createClient()
+
+  const { data: inst } = await (supabase as any)
+    .from('client_installments')
+    .select('client_id')
+    .eq('id', installmentId)
+    .single()
+
+  if (!inst) return { error: 'Parcela não encontrada.' }
+
+  const ext = file.name.split('.').pop() ?? 'pdf'
+  const filePath = `${inst.client_id}/${installmentId}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('receipts')
+    .upload(filePath, file, { upsert: true })
+
+  if (uploadError) return { error: 'Erro ao enviar: ' + uploadError.message }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+  const receiptUrl = `${supabaseUrl}/storage/v1/object/public/receipts/${filePath}`
+
+  await (supabase as any)
+    .from('client_installments')
+    .update({ receipt_url: receiptUrl })
+    .eq('id', installmentId)
+
+  revalidatePath('/financeiro')
+  return { success: 'Comprovante anexado.' }
+}
+
 export async function advanceToProjects(clientId: string): Promise<ActionResult> {
   const user = await getCurrentUserData()
   const orgId = user?.membership?.organization.id ?? null

@@ -12,6 +12,7 @@ export type FinanceiroInstallment = {
   notes: string | null
   status: 'pendente' | 'confirmada'
   confirmed_at: string | null
+  receipt_url: string | null
 }
 
 export type FinanceiroPainel = {
@@ -100,6 +101,7 @@ export async function getFinanceiroPainel(params: {
     notes: i.notes ?? null,
     status: i.status as 'pendente' | 'confirmada',
     confirmed_at: i.confirmed_at ?? null,
+    receipt_url: i.receipt_url ?? null,
   }))
 
   return {
@@ -143,5 +145,6 @@ export async function getParcelasByClient(clientId: string): Promise<FinanceiroI
     notes: i.notes ?? null,
     status: i.status as 'pendente' | 'confirmada',
     confirmed_at: i.confirmed_at ?? null,
+    receipt_url: i.receipt_url ?? null,
   }))
 }
