@@ -106,107 +106,102 @@ export function ProposalPricingReview({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-2 gap-6">
-            {/* Coluna esquerda — Breakdown */}
-            <div className="space-y-5">
-              <div className="rounded-xl p-4 space-y-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <p className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-3">Breakdown de Custos</p>
-                <div className={rowCls}>
-                  <span className="text-sm text-white/60">Kit Solar</span>
-                  <span className="text-sm text-white/80">{formatCurrency(pricing.custo_kit)}</span>
-                </div>
-                <div className={`${rowCls} ${dividerCls}`}>
-                  <span className="text-sm text-white/60">Projeto (engenharia)</span>
-                  <span className="text-sm text-white/80">{formatCurrency(pricing.custo_projeto)}</span>
-                </div>
-                <div className={`${rowCls} ${dividerCls}`}>
-                  <span className="text-sm text-white/60">Instalação</span>
-                  <span className="text-sm text-white/80">{formatCurrency(pricing.custo_instalacao)}</span>
-                </div>
-                <div className={`${rowCls} ${dividerCls}`}>
-                  <span className="text-sm text-white/60">Material CA</span>
-                  <span className="text-sm text-white/80">{formatCurrency(pricing.custo_ca)}</span>
-                </div>
-                <div className={`${rowCls} ${dividerCls}`} style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}>
-                  <span className="text-sm font-semibold text-white">Preço Total</span>
-                  <span className="text-lg font-bold" style={{ color: '#FFD080' }}>{formatCurrency(pricing.preco_total)}</span>
-                </div>
-              </div>
-
-              {/* Info do sistema */}
-              <div className="rounded-xl p-4 grid grid-cols-2 gap-3" style={{ background: 'rgba(255,200,100,0.04)', border: '1px solid rgba(255,200,100,0.10)' }}>
-                <div>
-                  <p className="text-xs text-white/35">Sistema</p>
-                  <p className="text-sm font-semibold" style={{ color: '#FFD080' }}>{proposal.total_power_kwp.toFixed(2)} kWp</p>
-                </div>
-                <div>
-                  <p className="text-xs text-white/35">Geração/mês</p>
-                  <p className="text-sm font-semibold text-white/70">{Math.round(proposal.monthly_generation_kwh)} kWh</p>
-                </div>
-              </div>
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Breakdown de custos */}
+          <div className="rounded-xl p-5 space-y-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <p className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-3">Breakdown de Custos</p>
+            <div className={rowCls}>
+              <span className="text-sm text-white/60">Kit Solar</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_kit)}</span>
             </div>
-
-            {/* Coluna direita — Pagamento + Template */}
-            <div className="space-y-5">
-              {/* Condições de pagamento */}
-              <div className="space-y-3">
-                <p className="text-xs font-semibold text-white/50 uppercase tracking-wide">Condições de Pagamento</p>
-                <CurrencyInput
-                  label="Valor de Entrada (R$)"
-                  value={valorEntrada || null}
-                  onChange={(v) => setValorEntrada(v)}
-                />
-                <div>
-                  <label className={labelCls}>Número de Parcelas</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={numParcelas}
-                    onChange={(e) => setNumParcelas(Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30 bg-white/5"
-                  />
-                </div>
-                {numParcelas > 0 && (
-                  <div className="rounded-xl p-3" style={{ background: 'rgba(255,208,128,0.06)', border: '1px solid rgba(255,208,128,0.15)' }}>
-                    <p className="text-xs text-white/50">
-                      {numParcelas}x de{' '}
-                      <span className="font-semibold" style={{ color: '#FFD080' }}>{formatCurrency(valorParcelas)}</span>
-                      {' '}· Restante: {formatCurrency(pricing.preco_total - valorEntrada)}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Seleção de template */}
-              <div>
-                <label className={labelCls}>Template do Orçamento *</label>
-                {templates.length === 0 ? (
-                  <p className="text-xs text-red-400">
-                    Nenhum template ativo. Cadastre um em Configurações → Templates.
-                  </p>
-                ) : (
-                  <select
-                    value={selectedTemplateId}
-                    onChange={(e) => setSelectedTemplateId(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}
-                  >
-                    <option value="">— Selecione —</option>
-                    {templates.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}{t.category ? ` (${t.category})` : ''}{t.is_default ? ' ★' : ''}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-
-              {error && (
-                <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">{error}</p>
-              )}
+            <div className={`${rowCls} ${dividerCls}`}>
+              <span className="text-sm text-white/60">Projeto (engenharia)</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_projeto)}</span>
+            </div>
+            <div className={`${rowCls} ${dividerCls}`}>
+              <span className="text-sm text-white/60">Instalação</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_instalacao)}</span>
+            </div>
+            <div className={`${rowCls} ${dividerCls}`}>
+              <span className="text-sm text-white/60">Material CA</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_ca)}</span>
+            </div>
+            <div className={`${rowCls} ${dividerCls}`} style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}>
+              <span className="text-sm font-semibold text-white">Preço Total</span>
+              <span className="text-lg font-bold" style={{ color: '#FFD080' }}>{formatCurrency(pricing.preco_total)}</span>
             </div>
           </div>
+
+          {/* Info do sistema */}
+          <div className="rounded-xl p-4 grid grid-cols-2 gap-4" style={{ background: 'rgba(255,200,100,0.04)', border: '1px solid rgba(255,200,100,0.10)' }}>
+            <div>
+              <p className="text-xs text-white/35">Sistema</p>
+              <p className="text-sm font-semibold" style={{ color: '#FFD080' }}>{proposal.total_power_kwp.toFixed(2)} kWp</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/35">Geração/mês</p>
+              <p className="text-sm font-semibold text-white/70">{Math.round(proposal.monthly_generation_kwh)} kWh</p>
+            </div>
+          </div>
+
+          {/* Condições de pagamento */}
+          <div className="space-y-4">
+            <p className="text-xs font-semibold text-white/50 uppercase tracking-wide">Condições de Pagamento</p>
+            <div className="grid grid-cols-2 gap-4">
+              <CurrencyInput
+                label="Valor de Entrada (R$)"
+                value={valorEntrada || null}
+                onChange={(v) => setValorEntrada(v)}
+              />
+              <div>
+                <label className={labelCls}>Número de Parcelas</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={numParcelas}
+                  onChange={(e) => setNumParcelas(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30 bg-white/5"
+                />
+              </div>
+            </div>
+            {numParcelas > 0 && (
+              <div className="rounded-xl p-3" style={{ background: 'rgba(255,208,128,0.06)', border: '1px solid rgba(255,208,128,0.15)' }}>
+                <p className="text-sm text-white/50">
+                  {numParcelas}x de{' '}
+                  <span className="font-semibold" style={{ color: '#FFD080' }}>{formatCurrency(valorParcelas)}</span>
+                  {' '}· Restante: {formatCurrency(pricing.preco_total - valorEntrada)}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Seleção de template */}
+          <div>
+            <label className={labelCls}>Template do Orçamento *</label>
+            {templates.length === 0 ? (
+              <p className="text-xs text-red-400">
+                Nenhum template ativo. Cadastre um em Configurações → Templates.
+              </p>
+            ) : (
+              <select
+                value={selectedTemplateId}
+                onChange={(e) => setSelectedTemplateId(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30"
+                style={{ background: 'rgba(255,255,255,0.06)' }}
+              >
+                <option value="">— Selecione —</option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}{t.category ? ` (${t.category})` : ''}{t.is_default ? ' ★' : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {error && (
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">{error}</p>
+          )}
         </div>
 
         {/* Footer */}
