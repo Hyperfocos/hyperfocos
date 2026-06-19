@@ -137,13 +137,12 @@ export async function getGenerationFactor(): Promise<number> {
   const user = await getCurrentUserData()
   if (!user?.membership) return 1.0
   const supabase = await createClient()
-  const { data } = await supabase
-    .from('organization_settings')
-    .select('setting_value')
+  const { data } = await (supabase as any)
+    .from('org_config')
+    .select('kwh_por_kwp')
     .eq('organization_id', user.membership.organization.id)
-    .eq('setting_key', 'generation_factor')
-    .single()
-  return (data?.setting_value as number) ?? 1.0
+    .maybeSingle()
+  return (data?.kwh_por_kwp as number) ?? 1.0
 }
 
 // Cria etapas padrão se a org não tiver nenhuma
