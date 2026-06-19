@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -21,13 +21,16 @@ interface KanbanBoardProps {
   onLeadClick: (lead: Lead) => void
 }
 
-export function KanbanBoard({ leads: initialLeads, stages, onLeadClick }: KanbanBoardProps) {
-  const [leads, setLeads] = useState(initialLeads)
+export function KanbanBoard({ leads: externalLeads, stages, onLeadClick }: KanbanBoardProps) {
+  const [leads, setLeads] = useState(externalLeads)
   const [activeLead, setActiveLead] = useState<Lead | null>(null)
+  const isDragging = useRef(false)
 
   useEffect(() => {
-    if (!activeLead) setLeads(initialLeads)
-  }, [initialLeads, activeLead])
+    if (!isDragging.current) {
+      setLeads(externalLeads)
+    }
+  }, [externalLeads])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -38,6 +41,7 @@ export function KanbanBoard({ leads: initialLeads, stages, onLeadClick }: Kanban
   }
 
   function handleDragStart({ active }: DragStartEvent) {
+    isDragging.current = true
     setActiveLead(leads.find((l) => l.id === String(active.id)) ?? null)
   }
 
@@ -56,6 +60,7 @@ export function KanbanBoard({ leads: initialLeads, stages, onLeadClick }: Kanban
   }
 
   async function handleDragEnd({ active, over }: DragEndEvent) {
+    isDragging.current = false
     setActiveLead(null)
     if (!over) return
     const overId = over.id as string
