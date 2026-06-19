@@ -3,21 +3,22 @@
 import { useState } from 'react'
 import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
+import { CurrencyInput } from '@/components/ui/inputs'
 import { FormError } from '@/components/ui/FormError'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { Button } from '@/components/ui/Button'
 import { createProposal } from '@/lib/crm/actions'
-import type { Supplier, ActionResult } from '@/lib/crm/types'
+import type { ActionResult } from '@/lib/crm/types'
 
 interface ProposalFormProps {
   leadId: string
-  suppliers: Supplier[]
+  suppliers?: any[]
   generationFactor: number
   onSuccess: () => void
   onCancel: () => void
 }
 
-export function ProposalForm({ leadId, suppliers, generationFactor, onSuccess, onCancel }: ProposalFormProps) {
+export function ProposalForm({ leadId, generationFactor, onSuccess, onCancel }: ProposalFormProps) {
   const [panelQty, setPanelQty] = useState(0)
   const [panelPower, setPanelPower] = useState(0)
 
@@ -35,17 +36,6 @@ export function ProposalForm({ leadId, suppliers, generationFactor, onSuccess, o
     },
     {} as ActionResult
   )
-
-  const selectStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.10)',
-    color: '#E0E8F0',
-    borderRadius: 12,
-    padding: '10px 14px',
-    fontSize: 14,
-    width: '100%',
-    outline: 'none',
-  }
 
   return (
     <form action={formAction} className="flex flex-col gap-3">
@@ -65,6 +55,7 @@ export function ProposalForm({ leadId, suppliers, generationFactor, onSuccess, o
           label="Potência placa (W)"
           type="number"
           min="0"
+          step="0.01"
           value={panelPower.toString()}
           onChange={(e) => setPanelPower(Number(e.target.value))}
         />
@@ -73,35 +64,13 @@ export function ProposalForm({ leadId, suppliers, generationFactor, onSuccess, o
 
       <div className="grid grid-cols-2 gap-3">
         <Input name="inverter_qty" label="Qtd. inversores" type="number" min="0" defaultValue="1" />
-        <Input name="inverter_power_w" label="Potência inversor (W)" type="number" min="0" />
+        <Input name="inverter_power_w" label="Potência inversor (W)" type="number" min="0" step="0.01" />
       </div>
       <Input name="inverter_brand_model" label="Marca/Modelo do inversor" placeholder="Ex: Growatt 5kW" />
 
-      <Input name="kit_value" label="Valor do kit (R$)" type="number" min="0" step="0.01" />
+      <CurrencyInput name="kit_value" label="Valor do kit (R$)" value={null} />
 
-      <div className="flex flex-col gap-1.5">
-        <label
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'rgba(255,255,255,0.40)',
-            marginBottom: 4,
-            display: 'block',
-          }}
-        >
-          Fornecedor
-        </label>
-        <select name="supplier_id" style={selectStyle}>
-          <option value="">— Nenhum —</option>
-          {suppliers.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Input name="supplier_name" label="Fornecedor" placeholder="Ex: Aldo Solar" />
 
       <div
         className="rounded-xl p-3 grid grid-cols-2 gap-3"
