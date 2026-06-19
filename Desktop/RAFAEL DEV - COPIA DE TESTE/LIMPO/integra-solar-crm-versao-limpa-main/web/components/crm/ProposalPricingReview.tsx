@@ -163,7 +163,7 @@ export function ProposalPricingReview({
         onClick={onClose}
       />
       <div
-        className="fixed right-0 top-0 bottom-0 w-[780px] z-[71] flex flex-col"
+        className="fixed left-56 right-0 top-0 bottom-0 z-[71] flex flex-col"
         style={{
           background: '#0f1424',
           borderLeft: '1px solid rgba(255,255,255,0.08)',
