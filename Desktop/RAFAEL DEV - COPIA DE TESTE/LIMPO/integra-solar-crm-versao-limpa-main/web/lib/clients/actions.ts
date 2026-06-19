@@ -205,6 +205,7 @@ export async function updateTab4(
     .from('clients')
     .update({
       has_adaptation_works: raw.has_adaptation_works === 'on',
+      adaptation_details: (raw.adaptation_details as string) || '[]',
       roof_type: (raw.roof_type as string) || null,
       roof_orientation: (raw.roof_orientation as string) || null,
       maps_coordinates: (raw.maps_coordinates as string) || null,

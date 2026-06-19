@@ -13,6 +13,8 @@ export type ObraClient = {
   equipe_nome: string | null
   dias_usados: number
   contract_max_days: number | null
+  has_adaptation_works: boolean
+  adaptation_details: string[]
 }
 
 export type ObraMember = {
@@ -37,6 +39,8 @@ export async function getObras(): Promise<ObraClient[]> {
         name,
         city,
         contract_max_days,
+        has_adaptation_works,
+        adaptation_details,
         pipeline_flags
       )
     `)
@@ -88,6 +92,8 @@ export async function getObras(): Promise<ObraClient[]> {
       equipe_nome: r.equipe_nome ?? null,
       dias_usados: diasUsados,
       contract_max_days: r.clients.contract_max_days ?? null,
+      has_adaptation_works: r.clients.has_adaptation_works ?? false,
+      adaptation_details: (() => { try { return JSON.parse(r.clients.adaptation_details ?? '[]') } catch { return [] } })(),
     }
   })
 }
@@ -108,7 +114,9 @@ export async function getObraById(clientId: string): Promise<ObraClient | null> 
       clients!inner (
         name,
         city,
-        contract_max_days
+        contract_max_days,
+        has_adaptation_works,
+        adaptation_details
       )
     `)
     .eq('client_id', clientId)
@@ -152,6 +160,8 @@ export async function getObraById(clientId: string): Promise<ObraClient | null> 
     equipe_nome: data.equipe_nome ?? null,
     dias_usados: diasUsados,
     contract_max_days: data.clients.contract_max_days ?? null,
+    has_adaptation_works: data.clients.has_adaptation_works ?? false,
+    adaptation_details: (() => { try { return JSON.parse(data.clients.adaptation_details ?? '[]') } catch { return [] } })(),
   }
 }
 

@@ -75,6 +75,24 @@ export default function ObraDetail({ obra, members, clientId }: { obra: ObraClie
         <span className="text-white font-semibold">{obra.dias_usados} / {obra.contract_max_days ?? '—'} dias</span>
       </div>
 
+      {obra.has_adaptation_works && obra.adaptation_details.length > 0 && (
+        <div className={cardCls} style={{ ...cardStyle, borderColor: 'rgba(255,160,60,0.25)' }}>
+          <h2 className="text-sm font-semibold" style={{ color: '#FFD080' }}>Obras de Adaptação</h2>
+          <div className="space-y-2">
+            {obra.adaptation_details.map((a, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-2.5 px-3 py-2 rounded-lg"
+                style={{ background: 'rgba(255,200,100,0.04)', border: '1px solid rgba(255,200,100,0.10)' }}
+              >
+                <span className="text-xs font-bold mt-0.5" style={{ color: '#FFD080' }}>{i + 1}.</span>
+                <span className="text-sm text-white/70">{a}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className={cardCls} style={cardStyle}>
         <h2 className="text-sm font-semibold text-white/70">Dados da Obra</h2>
         <div className="grid grid-cols-2 gap-4">

@@ -1,12 +1,14 @@
 // web/app/(dashboard)/clientes/[id]/tabs/Tab4Vistoria.tsx
 'use client'
 
+import { useState } from 'react'
 import { useFormState } from 'react-dom'
 import { Input } from '@/components/ui/Input'
 import { SubmitButton } from '@/components/ui/SubmitButton'
 import { FormError } from '@/components/ui/FormError'
 import { updateTab4 } from '@/lib/clients/actions'
 import type { Client, ActionResult } from '@/lib/clients/types'
+import { Plus, Trash2 } from 'lucide-react'
 
 const selectStyle: React.CSSProperties = {
   background: 'rgba(255,255,255,0.06)',
@@ -31,14 +33,98 @@ const labelStyle: React.CSSProperties = {
 
 export function Tab4Vistoria({ client }: { client: Client }) {
   const action = updateTab4.bind(null, client.id)
-  const [state, formAction] = useFormState(action, {} as ActionResult)
+
+  const existingAdaptations: string[] = (() => {
+    try {
+      const parsed = JSON.parse((client as any).adaptation_details ?? '[]')
+      return Array.isArray(parsed) ? parsed : []
+    } catch { return [] }
+  })()
+
+  const [hasAdaptation, setHasAdaptation] = useState(client.has_adaptation_works)
+  const [adaptations, setAdaptations] = useState<string[]>(
+    existingAdaptations.length > 0 ? existingAdaptations : ['']
+  )
+
+  const [state, formAction] = useFormState(
+    async (prev: ActionResult, formData: FormData) => {
+      if (hasAdaptation) {
+        formData.set('adaptation_details', JSON.stringify(adaptations.filter((a) => a.trim())))
+      } else {
+        formData.set('adaptation_details', '[]')
+      }
+      if (hasAdaptation) formData.set('has_adaptation_works', 'on')
+      return action(prev, formData)
+    },
+    {} as ActionResult
+  )
+
+  function addAdaptation() {
+    setAdaptations((prev) => [...prev, ''])
+  }
+
+  function updateAdaptation(idx: number, value: string) {
+    setAdaptations((prev) => prev.map((a, i) => (i === idx ? value : a)))
+  }
+
+  function removeAdaptation(idx: number) {
+    setAdaptations((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-4 max-w-lg">
       <label className="flex items-center gap-2.5 cursor-pointer">
-        <input type="checkbox" name="has_adaptation_works" defaultChecked={client.has_adaptation_works} className="w-4 h-4 rounded" />
+        <input
+          type="checkbox"
+          name="has_adaptation_works"
+          checked={hasAdaptation}
+          onChange={(e) => setHasAdaptation(e.target.checked)}
+          className="w-4 h-4 rounded"
+        />
         <span className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>Possui obras de adaptação</span>
       </label>
+
+      {hasAdaptation && (
+        <div
+          className="rounded-xl p-4 space-y-3"
+          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <p style={labelStyle}>Adaptações necessárias</p>
+          {adaptations.map((a, idx) => (
+            <div key={idx} className="flex gap-2">
+              <input
+                type="text"
+                value={a}
+                onChange={(e) => updateAdaptation(idx, e.target.value)}
+                placeholder={`Adaptação ${idx + 1} — descreva aqui`}
+                className="flex-1 rounded-xl px-3.5 py-2.5 text-sm outline-none"
+                style={{
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.10)',
+                  color: '#E0E8F0',
+                }}
+              />
+              {adaptations.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeAdaptation(idx)}
+                  className="p-2 rounded-lg transition-colors hover:bg-white/10"
+                >
+                  <Trash2 size={14} style={{ color: 'rgba(255,80,80,0.5)' }} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addAdaptation}
+            className="flex items-center gap-1.5 text-xs transition-colors hover:text-white/70"
+            style={{ color: 'rgba(255,255,255,0.40)' }}
+          >
+            <Plus size={13} /> Adicionar adaptação
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
