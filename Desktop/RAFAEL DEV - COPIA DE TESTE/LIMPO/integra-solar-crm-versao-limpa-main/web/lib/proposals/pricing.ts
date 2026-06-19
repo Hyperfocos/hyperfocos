@@ -34,10 +34,10 @@ export function calcularPreco(
     km_rodados = 0,
   } = input
 
-  const pct_imposto  = config.pct_imposto  ?? 0
-  const pct_margem   = config.pct_margem   ?? 0
-  const pct_comissao = config.pct_comissao ?? 0
-  const pct_ca       = config.pct_material_ca ?? 0
+  const pct_imposto  = (config.pct_imposto  ?? 0) / 100
+  const pct_margem   = (config.pct_margem   ?? 0) / 100
+  const pct_comissao = (config.pct_comissao ?? 0) / 100
+  const pct_ca       = (config.pct_material_ca ?? 0) / 100
 
   const valor_projeto_por_kwp      = config.valor_projeto_por_kwp      ?? 0
   const valor_instalacao_por_placa = config.valor_instalacao_por_placa ?? 0
