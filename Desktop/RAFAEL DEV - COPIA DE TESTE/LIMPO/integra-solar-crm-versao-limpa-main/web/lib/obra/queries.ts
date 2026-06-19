@@ -68,10 +68,10 @@ export async function getObras(): Promise<ObraClient[]> {
   if (responsavelIds.length > 0) {
     const { data: profiles } = await (supabase as any)
       .from('profiles')
-      .select('id, name')
+      .select('id, full_name')
       .in('id', responsavelIds)
     for (const p of profiles ?? []) {
-      responsavelMap[p.id] = p.name
+      responsavelMap[p.id] = p.full_name
     }
   }
 
@@ -161,6 +161,6 @@ export async function getObraById(clientId: string): Promise<ObraClient | null> 
 
 export async function getObraMembers(): Promise<ObraMember[]> {
   const supabase = await createClient()
-  const { data } = await (supabase as any).from('profiles').select('id, name').order('name')
-  return (data ?? []).map((p: any) => ({ id: p.id, name: p.name }))
+  const { data } = await (supabase as any).from('profiles').select('id, full_name').order('full_name')
+  return (data ?? []).map((p: any) => ({ id: p.id, name: p.full_name ?? p.name }))
 }

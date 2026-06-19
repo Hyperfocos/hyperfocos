@@ -40,6 +40,7 @@ export async function createColaborador(data: CreateColaboradorData): Promise<Ac
     id: newUserId,
     email: data.email,
     full_name: data.full_name,
+    name: data.full_name,
   })
 
   const supabase = await createClient()
