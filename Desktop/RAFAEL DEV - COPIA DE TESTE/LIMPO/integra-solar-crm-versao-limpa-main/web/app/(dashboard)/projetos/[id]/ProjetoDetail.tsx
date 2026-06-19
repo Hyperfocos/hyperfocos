@@ -198,28 +198,6 @@ export default function ProjetoDetail({
         </span>
       </div>
 
-      {/* Checklist */}
-      <div className={cardCls} style={cardStyle}>
-        <h2 className="text-sm font-semibold text-white/70">Checklist</h2>
-        {(
-          [
-            ['memorial_calculo', 'Memorial de Cálculo'],
-            ['art', 'ART'],
-            ['homologacao', 'Homologação junto à concessionária'],
-          ] as [keyof typeof form.checklist, string][]
-        ).map(([key, label]) => (
-          <label key={key} className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.checklist[key]}
-              onChange={() => handleCheckbox(key)}
-              className="w-4 h-4 accent-yellow-400"
-            />
-            <span className="text-sm text-white/80">{label}</span>
-          </label>
-        ))}
-      </div>
-
       {/* Responsável + Status */}
       <div className={cardCls} style={cardStyle}>
         <h2 className="text-sm font-semibold text-white/70">Responsável e Status</h2>
