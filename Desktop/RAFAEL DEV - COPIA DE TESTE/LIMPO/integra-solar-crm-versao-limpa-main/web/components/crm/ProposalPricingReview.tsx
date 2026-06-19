@@ -39,6 +39,7 @@ export function ProposalPricingReview({
       kit_value: proposal.kit_value,
       total_power_kwp: proposal.total_power_kwp,
       panel_qty: proposal.panel_qty,
+      km_rodados: (proposal as any).km_rodados ?? 0,
     },
     orgConfig
   )
@@ -112,19 +113,23 @@ export function ProposalPricingReview({
             <p className="text-xs font-semibold text-white/50 uppercase tracking-wide mb-3">Breakdown de Custos</p>
             <div className={rowCls}>
               <span className="text-sm text-white/60">Kit Solar</span>
-              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_kit)}</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.preco_venda_kit)}</span>
             </div>
             <div className={`${rowCls} ${dividerCls}`}>
               <span className="text-sm text-white/60">Projeto (engenharia)</span>
-              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_projeto)}</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.preco_venda_projeto)}</span>
             </div>
             <div className={`${rowCls} ${dividerCls}`}>
               <span className="text-sm text-white/60">Instalação</span>
-              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_instalacao)}</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.preco_venda_instalacao)}</span>
+            </div>
+            <div className={`${rowCls} ${dividerCls}`}>
+              <span className="text-sm text-white/60">Quilometragem</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.preco_venda_km)}</span>
             </div>
             <div className={`${rowCls} ${dividerCls}`}>
               <span className="text-sm text-white/60">Material CA</span>
-              <span className="text-sm text-white/80">{formatCurrency(pricing.custo_ca)}</span>
+              <span className="text-sm text-white/80">{formatCurrency(pricing.preco_venda_ca)}</span>
             </div>
             <div className={`${rowCls} ${dividerCls}`} style={{ borderTopColor: 'rgba(255,255,255,0.12)' }}>
               <span className="text-sm font-semibold text-white">Preço Total</span>

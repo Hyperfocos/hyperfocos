@@ -1,11 +1,40 @@
 import { NextResponse } from 'next/server'
 import PizZip from 'pizzip'
-import Docxtemplater from 'docxtemplater'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUserData } from '@/lib/org/queries'
 import { getOrgConfig } from '@/lib/configuracoes/queries'
 import { calcularPreco } from '@/lib/proposals/pricing'
 import { buildPlaceholders } from '@/lib/proposals/placeholders'
+
+function replaceInDocx(zip: PizZip, data: Record<string, string>): void {
+  for (const fileName of Object.keys(zip.files)) {
+    if (!fileName.endsWith('.xml')) continue
+    let content = zip.files[fileName].asText()
+
+    // 1. Juntar tags fragmentadas pelo Word: {{tag}} pode virar
+    //    <w:t>{{</w:t></w:r><w:r><w:t>tag}}</w:t> etc.
+    //    Removemos runs XML entre chaves para reconstruir a tag inteira.
+    content = content.replace(
+      /\{\{([^}]*(?:<[^>]+>[^}]*)*)\}\}/g,
+      (match) => {
+        const clean = match.replace(/<[^>]+>/g, '')
+        return clean
+      }
+    )
+
+    // 2. Substituir cada {{placeholder}} pelo valor correspondente
+    for (const [key, value] of Object.entries(data)) {
+      const escaped = value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+      content = content.split(`{{${key}}}`).join(escaped)
+    }
+
+    zip.file(fileName, content)
+  }
+}
 
 export async function POST(
   req: Request,
@@ -31,7 +60,7 @@ export async function POST(
 
     const supabase = await createClient()
 
-    // 1. Buscar proposta (colunas raw do DB)
+    // 1. Buscar proposta
     const { data: rawProposal } = await supabase
       .from('proposals')
       .select('*')
@@ -60,6 +89,7 @@ export async function POST(
         kit_value: p.kit_value ?? 0,
         total_power_kwp: p.total_power_kwp ?? 0,
         panel_qty: p.total_modules ?? 0,
+        km_rodados: p.km_rodados ?? 0,
       },
       orgConfig
     )
@@ -82,10 +112,9 @@ export async function POST(
       return NextResponse.json({ error: 'Erro ao baixar template: ' + downloadError?.message }, { status: 500 })
     }
 
-    // 6. Substituir placeholders com docxtemplater
+    // 6. Substituir placeholders diretamente no XML (sem docxtemplater)
     const templateBuffer = Buffer.from(await templateBlob.arrayBuffer())
     const zip = new PizZip(templateBuffer)
-    const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true })
 
     const placeholders = buildPlaceholders(
       lead as any,
@@ -111,8 +140,8 @@ export async function POST(
       }
     )
 
-    doc.render(placeholders)
-    const docxBuffer = doc.getZip().generate({ type: 'nodebuffer' })
+    replaceInDocx(zip, placeholders)
+    const docxBuffer = zip.generate({ type: 'nodebuffer' })
 
     // 7. Salvar DOCX no Storage
     const docxPath = `${orgId}/${proposalId}.docx`

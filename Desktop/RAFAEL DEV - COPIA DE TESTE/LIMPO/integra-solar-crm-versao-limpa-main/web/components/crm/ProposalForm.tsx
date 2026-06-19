@@ -72,7 +72,10 @@ export function ProposalForm({ leadId, generationFactor, onSuccess, onCancel }: 
         </div>
 
         <CurrencyInput name="kit_value" label="Valor do kit (R$)" value={null} />
-        <Input name="supplier_name" label="Fornecedor" placeholder="Ex: Aldo Solar" />
+        <Input name="km_rodados" label="Km rodados (ida e volta)" type="number" min="0" step="0.1" defaultValue="0" placeholder="Ex: 10" />
+        <div className="col-span-2">
+          <Input name="supplier_name" label="Fornecedor" placeholder="Ex: Aldo Solar" />
+        </div>
       </div>
 
       <div
