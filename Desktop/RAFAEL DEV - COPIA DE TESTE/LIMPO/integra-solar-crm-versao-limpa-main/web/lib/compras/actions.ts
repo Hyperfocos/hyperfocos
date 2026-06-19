@@ -151,13 +151,13 @@ export async function uploadPurchaseDoc(
   const filePath = `${clientId}/${docType}.${ext}`
 
   const { error: uploadError } = await supabase.storage
-    .from('purchase-docs')
+    .from('client-files')
     .upload(filePath, file, { upsert: true })
 
   if (uploadError) return { error: 'Erro ao enviar: ' + uploadError.message }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-  const url = `${supabaseUrl}/storage/v1/object/public/purchase-docs/${filePath}`
+  const url = `${supabaseUrl}/storage/v1/object/public/client-files/${filePath}`
 
   await (supabase as any)
     .from('client_purchases')
