@@ -24,6 +24,7 @@ function ParcelaRow({
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [localReceiptUrl, setLocalReceiptUrl] = useState<string | null>(p.receipt_url)
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -32,8 +33,12 @@ function ParcelaRow({
     const fd = new FormData()
     fd.append('file', file)
     const result = await uploadReceipt(p.id, fd)
-    if (result.error) onMessage({ type: 'error', text: result.error })
-    if (result.success) onMessage({ type: 'success', text: result.success })
+    if (result.error) {
+      onMessage({ type: 'error', text: result.error })
+    } else {
+      onMessage({ type: 'success', text: result.success! })
+      if (result.receipt_url) setLocalReceiptUrl(result.receipt_url)
+    }
     setUploading(false)
     if (fileRef.current) fileRef.current.value = ''
   }
@@ -61,9 +66,9 @@ function ParcelaRow({
 
       {/* Comprovante */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
-        {p.receipt_url ? (
+        {localReceiptUrl ? (
           <a
-            href={p.receipt_url}
+            href={localReceiptUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors hover:bg-white/10"

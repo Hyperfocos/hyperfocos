@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUserData } from '@/lib/org/queries'
 
-export type ActionResult = { error?: string; success?: string }
+export type ActionResult = { error?: string; success?: string; receipt_url?: string }
 
 export async function confirmInstallment(installmentId: string): Promise<ActionResult> {
   const supabase = await createClient()
@@ -120,7 +120,7 @@ export async function uploadReceipt(installmentId: string, formData: FormData): 
     .eq('id', installmentId)
 
   revalidatePath('/financeiro')
-  return { success: 'Comprovante anexado.' }
+  return { success: 'Comprovante anexado.', receipt_url: receiptUrl }
 }
 
 export async function advanceToProjects(clientId: string): Promise<ActionResult> {
