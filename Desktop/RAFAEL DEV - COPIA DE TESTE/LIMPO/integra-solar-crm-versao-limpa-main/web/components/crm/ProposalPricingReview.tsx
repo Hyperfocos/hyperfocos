@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { X, Plus, Trash2 } from 'lucide-react'
+import { X, Plus, Trash2, Settings2 } from 'lucide-react'
 import type { Proposal, ProposalTemplate } from '@/lib/crm/types'
-import { calcularPreco } from '@/lib/proposals/pricing'
 import { formatCurrency } from '@/lib/format'
 import type { OrgConfig } from '@/lib/configuracoes/queries'
 
@@ -40,21 +39,30 @@ export function ProposalPricingReview({
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  const pricing = calcularPreco(
-    {
-      kit_value: proposal.kit_value,
-      total_power_kwp: proposal.total_power_kwp,
-      panel_qty: proposal.panel_qty,
-      km_rodados: (proposal as any).km_rodados ?? 0,
-    },
-    orgConfig
-  )
+  // Variáveis editáveis — inicializadas com valores das configurações
+  const [vInstalacao, setVInstalacao] = useState(orgConfig.valor_instalacao_por_placa ?? 0)
+  const [vProjeto, setVProjeto] = useState(orgConfig.valor_projeto_por_kwp ?? 0)
+  const [vMaterialCa, setVMaterialCa] = useState(orgConfig.pct_material_ca ?? 0)
+  const [vKm, setVKm] = useState(orgConfig.quilometragem ?? 0)
+  const [vComissao, setVComissao] = useState(orgConfig.pct_comissao ?? 0)
+  const [vImposto, setVImposto] = useState(orgConfig.pct_imposto ?? 0)
+  const [vMargem, setVMargem] = useState(orgConfig.pct_margem ?? 0)
 
-  const pct_imposto  = (orgConfig.pct_imposto  ?? 0) / 100
-  const pct_margem   = (orgConfig.pct_margem   ?? 0) / 100
-  const pct_comissao = (orgConfig.pct_comissao ?? 0) / 100
+  // Cálculos com variáveis locais
+  const pct_imposto  = vImposto / 100
+  const pct_margem   = vMargem / 100
+  const pct_comissao = vComissao / 100
+  const pct_ca       = vMaterialCa / 100
   const divisor = 1 - pct_imposto - pct_margem - pct_comissao
   const d = divisor > 0 ? divisor : 1
+
+  const km_rodados = (proposal as any).km_rodados ?? 0
+
+  const custo_kit        = proposal.kit_value
+  const custo_projeto    = proposal.total_power_kwp * vProjeto
+  const custo_instalacao = proposal.panel_qty * vInstalacao
+  const custo_km         = vKm * km_rodados
+  const custo_ca         = proposal.kit_value * pct_ca
 
   type Row = {
     categoria: string
@@ -70,11 +78,7 @@ export function ProposalPricingReview({
   function buildRow(categoria: string, item: string, qtd: number | string, custoUnit: number, custo: number): Row {
     const venda = custo / d
     return {
-      categoria,
-      item,
-      qtd,
-      custoUnit,
-      custo,
+      categoria, item, qtd, custoUnit, custo,
       imposto: venda * pct_imposto,
       lucro: venda * pct_margem,
       venda,
@@ -82,11 +86,11 @@ export function ProposalPricingReview({
   }
 
   const rows: Row[] = [
-    buildRow('Kit', 'Equipamentos', 1, proposal.kit_value, pricing.custo_kit),
-    buildRow('Projeto', 'Engenharia elétrica', proposal.total_power_kwp.toFixed(2) + ' kWp', orgConfig.valor_projeto_por_kwp ?? 0, pricing.custo_projeto),
-    buildRow('Instalação', 'Mão de obra', proposal.panel_qty, orgConfig.valor_instalacao_por_placa ?? 0, pricing.custo_instalacao),
-    buildRow('Quilometragem', 'Deslocamento', (proposal as any).km_rodados ?? 0, orgConfig.quilometragem ?? 0, pricing.custo_km),
-    buildRow('Material CA', '% sobre kit', `${orgConfig.pct_material_ca ?? 0}%`, pricing.custo_ca, pricing.custo_ca),
+    buildRow('Kit', 'Equipamentos', 1, proposal.kit_value, custo_kit),
+    buildRow('Projeto', 'Engenharia elétrica', proposal.total_power_kwp.toFixed(2) + ' kWp', vProjeto, custo_projeto),
+    buildRow('Instalação', 'Mão de obra', proposal.panel_qty, vInstalacao, custo_instalacao),
+    buildRow('Quilometragem', 'Deslocamento', km_rodados, vKm, custo_km),
+    buildRow('Material CA', '% sobre kit', `${vMaterialCa}%`, custo_ca, custo_ca),
   ]
 
   for (const ec of extraCosts) {
@@ -95,12 +99,7 @@ export function ProposalPricingReview({
   }
 
   const totals = rows.reduce(
-    (acc, r) => ({
-      custo: acc.custo + r.custo,
-      imposto: acc.imposto + r.imposto,
-      lucro: acc.lucro + r.lucro,
-      venda: acc.venda + r.venda,
-    }),
+    (acc, r) => ({ custo: acc.custo + r.custo, imposto: acc.imposto + r.imposto, lucro: acc.lucro + r.lucro, venda: acc.venda + r.venda }),
     { custo: 0, imposto: 0, lucro: 0, venda: 0 }
   )
 
@@ -130,6 +129,15 @@ export function ProposalPricingReview({
           valor_entrada: 0,
           valor_parcelas: 0,
           num_parcelas: 0,
+          overrides: {
+            valor_instalacao_por_placa: vInstalacao,
+            valor_projeto_por_kwp: vProjeto,
+            pct_material_ca: vMaterialCa,
+            quilometragem: vKm,
+            pct_comissao: vComissao,
+            pct_imposto: vImposto,
+            pct_margem: vMargem,
+          },
           extras: extraCosts.map((ec) => ({
             categoria: ec.categoria,
             item: ec.item,
@@ -154,6 +162,7 @@ export function ProposalPricingReview({
   const thCls = 'text-[10px] font-semibold uppercase tracking-wide text-white/40 py-2 px-2 text-left'
   const tdCls = 'text-xs text-white/70 py-2 px-2 whitespace-nowrap'
   const inputSmCls = 'w-full px-2 py-1.5 rounded-lg text-xs text-white outline-none border border-white/10 focus:border-white/30 bg-white/5'
+  const varInputCls = 'w-full px-3 py-2 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30 bg-white/5'
 
   return (
     <>
@@ -196,18 +205,13 @@ export function ProposalPricingReview({
             <div className="rounded-xl p-3" style={{ background: 'rgba(255,200,100,0.04)', border: '1px solid rgba(255,200,100,0.10)' }}>
               <p className="text-[10px] text-white/35 uppercase tracking-wide">R$/kWp</p>
               <p className="text-sm font-semibold text-white/70">
-                {proposal.total_power_kwp > 0
-                  ? formatCurrency(totals.venda / proposal.total_power_kwp)
-                  : '—'}
+                {proposal.total_power_kwp > 0 ? formatCurrency(totals.venda / proposal.total_power_kwp) : '—'}
               </p>
             </div>
           </div>
 
           {/* Tabela de composição */}
-          <div
-            className="rounded-xl overflow-hidden"
-            style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-          >
+          <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
             <div className="px-4 py-3" style={{ background: 'rgba(255,255,255,0.04)' }}>
               <p className="text-xs font-semibold text-white/50 uppercase tracking-wide">Composição do Preço</p>
             </div>
@@ -233,56 +237,25 @@ export function ProposalPricingReview({
                     const ec = isExtra ? extraCosts[extraIdx] : null
 
                     return (
-                      <tr
-                        key={i}
-                        style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-                      >
+                      <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                         <td className={tdCls}>
                           {isExtra && ec ? (
-                            <input
-                              className={inputSmCls}
-                              value={ec.categoria}
-                              onChange={(e) => updateExtra(ec.id, 'categoria', e.target.value)}
-                              placeholder="Categoria"
-                              style={{ width: 90 }}
-                            />
+                            <input className={inputSmCls} value={ec.categoria} onChange={(e) => updateExtra(ec.id, 'categoria', e.target.value)} placeholder="Categoria" style={{ width: 90 }} />
                           ) : r.categoria}
                         </td>
                         <td className={tdCls}>
                           {isExtra && ec ? (
-                            <input
-                              className={inputSmCls}
-                              value={ec.item}
-                              onChange={(e) => updateExtra(ec.id, 'item', e.target.value)}
-                              placeholder="Descrição"
-                              style={{ width: 120 }}
-                            />
+                            <input className={inputSmCls} value={ec.item} onChange={(e) => updateExtra(ec.id, 'item', e.target.value)} placeholder="Descrição" style={{ width: 120 }} />
                           ) : r.item}
                         </td>
                         <td className={`${tdCls} text-right`}>
                           {isExtra && ec ? (
-                            <input
-                              className={`${inputSmCls} text-right`}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={ec.qtd}
-                              onChange={(e) => updateExtra(ec.id, 'qtd', parseFloat(e.target.value) || 0)}
-                              style={{ width: 60 }}
-                            />
+                            <input className={`${inputSmCls} text-right`} type="number" min="0" step="0.01" value={ec.qtd} onChange={(e) => updateExtra(ec.id, 'qtd', parseFloat(e.target.value) || 0)} style={{ width: 60 }} />
                           ) : r.qtd}
                         </td>
                         <td className={`${tdCls} text-right`}>
                           {isExtra && ec ? (
-                            <input
-                              className={`${inputSmCls} text-right`}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={ec.custo_unit}
-                              onChange={(e) => updateExtra(ec.id, 'custo_unit', parseFloat(e.target.value) || 0)}
-                              style={{ width: 80 }}
-                            />
+                            <input className={`${inputSmCls} text-right`} type="number" min="0" step="0.01" value={ec.custo_unit} onChange={(e) => updateExtra(ec.id, 'custo_unit', parseFloat(e.target.value) || 0)} style={{ width: 80 }} />
                           ) : formatCurrency(r.custoUnit)}
                         </td>
                         <td className={`${tdCls} text-right`}>{formatCurrency(r.custo)}</td>
@@ -291,10 +264,7 @@ export function ProposalPricingReview({
                         <td className={`${tdCls} text-right font-medium`}>{formatCurrency(r.venda)}</td>
                         <td className={tdCls}>
                           {isExtra && ec && (
-                            <button
-                              onClick={() => removeExtra(ec.id)}
-                              className="p-1 rounded hover:bg-white/10 transition-colors"
-                            >
+                            <button onClick={() => removeExtra(ec.id)} className="p-1 rounded hover:bg-white/10 transition-colors">
                               <Trash2 size={12} style={{ color: 'rgba(255,80,80,0.5)' }} />
                             </button>
                           )}
@@ -316,15 +286,48 @@ export function ProposalPricingReview({
               </table>
             </div>
 
-            {/* Botão adicionar custo */}
             <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-              <button
-                onClick={addExtraCost}
-                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
-              >
-                <Plus size={13} />
-                Adicionar custo extra
+              <button onClick={addExtraCost} className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors">
+                <Plus size={13} /> Adicionar custo extra
               </button>
+            </div>
+          </div>
+
+          {/* Variáveis da proposta */}
+          <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.04)' }}>
+              <Settings2 size={13} style={{ color: 'rgba(255,255,255,0.35)' }} />
+              <p className="text-xs font-semibold text-white/50 uppercase tracking-wide">Variáveis desta Proposta</p>
+            </div>
+            <div className="p-4 grid grid-cols-4 gap-4">
+              <div>
+                <label className={labelCls}>Instalação (R$/placa)</label>
+                <input type="number" min="0" step="0.01" value={vInstalacao} onChange={(e) => setVInstalacao(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Projeto (R$/kWp)</label>
+                <input type="number" min="0" step="0.01" value={vProjeto} onChange={(e) => setVProjeto(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Material CA (% kit)</label>
+                <input type="number" min="0" step="0.1" value={vMaterialCa} onChange={(e) => setVMaterialCa(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Km rodado (R$/km)</label>
+                <input type="number" min="0" step="0.01" value={vKm} onChange={(e) => setVKm(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Comissão (%)</label>
+                <input type="number" min="0" step="0.1" value={vComissao} onChange={(e) => setVComissao(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Imposto (%)</label>
+                <input type="number" min="0" step="0.1" value={vImposto} onChange={(e) => setVImposto(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Margem de lucro (%)</label>
+                <input type="number" min="0" step="0.1" value={vMargem} onChange={(e) => setVMargem(parseFloat(e.target.value) || 0)} className={varInputCls} />
+              </div>
             </div>
           </div>
 
@@ -332,9 +335,7 @@ export function ProposalPricingReview({
           <div>
             <label className={labelCls}>Template do Orçamento *</label>
             {templates.length === 0 ? (
-              <p className="text-xs text-red-400">
-                Nenhum template ativo. Cadastre um em Configurações → Templates.
-              </p>
+              <p className="text-xs text-red-400">Nenhum template ativo. Cadastre um em Configurações → Templates.</p>
             ) : (
               <select
                 value={selectedTemplateId}
@@ -358,14 +359,8 @@ export function ProposalPricingReview({
         </div>
 
         {/* Footer */}
-        <div
-          className="flex gap-3 px-6 py-4 flex-shrink-0"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 rounded-xl text-sm text-white/50 border border-white/10 hover:text-white transition-colors"
-          >
+        <div className="flex gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <button onClick={onClose} className="flex-1 py-3 rounded-xl text-sm text-white/50 border border-white/10 hover:text-white transition-colors">
             Cancelar
           </button>
           <button
