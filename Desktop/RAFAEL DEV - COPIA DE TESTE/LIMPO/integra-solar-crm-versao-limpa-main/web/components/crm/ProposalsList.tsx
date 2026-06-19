@@ -167,7 +167,7 @@ export function ProposalsList({ lead }: { lead: Lead }) {
                 className="text-xs px-3 py-1.5 rounded-lg text-white/60 hover:text-white transition-colors"
                 style={{ background: 'rgba(255,255,255,0.06)' }}
               >
-                {p.pdf_url ? 'Regerar PDF' : 'Gerar PDF'}
+                {p.pdf_url ? 'Regerar Orçamento' : 'Gerar Orçamento'}
               </button>
             </div>
             <button

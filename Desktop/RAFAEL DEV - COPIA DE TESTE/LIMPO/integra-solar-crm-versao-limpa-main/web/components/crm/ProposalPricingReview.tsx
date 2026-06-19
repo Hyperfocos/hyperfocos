@@ -86,7 +86,7 @@ export function ProposalPricingReview({
       >
         <div className="p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">Gerar Proposta PDF</h2>
+            <h2 className="text-lg font-bold text-white">Gerar Orçamento</h2>
             <button onClick={onClose} className="text-white/40 hover:text-white transition-colors text-xl leading-none">×</button>
           </div>
 
@@ -185,7 +185,7 @@ export function ProposalPricingReview({
               className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
               style={{ background: '#FFD080', color: '#0a0e1a' }}
             >
-              {isPending ? 'Gerando PDF...' : 'Gerar Proposta PDF'}
+              {isPending ? 'Gerando...' : 'Gerar Orçamento'}
             </button>
           </div>
         </div>
