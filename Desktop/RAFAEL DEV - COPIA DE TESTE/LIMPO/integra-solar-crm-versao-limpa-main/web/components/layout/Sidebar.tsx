@@ -114,8 +114,8 @@ export function Sidebar({ user, notificationCount = 0, onNotificationClick }: Si
         <Image
           src="/Logo integra solar - sem nome.png"
           alt="Integra Solar"
-          width={36}
-          height={36}
+          width={48}
+          height={48}
           className="object-contain"
         />
         {onNotificationClick && (
