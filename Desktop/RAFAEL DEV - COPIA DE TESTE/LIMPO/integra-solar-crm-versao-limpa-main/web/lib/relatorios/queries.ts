@@ -22,9 +22,8 @@ export type ComercialSummary = {
   ticket_medio: number
   taxa_conversao: number
   margem_media: number
-  residencial: number
-  comercial: number
-  rural: number
+  pf: number
+  pj: number
   vendas_por_periodo: VendasPorPeriodoRow[]
 }
 
@@ -49,12 +48,27 @@ export type ComissaoVendedorRow = {
   comissao: number
 }
 
+export type FinanceiroSummary = {
+  comissoes: ComissaoVendedorRow[]
+  ticket_medio_mes: number
+  ticket_medio_anual: number
+  valor_mes_atual: number
+  valor_mes_anterior: number
+  variacao_mensal: number | null
+  media_3m: number
+  media_12m: number
+  crescimento_mensal: number | null
+  crescimento_trimestral: number | null
+  crescimento_anual: number | null
+  evolucao_ticket: VendasPorPeriodoRow[]
+  comparativo_anual: { ano: number; valor: number; contratos: number }[]
+}
+
 export type TecnicoSummary = {
   tempo_medio_implantacao: number | null
   modulos_por_fabricante: { fabricante: string; quantidade: number }[]
   inversores_por_fabricante: { fabricante: string; quantidade: number }[]
   total_kwh_projetados: number
-  economia_financeira_estimada: number
 }
 
 const MES_LABELS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
@@ -64,63 +78,46 @@ function mesLabel(dateStr: string): string {
   return `${MES_LABELS[d.getMonth()]}/${d.getFullYear().toString().slice(2)}`
 }
 
-export async function getComercialData(filter: RelatorioFilter): Promise<ComercialSummary> {
+async function getOrgId() {
   const user = await getCurrentUserData()
-  const orgId = user?.membership?.organization.id
-  if (!orgId) return {
-    qtd_propostas: 0, qtd_contratos: 0, valor_total: 0, ticket_medio: 0,
-    taxa_conversao: 0, margem_media: 0, residencial: 0, comercial: 0, rural: 0,
-    vendas_por_periodo: [],
-  }
+  return user?.membership?.organization.id ?? null
+}
+
+// ── Comercial ───────────────────────────────────────────────────
+
+export async function getComercialData(filter: RelatorioFilter): Promise<ComercialSummary> {
+  const orgId = await getOrgId()
+  if (!orgId) return { qtd_propostas: 0, qtd_contratos: 0, valor_total: 0, ticket_medio: 0, taxa_conversao: 0, margem_media: 0, pf: 0, pj: 0, vendas_por_periodo: [] }
 
   const supabase = await createClient()
 
-  let propQuery = (supabase as any)
-    .from('clients')
-    .select('id, client_type, created_at', { count: 'exact' })
-    .eq('organization_id', orgId)
+  let propQuery = (supabase as any).from('clients').select('id', { count: 'exact' }).eq('organization_id', orgId)
   if (filter.dateFrom) propQuery = propQuery.gte('created_at', filter.dateFrom)
   if (filter.dateTo) propQuery = propQuery.lte('created_at', filter.dateTo + 'T23:59:59')
-  const { count: qtd_propostas_count } = await propQuery
-  const qtd_propostas = qtd_propostas_count ?? 0
+  const { count: qtd_propostas } = await propQuery
 
   let contQuery = (supabase as any)
     .from('clients')
-    .select(`
-      id, client_type, contract_date,
-      client_sale (sale_value),
-      client_contracts (pct_margem)
-    `)
+    .select('id, type, contract_date, client_sale(sale_value)')
     .eq('organization_id', orgId)
     .not('contract_date', 'is', null)
   if (filter.dateFrom) contQuery = contQuery.gte('contract_date', filter.dateFrom)
   if (filter.dateTo) contQuery = contQuery.lte('contract_date', filter.dateTo)
   const { data: contratos } = await contQuery
-  const contratosArr = (contratos ?? []) as any[]
+  const arr = (contratos ?? []) as any[]
 
-  const qtd_contratos = contratosArr.length
-  let valor_total = 0
-  let margem_soma = 0
-  let margem_count = 0
-  let residencial = 0, comercial = 0, rural = 0
+  const { data: orgConfig } = await (supabase as any).from('org_config').select('pct_margem').eq('organization_id', orgId).maybeSingle()
+  const margem_config = orgConfig?.pct_margem ?? 0
+
+  let valor_total = 0, pf = 0, pj = 0
   const mesBucket: Record<string, { label: string; qtd: number; valor: number }> = {}
 
-  for (const c of contratosArr) {
+  for (const c of arr) {
     const sale = Array.isArray(c.client_sale) ? c.client_sale[0] : c.client_sale
     const valor = sale?.sale_value ?? 0
     valor_total += valor
-
-    const contract = Array.isArray(c.client_contracts) ? c.client_contracts[0] : c.client_contracts
-    if (contract?.pct_margem != null) {
-      margem_soma += Number(contract.pct_margem)
-      margem_count++
-    }
-
-    const ct = (c.client_type ?? '').toLowerCase()
-    if (ct === 'residencial') residencial++
-    else if (ct === 'comercial') comercial++
-    else if (ct === 'rural') rural++
-
+    if (c.type === 'pf') pf++
+    else if (c.type === 'pj') pj++
     if (c.contract_date) {
       const key = c.contract_date.substring(0, 7)
       if (!mesBucket[key]) mesBucket[key] = { label: mesLabel(c.contract_date), qtd: 0, valor: 0 }
@@ -129,41 +126,26 @@ export async function getComercialData(filter: RelatorioFilter): Promise<Comerci
     }
   }
 
+  const qtd_contratos = arr.length
   const ticket_medio = qtd_contratos > 0 ? valor_total / qtd_contratos : 0
-  const taxa_conversao = qtd_propostas > 0 ? (qtd_contratos / qtd_propostas) * 100 : 0
-  const margem_media = margem_count > 0 ? margem_soma / margem_count : 0
+  const taxa_conversao = (qtd_propostas ?? 0) > 0 ? (qtd_contratos / (qtd_propostas ?? 1)) * 100 : 0
 
-  const vendas_por_periodo: VendasPorPeriodoRow[] = Object.entries(mesBucket)
+  const vendas_por_periodo = Object.entries(mesBucket)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([mes, v]) => ({
-      mes,
-      label: v.label,
-      qtd_contratos: v.qtd,
-      valor_total: v.valor,
-      ticket_medio: v.qtd > 0 ? v.valor / v.qtd : 0,
-    }))
+    .map(([mes, v]) => ({ mes, label: v.label, qtd_contratos: v.qtd, valor_total: v.valor, ticket_medio: v.qtd > 0 ? v.valor / v.qtd : 0 }))
 
-  return {
-    qtd_propostas, qtd_contratos, valor_total, ticket_medio,
-    taxa_conversao, margem_media, residencial, comercial, rural,
-    vendas_por_periodo,
-  }
+  return { qtd_propostas: qtd_propostas ?? 0, qtd_contratos, valor_total, ticket_medio, taxa_conversao, margem_media: margem_config, pf, pj, vendas_por_periodo }
 }
 
-export async function getLeadsData(filter: RelatorioFilter): Promise<{
-  origens: LeadOrigemRow[]
-  ranking: RankingVendedorRow[]
-}> {
-  const user = await getCurrentUserData()
-  const orgId = user?.membership?.organization.id
+// ── Leads ────────────────────────────────────────────────────────
+
+export async function getLeadsData(filter: RelatorioFilter): Promise<{ origens: LeadOrigemRow[]; ranking: RankingVendedorRow[] }> {
+  const orgId = await getOrgId()
   if (!orgId) return { origens: [], ranking: [] }
 
   const supabase = await createClient()
 
-  let leadsQuery = (supabase as any)
-    .from('leads')
-    .select(`id, converted, lead_source_id, lead_sources!lead_source_id (name)`)
-    .eq('organization_id', orgId)
+  let leadsQuery = (supabase as any).from('leads').select('id, converted, lead_source_id, lead_sources!lead_source_id(name)').eq('organization_id', orgId)
   if (filter.dateFrom) leadsQuery = leadsQuery.gte('created_at', filter.dateFrom)
   if (filter.dateTo) leadsQuery = leadsQuery.lte('created_at', filter.dateTo + 'T23:59:59')
   const { data: leadsData } = await leadsQuery
@@ -175,22 +157,11 @@ export async function getLeadsData(filter: RelatorioFilter): Promise<{
     origemMap[nome].total++
     if (l.converted) origemMap[nome].convertidos++
   }
-  const origens: LeadOrigemRow[] = Object.entries(origemMap)
-    .sort(([, a], [, b]) => b.total - a.total)
-    .map(([origem, v]) => ({
-      origem,
-      total_leads: v.total,
-      leads_convertidos: v.convertidos,
-      taxa_conversao: v.total > 0 ? (v.convertidos / v.total) * 100 : 0,
-    }))
+  const origens = Object.entries(origemMap).sort(([, a], [, b]) => b.total - a.total)
+    .map(([origem, v]) => ({ origem, total_leads: v.total, leads_convertidos: v.convertidos, taxa_conversao: v.total > 0 ? (v.convertidos / v.total) * 100 : 0 }))
 
-  let rankQuery = (supabase as any)
-    .from('clients')
-    .select(`
-      id, contract_date, responsible_id,
-      profiles!responsible_id (full_name, email),
-      client_sale (sale_value)
-    `)
+  let rankQuery = (supabase as any).from('clients')
+    .select('id, contract_date, responsible_id, profiles!responsible_id(full_name, email), client_sale(sale_value)')
     .eq('organization_id', orgId)
   if (filter.dateFrom) rankQuery = rankQuery.gte('created_at', filter.dateFrom)
   if (filter.dateTo) rankQuery = rankQuery.lte('created_at', filter.dateTo + 'T23:59:59')
@@ -210,129 +181,170 @@ export async function getLeadsData(filter: RelatorioFilter): Promise<{
       vendedorMap[id].valor += sale?.sale_value ?? 0
     }
   }
-  const ranking: RankingVendedorRow[] = Object.values(vendedorMap)
-    .sort((a, b) => b.valor - a.valor)
-    .map((v) => ({
-      nome: v.nome,
-      qtd_leads: v.qtd_leads,
-      qtd_contratos: v.qtd_contratos,
-      valor_vendido: v.valor,
-    }))
+  const ranking = Object.values(vendedorMap).sort((a, b) => b.valor - a.valor)
+    .map((v) => ({ nome: v.nome, qtd_leads: v.qtd_leads, qtd_contratos: v.qtd_contratos, valor_vendido: v.valor }))
 
   return { origens, ranking }
 }
 
-export async function getFinanceiroData(filter: RelatorioFilter): Promise<{ comissoes: ComissaoVendedorRow[] }> {
-  const user = await getCurrentUserData()
-  const orgId = user?.membership?.organization.id
-  if (!orgId) return { comissoes: [] }
+// ── Financeiro ───────────────────────────────────────────────────
+
+export async function getFinanceiroData(filter: RelatorioFilter): Promise<FinanceiroSummary> {
+  const orgId = await getOrgId()
+  const empty: FinanceiroSummary = { comissoes: [], ticket_medio_mes: 0, ticket_medio_anual: 0, valor_mes_atual: 0, valor_mes_anterior: 0, variacao_mensal: null, media_3m: 0, media_12m: 0, crescimento_mensal: null, crescimento_trimestral: null, crescimento_anual: null, evolucao_ticket: [], comparativo_anual: [] }
+  if (!orgId) return empty
 
   const supabase = await createClient()
 
-  let query = (supabase as any)
+  const { data: allContracts } = await (supabase as any)
     .from('clients')
-    .select(`
-      id, contract_date, responsible_id,
-      profiles!responsible_id (full_name, email),
-      client_sale (sale_value),
-      client_contracts (pct_comissao)
-    `)
+    .select('id, contract_date, responsible_id, profiles!responsible_id(full_name, email), client_sale(sale_value, commission_pct)')
     .eq('organization_id', orgId)
     .not('contract_date', 'is', null)
-  if (filter.dateFrom) query = query.gte('contract_date', filter.dateFrom)
-  if (filter.dateTo) query = query.lte('contract_date', filter.dateTo)
-  const { data } = await query
+    .order('contract_date', { ascending: true })
 
-  const map: Record<string, { nome: string; qtd: number; valor: number; comissao: number }> = {}
-  for (const c of (data ?? []) as any[]) {
+  const todos = (allContracts ?? []) as any[]
+
+  const filtrados = todos.filter((c: any) => {
+    if (filter.dateFrom && c.contract_date < filter.dateFrom) return false
+    if (filter.dateTo && c.contract_date > filter.dateTo) return false
+    return true
+  })
+
+  const comMap: Record<string, { nome: string; qtd: number; valor: number; comissao: number }> = {}
+  for (const c of filtrados) {
     const profile = c.profiles
     if (!profile) continue
     const nome = profile.full_name ?? profile.email ?? 'Desconhecido'
     const id = c.responsible_id ?? nome
-    if (!map[id]) map[id] = { nome, qtd: 0, valor: 0, comissao: 0 }
-    map[id].qtd++
+    if (!comMap[id]) comMap[id] = { nome, qtd: 0, valor: 0, comissao: 0 }
+    comMap[id].qtd++
     const sale = Array.isArray(c.client_sale) ? c.client_sale[0] : c.client_sale
     const valor = sale?.sale_value ?? 0
-    map[id].valor += valor
-    const contract = Array.isArray(c.client_contracts) ? c.client_contracts[0] : c.client_contracts
-    const pct = Number(contract?.pct_comissao ?? 0)
-    map[id].comissao += valor * pct / 100
+    const pct = Number(sale?.commission_pct ?? 0)
+    comMap[id].valor += valor
+    comMap[id].comissao += valor * pct / 100
+  }
+  const comissoes = Object.values(comMap).sort((a, b) => b.comissao - a.comissao)
+    .map((v) => ({ nome: v.nome, qtd_contratos: v.qtd, valor_total: v.valor, comissao: v.comissao }))
+
+  const mesBucket: Record<string, { qtd: number; valor: number }> = {}
+  for (const c of todos) {
+    const sale = Array.isArray(c.client_sale) ? c.client_sale[0] : c.client_sale
+    const valor = sale?.sale_value ?? 0
+    const key = c.contract_date.substring(0, 7)
+    if (!mesBucket[key]) mesBucket[key] = { qtd: 0, valor: 0 }
+    mesBucket[key].qtd++
+    mesBucket[key].valor += valor
   }
 
-  const comissoes: ComissaoVendedorRow[] = Object.values(map)
-    .sort((a, b) => b.comissao - a.comissao)
-    .map((v) => ({
-      nome: v.nome,
-      qtd_contratos: v.qtd,
-      valor_total: v.valor,
-      comissao: v.comissao,
-    }))
+  const mesesOrdenados = Object.entries(mesBucket).sort(([a], [b]) => a.localeCompare(b))
 
-  return { comissoes }
+  const evolucao_ticket = mesesOrdenados.map(([mes, v]) => ({
+    mes, label: mesLabel(mes + '-01'), qtd_contratos: v.qtd, valor_total: v.valor, ticket_medio: v.qtd > 0 ? v.valor / v.qtd : 0,
+  }))
+
+  const now = new Date()
+  const mesAtualKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const mesAnteriorDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const mesAnteriorKey = `${mesAnteriorDate.getFullYear()}-${String(mesAnteriorDate.getMonth() + 1).padStart(2, '0')}`
+
+  const mesAtual = mesBucket[mesAtualKey] ?? { qtd: 0, valor: 0 }
+  const mesAnterior = mesBucket[mesAnteriorKey] ?? { qtd: 0, valor: 0 }
+
+  const ticket_medio_mes = mesAtual.qtd > 0 ? mesAtual.valor / mesAtual.qtd : 0
+
+  const anoAtual = now.getFullYear()
+  let valorAno = 0, qtdAno = 0
+  for (const [mes, v] of mesesOrdenados) {
+    if (mes.startsWith(String(anoAtual))) { valorAno += v.valor; qtdAno += v.qtd }
+  }
+  const ticket_medio_anual = qtdAno > 0 ? valorAno / qtdAno : 0
+
+  const variacao_mensal = mesAnterior.valor > 0 ? ((mesAtual.valor - mesAnterior.valor) / mesAnterior.valor) * 100 : null
+
+  const ultimos = mesesOrdenados.slice(-12)
+  const ultimos3 = mesesOrdenados.slice(-3)
+  const media_3m = ultimos3.length > 0 ? ultimos3.reduce((s, [, v]) => s + v.valor, 0) / ultimos3.length : 0
+  const media_12m = ultimos.length > 0 ? ultimos.reduce((s, [, v]) => s + v.valor, 0) / ultimos.length : 0
+
+  const crescimento_mensal = variacao_mensal
+  const trimAtual = mesesOrdenados.slice(-3).reduce((s, [, v]) => s + v.valor, 0)
+  const trimAnterior = mesesOrdenados.slice(-6, -3).reduce((s, [, v]) => s + v.valor, 0)
+  const crescimento_trimestral = trimAnterior > 0 ? ((trimAtual - trimAnterior) / trimAnterior) * 100 : null
+
+  const anoAnterior = anoAtual - 1
+  let valorAnoAnt = 0
+  for (const [mes, v] of mesesOrdenados) {
+    if (mes.startsWith(String(anoAnterior))) valorAnoAnt += v.valor
+  }
+  const crescimento_anual = valorAnoAnt > 0 ? ((valorAno - valorAnoAnt) / valorAnoAnt) * 100 : null
+
+  const mesNum = now.getMonth() + 1
+  const comparativo_anual: { ano: number; valor: number; contratos: number }[] = []
+  for (let y = anoAtual - 3; y <= anoAtual; y++) {
+    const key = `${y}-${String(mesNum).padStart(2, '0')}`
+    const d = mesBucket[key]
+    if (d) comparativo_anual.push({ ano: y, valor: d.valor, contratos: d.qtd })
+  }
+
+  return {
+    comissoes, ticket_medio_mes, ticket_medio_anual, valor_mes_atual: mesAtual.valor, valor_mes_anterior: mesAnterior.valor,
+    variacao_mensal, media_3m, media_12m, crescimento_mensal, crescimento_trimestral, crescimento_anual, evolucao_ticket, comparativo_anual,
+  }
 }
 
+// ── Técnico ──────────────────────────────────────────────────────
+
 export async function getTecnicoData(filter: RelatorioFilter): Promise<TecnicoSummary> {
-  const user = await getCurrentUserData()
-  const orgId = user?.membership?.organization.id
-  if (!orgId) return {
-    tempo_medio_implantacao: null,
-    modulos_por_fabricante: [],
-    inversores_por_fabricante: [],
-    total_kwh_projetados: 0,
-    economia_financeira_estimada: 0,
-  }
+  const orgId = await getOrgId()
+  if (!orgId) return { tempo_medio_implantacao: null, modulos_por_fabricante: [], inversores_por_fabricante: [], total_kwh_projetados: 0 }
 
   const supabase = await createClient()
 
-  let projQuery = (supabase as any)
-    .from('client_projects')
-    .select('modules_brand, inverter_brand, estimated_production, estimated_savings')
+  let clientQuery = (supabase as any)
+    .from('clients')
+    .select('id, panel_brand, inverter_brand, promised_kwh')
     .eq('organization_id', orgId)
-  if (filter.dateFrom) projQuery = projQuery.gte('created_at', filter.dateFrom)
-  if (filter.dateTo) projQuery = projQuery.lte('created_at', filter.dateTo + 'T23:59:59')
-  const { data: projetos } = await projQuery
+    .not('contract_date', 'is', null)
+  if (filter.dateFrom) clientQuery = clientQuery.gte('contract_date', filter.dateFrom)
+  if (filter.dateTo) clientQuery = clientQuery.lte('contract_date', filter.dateTo)
+  const { data: clientes } = await clientQuery
 
   const modulosMap: Record<string, number> = {}
   const inversoresMap: Record<string, number> = {}
   let total_kwh = 0
-  let total_economia = 0
 
-  for (const p of (projetos ?? []) as any[]) {
-    const mb = (p.modules_brand ?? '').trim()
+  for (const c of (clientes ?? []) as any[]) {
+    const mb = (c.panel_brand ?? '').trim()
     if (mb) modulosMap[mb] = (modulosMap[mb] ?? 0) + 1
-    const ib = (p.inverter_brand ?? '').trim()
+    const ib = (c.inverter_brand ?? '').trim()
     if (ib) inversoresMap[ib] = (inversoresMap[ib] ?? 0) + 1
-    total_kwh += Number(p.estimated_production ?? 0)
-    total_economia += Number(p.estimated_savings ?? 0)
+    total_kwh += Number(c.promised_kwh ?? 0)
   }
 
-  const { data: obras } = await (supabase as any)
+  let obrasQuery = (supabase as any)
     .from('client_obras')
-    .select(`client_id, data_inicio, clients!client_id (contract_date)`)
+    .select('client_id, data_inicio, clients!client_id(delivery_start_date)')
     .eq('organization_id', orgId)
     .not('data_inicio', 'is', null)
+  if (filter.dateFrom) obrasQuery = obrasQuery.gte('data_inicio', filter.dateFrom)
+  if (filter.dateTo) obrasQuery = obrasQuery.lte('data_inicio', filter.dateTo)
+  const { data: obras } = await obrasQuery
 
-  let dias_total = 0
-  let dias_count = 0
+  let dias_total = 0, dias_count = 0
   for (const o of (obras ?? []) as any[]) {
-    const contractDate = o.clients?.contract_date
-    if (contractDate && o.data_inicio) {
-      const dias = Math.floor(
-        (new Date(o.data_inicio).getTime() - new Date(contractDate).getTime()) / 86400000
-      )
+    const startDate = o.clients?.delivery_start_date
+    if (startDate && o.data_inicio) {
+      const dias = Math.floor((new Date(o.data_inicio).getTime() - new Date(startDate).getTime()) / 86400000)
       if (dias >= 0) { dias_total += dias; dias_count++ }
     }
   }
 
   return {
     tempo_medio_implantacao: dias_count > 0 ? Math.round(dias_total / dias_count) : null,
-    modulos_por_fabricante: Object.entries(modulosMap)
-      .sort(([, a], [, b]) => b - a)
-      .map(([fabricante, quantidade]) => ({ fabricante, quantidade })),
-    inversores_por_fabricante: Object.entries(inversoresMap)
-      .sort(([, a], [, b]) => b - a)
-      .map(([fabricante, quantidade]) => ({ fabricante, quantidade })),
+    modulos_por_fabricante: Object.entries(modulosMap).sort(([, a], [, b]) => b - a).map(([fabricante, quantidade]) => ({ fabricante, quantidade })),
+    inversores_por_fabricante: Object.entries(inversoresMap).sort(([, a], [, b]) => b - a).map(([fabricante, quantidade]) => ({ fabricante, quantidade })),
     total_kwh_projetados: total_kwh,
-    economia_financeira_estimada: total_economia,
   }
 }
