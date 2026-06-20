@@ -11,13 +11,11 @@ import { Paperclip, ExternalLink, FileText } from 'lucide-react'
 const STATUS_OPTIONS = [
   { value: 'aguardando', label: 'Aguardando' },
   { value: 'confirmado', label: 'Confirmado' },
-  { value: 'entregue', label: 'Entregue' },
 ]
 
 const STATUS_BADGE: Record<string, string> = {
   aguardando: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
   confirmado: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
-  entregue: 'bg-green-500/20 text-green-300 border-green-500/40',
 }
 
 function DocUploadRow({
@@ -147,7 +145,7 @@ export default function CompraDetail({
         setError(result.error)
       } else {
         setSuccess(result.success ?? 'Salvo.')
-        if (form.status === 'entregue') router.push('/compras')
+        if (form.status === 'confirmado') router.push('/compras')
       }
     })
   }

@@ -40,7 +40,7 @@ export async function getCompras(): Promise<CompraClient[]> {
       )
     `)
     .not('clients.pipeline_flags->>compras', 'is', null)
-    .neq('status', 'entregue')
+    .eq('status', 'aguardando')
 
   if (error || !data) return []
 
