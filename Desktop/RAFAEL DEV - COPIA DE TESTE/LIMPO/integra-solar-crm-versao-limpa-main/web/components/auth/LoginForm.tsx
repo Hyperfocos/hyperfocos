@@ -18,10 +18,10 @@ export function LoginForm() {
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center">
         <Image
-          src="/Logo integra solar - Com nome.png"
+          src="/Logo integra solar - sem nome.png"
           alt="Integra Solar"
-          width={200}
-          height={80}
+          width={280}
+          height={110}
           className="object-contain"
           priority
         />

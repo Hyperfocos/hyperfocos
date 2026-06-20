@@ -113,9 +113,9 @@ export function Sidebar({ user, notificationCount = 0, onNotificationClick }: Si
         style={{ borderBottom: '1px solid var(--theme-sidebar-border)' }}
       >
         <Image
-          src="/Logo integra solar - sem nome.png"
+          src="/Logo integra solar - Com nome.png"
           alt="Integra Solar"
-          width={48}
+          width={120}
           height={48}
           className="object-contain"
         />
