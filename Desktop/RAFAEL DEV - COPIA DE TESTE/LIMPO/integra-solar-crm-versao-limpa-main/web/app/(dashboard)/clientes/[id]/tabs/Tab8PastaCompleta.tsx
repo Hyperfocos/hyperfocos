@@ -97,6 +97,7 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
         <Row label="Telefone" value={client.phone ? formatPhone(client.phone) : null} />
         <Row label="Endereço" value={[client.street, client.number, client.neighborhood, client.city, client.state].filter(Boolean).join(', ')} />
         <Row label="CEP" value={client.zip} />
+        <Row label="Coordenadas Google Maps" value={client.maps_coordinates} />
         <div className="border-t border-white/[0.06] my-2" />
         <Row label="kWh prometido/mês" value={client.promised_kwh} />
         <Row label="Potência do sistema" value={client.system_power_kwp ? `${client.system_power_kwp} kWp` : null} />
