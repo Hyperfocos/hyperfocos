@@ -81,10 +81,30 @@ export async function getPipelineCards(): Promise<PipelineCard[]> {
       const { count } = await (supabase as any).from('leads').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('converted', false)
       return count ?? 0
     })(),
-    // Leads pendentes: next_action_date vencida
+    // Leads pendentes: follow-ups atrasados OU sem movimentação há 7+ dias
     (async () => {
-      const { count } = await (supabase as any).from('leads').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('converted', false).lt('next_action_date', now)
-      return count ?? 0
+      const seteDiasAtras = new Date(Date.now() - 7 * 86400000).toISOString()
+
+      // Leads com follow-ups atrasados
+      const { data: followupLeads } = await (supabase as any)
+        .from('tasks')
+        .select('related_to_lead_id')
+        .eq('organization_id', orgId)
+        .is('completed_at', null)
+        .lt('due_date', now)
+      const leadsComFollowupAtrasado = new Set((followupLeads ?? []).map((r: any) => r.related_to_lead_id).filter(Boolean))
+
+      // Leads sem movimentação há 7+ dias
+      const { data: leadsInativos } = await (supabase as any)
+        .from('leads')
+        .select('id')
+        .eq('organization_id', orgId)
+        .eq('converted', false)
+        .lt('updated_at', seteDiasAtras)
+      const leadsSemMovimentacao = new Set((leadsInativos ?? []).map((r: any) => r.id))
+
+      leadsSemMovimentacao.forEach((id) => leadsComFollowupAtrasado.add(id))
+      return leadsComFollowupAtrasado.size
     })(),
     // Contratos: total
     countTable('client_contracts'),
