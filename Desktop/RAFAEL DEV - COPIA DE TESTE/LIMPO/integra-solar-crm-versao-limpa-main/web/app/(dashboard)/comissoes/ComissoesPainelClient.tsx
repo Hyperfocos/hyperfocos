@@ -1,10 +1,12 @@
 // web/app/(dashboard)/comissoes/ComissoesPainelClient.tsx
 'use client'
 
+import { useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import type { ComissoesPainel, ComissaoMember } from '@/lib/comissoes/queries'
 import { formatCurrency } from '@/lib/format'
+import { SearchBar, filterBySearch } from '@/components/ui/SearchBar'
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
@@ -40,6 +42,8 @@ export default function ComissoesPainelClient({
 }) {
   const router = useRouter()
   const pathname = usePathname()
+  const [search, setSearch] = useState('')
+  const filteredItems = filterBySearch(painel.items, search, ['client_name'])
 
   function navigate(params: Record<string, string>) {
     const sp = new URLSearchParams({ month: String(month), year: String(year), vendedorId, ...params })
@@ -85,6 +89,7 @@ export default function ComissoesPainelClient({
             <option key={m.id} value={m.id}>{m.name}</option>
           ))}
         </select>
+        <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
       </div>
 
       {/* Cards */}
@@ -116,14 +121,14 @@ export default function ComissoesPainelClient({
             </tr>
           </thead>
           <tbody>
-            {painel.items.length === 0 && (
+            {filteredItems.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center text-white/40">
                   Nenhuma comissão no período.
                 </td>
               </tr>
             )}
-            {painel.items.map((c) => (
+            {filteredItems.map((c) => (
               <tr key={c.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                 <td className="px-4 py-3 text-white font-medium">{c.client_name}</td>
                 <td className="px-4 py-3 text-white/60">{c.vendedor_name ?? '—'}</td>

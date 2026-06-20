@@ -1,10 +1,12 @@
 // web/app/(dashboard)/financeiro/FinanceiroPainelClient.tsx
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { FinanceiroPainel, FinanceiroMember, FinanceiroInstallment } from '@/lib/financeiro/queries'
 import { formatCurrency, formatDate } from '@/lib/format'
+import { SearchBar, filterBySearch } from '@/components/ui/SearchBar'
 
 const MONTHS = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -87,6 +89,8 @@ export function FinanceiroPainelClient({
   vendedorId: string
 }) {
   const router = useRouter()
+  const [search, setSearch] = useState('')
+  const filteredInstallments = filterBySearch(painel.installments, search, ['client_name'])
 
   const selectStyle: React.CSSProperties = {
     background: 'rgba(255,255,255,0.06)',
@@ -142,6 +146,7 @@ export function FinanceiroPainelClient({
             <option key={m.id} value={m.id}>{m.full_name ?? m.email}</option>
           ))}
         </select>
+        <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
       </div>
 
       {/* Cards */}
@@ -155,14 +160,14 @@ export function FinanceiroPainelClient({
       {/* Lista de parcelas */}
       <div className="flex flex-col gap-2">
         <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
-          Parcelas do período ({painel.installments.length})
+          Parcelas do período ({filteredInstallments.length})
         </p>
-        {painel.installments.length === 0 ? (
+        {filteredInstallments.length === 0 ? (
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.25)' }}>
             Nenhuma parcela no período selecionado.
           </p>
         ) : (
-          painel.installments.map((inst) => (
+          filteredInstallments.map((inst) => (
             <InstallmentRow key={inst.id} inst={inst} />
           ))
         )}

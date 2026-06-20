@@ -8,6 +8,7 @@ import { LeadsTable } from '@/components/crm/LeadsTable'
 import { KanbanBoard } from '@/components/crm/KanbanBoard'
 import { LeadDrawer } from '@/components/crm/LeadDrawer'
 import { Button } from '@/components/ui/Button'
+import { SearchBar, filterBySearch } from '@/components/ui/SearchBar'
 
 interface LeadsClientProps {
   initialLeads: Lead[]
@@ -21,6 +22,8 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
   const [leads, setLeads] = useState<Lead[]>(initialLeads)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [creatingNew, setCreatingNew] = useState(false)
+  const [search, setSearch] = useState('')
+  const filteredLeads = filterBySearch(leads, search, ['name', 'phone', 'city'])
 
   const refreshLeads = useCallback(() => {
     fetch('/api/leads')
@@ -62,6 +65,8 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
           ))}
         </div>
 
+        <SearchBar value={search} onChange={setSearch} placeholder="Buscar lead..." />
+
         <div className="flex-1" />
 
         <Link href="/leads/configurar-funil">
@@ -82,13 +87,13 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
       <div className="flex-1 overflow-hidden">
         {view === 'kanban' ? (
           <KanbanBoard
-            leads={leads}
+            leads={filteredLeads}
             stages={stages}
             onLeadClick={setSelectedLead}
           />
         ) : (
           <LeadsTable
-            leads={leads}
+            leads={filteredLeads}
             onLeadClick={setSelectedLead}
           />
         )}
