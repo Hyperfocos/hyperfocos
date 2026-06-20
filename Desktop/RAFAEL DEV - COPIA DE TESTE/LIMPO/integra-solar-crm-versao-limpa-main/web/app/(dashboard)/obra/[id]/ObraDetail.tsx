@@ -103,13 +103,6 @@ export default function ObraDetail({ obra, members, clientId }: { obra: ObraClie
             <DatePicker label="Data prevista de conclusão" value={form.data_prevista || null} onChange={(iso) => setForm((f) => ({ ...f, data_prevista: iso }))} />
           </div>
           <div>
-            <label className={labelCls}>Responsável pela instalação</label>
-            <select value={form.responsavel_id} onChange={(e) => setForm((f) => ({ ...f, responsavel_id: e.target.value }))} className={inputCls}>
-              <option value="">— Selecionar —</option>
-              {members.map((m) => (<option key={m.id} value={m.id}>{m.name}</option>))}
-            </select>
-          </div>
-          <div>
             <label className={labelCls}>Nome da equipe</label>
             <input type="text" value={form.equipe_nome} onChange={(e) => setForm((f) => ({ ...f, equipe_nome: e.target.value }))} className={inputCls} placeholder="Ex: Equipe Alpha" />
           </div>

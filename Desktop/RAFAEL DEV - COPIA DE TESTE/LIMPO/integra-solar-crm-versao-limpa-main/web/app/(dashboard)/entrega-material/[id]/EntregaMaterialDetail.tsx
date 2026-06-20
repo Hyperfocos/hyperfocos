@@ -55,7 +55,7 @@ export default function EntregaMaterialDetail({
         setError(result.error)
       } else {
         setSuccess(result.success ?? 'Salvo.')
-        if (form.status === 'concluida') router.push('/entrega-material')
+        if (form.status === 'entregue') router.push('/entrega-material')
       }
     })
   }
@@ -90,8 +90,12 @@ export default function EntregaMaterialDetail({
           <h1 className="text-2xl font-bold text-white">{entrega.client_name}</h1>
           <p className="text-white/40 text-sm mt-0.5">{entrega.client_city}</p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs border ${entrega.status === 'concluida' ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40'}`}>
-          {entrega.status === 'concluida' ? 'Concluída' : 'Pendente'}
+        <span className={`px-3 py-1 rounded-full text-xs border ${
+          entrega.status === 'entregue' ? 'bg-green-500/20 text-green-300 border-green-500/40'
+          : entrega.status === 'atrasada' ? 'bg-red-500/20 text-red-300 border-red-500/40'
+          : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40'
+        }`}>
+          {entrega.status === 'entregue' ? 'Entregue' : entrega.status === 'atrasada' ? 'Atrasada' : 'Pendente'}
         </span>
       </div>
 
@@ -125,7 +129,8 @@ export default function EntregaMaterialDetail({
             <label className={labelCls}>Status</label>
             <select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))} className={inputCls}>
               <option value="pendente">Pendente</option>
-              <option value="concluida">Concluída</option>
+              <option value="atrasada">Atrasada</option>
+              <option value="entregue">Entregue</option>
             </select>
           </div>
         </div>
