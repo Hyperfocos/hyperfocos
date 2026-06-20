@@ -128,7 +128,12 @@ export async function getPipelineCards(): Promise<PipelineCard[]> {
     countByStatus('client_projects', 'status', ['pendente', 'enviado']),
     // Compras
     countTable('client_purchases'),
-    countByStatus('client_purchases', 'status', ['aguardando']),
+    // Compras pendentes: sem status ou aguardando
+    (async () => {
+      const { count: aguardando } = await (supabase as any).from('client_purchases').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).eq('status', 'aguardando')
+      const { count: semStatus } = await (supabase as any).from('client_purchases').select('id', { count: 'exact', head: true }).eq('organization_id', orgId).is('status', null)
+      return (aguardando ?? 0) + (semStatus ?? 0)
+    })(),
     // Comissões
     countTable('client_commissions'),
     countByStatus('client_commissions', 'status', ['pendente']),
