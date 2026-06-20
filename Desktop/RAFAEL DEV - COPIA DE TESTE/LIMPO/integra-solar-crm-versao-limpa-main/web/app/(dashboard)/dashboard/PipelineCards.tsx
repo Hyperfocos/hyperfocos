@@ -11,7 +11,7 @@ export default function PipelineCards({ cards }: { cards: PipelineCard[] }) {
           key={card.href}
           href={card.href}
           className="rounded-2xl border border-white/10 p-4 flex flex-col gap-2 hover:border-white/20 transition-all cursor-pointer"
-          style={{ background: 'rgba(255,255,255,0.04)' }}
+          style={{ background: 'var(--theme-surface)' }}
         >
           <span className="text-xs font-medium uppercase tracking-wide" style={{ color: card.color }}>
             {card.label}

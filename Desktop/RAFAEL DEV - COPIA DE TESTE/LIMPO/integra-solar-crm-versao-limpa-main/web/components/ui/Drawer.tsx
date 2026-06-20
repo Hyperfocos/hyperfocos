@@ -28,7 +28,7 @@ export function Drawer({ open, onClose, title, width = '50vw', children }: Drawe
       {/* Overlay */}
       <div
         className="fixed inset-0 z-40"
-        style={{ background: 'rgba(0,0,0,0.40)' }}
+        style={{ background: 'var(--theme-overlay)' }}
         onClick={onClose}
       />
       {/* Panel */}
@@ -36,27 +36,27 @@ export function Drawer({ open, onClose, title, width = '50vw', children }: Drawe
         className="fixed top-0 right-0 bottom-0 z-50 flex flex-col overflow-hidden"
         style={{
           width,
-          background: 'rgba(15,30,55,0.97)',
+          background: 'var(--theme-drawer-bg)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderLeft: '1px solid rgba(255,255,255,0.08)',
+          borderLeft: '1px solid var(--theme-card-border)',
           boxShadow: '-8px 0 40px rgba(0,0,0,0.4)',
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-5 py-4 flex-shrink-0"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ borderBottom: '1px solid var(--theme-border)' }}
         >
           {title && (
-            <h2 className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <h2 className="text-sm font-semibold" style={{ color: 'var(--theme-text)' }}>
               {title}
             </h2>
           )}
           <button
             onClick={onClose}
             className="ml-auto p-1.5 rounded-lg transition-colors"
-            style={{ color: 'rgba(255,255,255,0.35)' }}
+            style={{ color: 'var(--theme-text-subtle)' }}
           >
             ✕
           </button>

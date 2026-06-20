@@ -80,13 +80,13 @@ export function Sidebar({ user, notificationCount = 0, onNotificationClick }: Si
   function renderItem(item: NavItem) {
     const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
     const Icon = item.icon
-    const color = isActive ? '#FFD080' : 'rgba(255,255,255,0.4)'
+    const color = isActive ? 'var(--theme-accent)' : 'rgba(255,255,255,0.4)'
     return (
       <Link
         key={item.href}
         href={item.href}
         className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-medium my-0.5 transition-all"
-        style={isActive ? { color: '#FFD080', background: 'rgba(255,200,100,0.08)', fontWeight: 600 } : undefined}
+        style={isActive ? { color: 'var(--theme-accent)', background: 'rgba(255,200,100,0.08)', fontWeight: 600 } : undefined}
       >
         <Icon size={15} style={{ color, flexShrink: 0 }} />
         <span style={{ color }}>{item.label}</span>
@@ -101,16 +101,16 @@ export function Sidebar({ user, notificationCount = 0, onNotificationClick }: Si
     <aside
       className="fixed left-0 top-0 bottom-0 w-56 flex flex-col z-50"
       style={{
-        background: 'rgba(255,255,255,0.05)',
+        background: 'var(--theme-sidebar-bg)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        borderRight: '1px solid var(--theme-sidebar-border)',
       }}
     >
       {/* Logo */}
       <div
         className="h-14 flex items-center justify-between px-4"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ borderBottom: '1px solid var(--theme-sidebar-border)' }}
       >
         <Image
           src="/Logo integra solar - sem nome.png"
@@ -130,21 +130,21 @@ export function Sidebar({ user, notificationCount = 0, onNotificationClick }: Si
 
         {/* Separador */}
         <div className="mx-3 my-2 flex items-center gap-2">
-          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <div className="flex-1 h-px" style={{ background: 'var(--theme-sidebar-border)' }} />
           <span className="text-[9px] font-semibold tracking-widest" style={{ color: 'rgba(255,255,255,0.2)' }}>
             OUTROS
           </span>
-          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <div className="flex-1 h-px" style={{ background: 'var(--theme-sidebar-border)' }} />
         </div>
 
         {supportVisible.map(renderItem)}
       </nav>
 
       {/* User area */}
-      <div className="p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="p-3" style={{ borderTop: '1px solid var(--theme-sidebar-border)' }}>
         <div
           className="flex items-center gap-2 p-2 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.05)' }}
+          style={{ background: 'var(--theme-sidebar-bg)' }}
         >
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black text-[#1A1A1A] flex-shrink-0"

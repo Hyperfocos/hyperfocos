@@ -9,12 +9,14 @@ import EmpresaTab from './EmpresaTab'
 import AcessoTab from './AcessoTab'
 import AuditoriaTab from './AuditoriaTab'
 import TemplatesTab from './TemplatesTab'
+import AparenciaTab from './AparenciaTab'
 
 const TABS = [
   { key: 'empresa', label: 'Empresa' },
   { key: 'acesso', label: 'Acesso' },
   { key: 'templates', label: 'Templates' },
   { key: 'auditoria', label: 'Auditoria' },
+  { key: 'aparencia', label: 'Aparência' },
 ] as const
 
 type TabKey = typeof TABS[number]['key']
@@ -46,7 +48,7 @@ export default function ConfiguracoesClient({
       {/* Tab bar */}
       <div
         className="flex gap-1 rounded-xl p-1 w-fit"
-        style={{ background: 'rgba(255,255,255,0.06)' }}
+        style={{ background: 'var(--theme-input-bg)' }}
       >
         {TABS.map((t) => (
           <button
@@ -55,8 +57,8 @@ export default function ConfiguracoesClient({
             className="px-5 py-2.5 text-sm font-medium rounded-lg transition-colors"
             style={
               activeTab === t.key
-                ? { background: '#FFD080', color: '#0a0e1a' }
-                : { color: 'rgba(255,255,255,0.5)' }
+                ? { background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }
+                : { color: 'var(--theme-text-muted)' }
             }
           >
             {t.label}
@@ -68,6 +70,7 @@ export default function ConfiguracoesClient({
       {activeTab === 'acesso'    && <AcessoTab colaboradores={colaboradores} />}
       {activeTab === 'templates' && <TemplatesTab initialTemplates={proposalTemplates} />}
       {activeTab === 'auditoria' && <AuditoriaTab logs={auditLogs} total={auditTotal} />}
+      {activeTab === 'aparencia' && <AparenciaTab />}
     </div>
   )
 }

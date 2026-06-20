@@ -16,12 +16,12 @@ export function NotificationBell({ count, onClick }: NotificationBellProps) {
     >
       <Bell
         size={18}
-        style={{ color: count > 0 ? '#FFD080' : 'rgba(255,255,255,0.35)' }}
+        style={{ color: count > 0 ? 'var(--theme-accent)' : 'var(--theme-text-subtle)' }}
       />
       {count > 0 && (
         <span
           className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full text-[10px] font-bold text-white px-1"
-          style={{ background: '#EF4444' }}
+          style={{ background: 'var(--theme-danger)' }}
         >
           {count > 99 ? '99+' : count}
         </span>

@@ -12,7 +12,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)})()
+        `}} />
+      </head>
       <body className="antialiased">{children}</body>
     </html>
   )

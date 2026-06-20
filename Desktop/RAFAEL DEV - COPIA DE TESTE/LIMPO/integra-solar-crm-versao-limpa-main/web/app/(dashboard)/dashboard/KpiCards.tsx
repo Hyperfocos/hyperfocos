@@ -17,7 +17,7 @@ export default function KpiCards({ kpi }: { kpi: KpiData }) {
         <div
           key={c.label}
           className="rounded-2xl border border-white/10 p-5"
-          style={{ background: 'rgba(255,255,255,0.04)', borderLeft: `3px solid ${c.color}` }}
+          style={{ background: 'var(--theme-surface)', borderLeft: `3px solid ${c.color}` }}
         >
           <p className="text-xs text-white/50 uppercase tracking-wide mb-2">{c.label}</p>
           <p className="text-2xl font-bold" style={{ color: c.color }}>{c.value}</p>

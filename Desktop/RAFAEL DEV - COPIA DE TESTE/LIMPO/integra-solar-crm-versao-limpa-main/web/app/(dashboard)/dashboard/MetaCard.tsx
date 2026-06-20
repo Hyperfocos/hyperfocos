@@ -6,7 +6,7 @@ import { formatCurrency } from '@/lib/format'
 function ProgressBar({ value, max, color }: { value: number; max: number; color: string }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0
   return (
-    <div className="w-full rounded-full h-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
+    <div className="w-full rounded-full h-2" style={{ background: 'var(--theme-surface-hover)' }}>
       <div
         className="h-2 rounded-full transition-all duration-500"
         style={{ width: `${pct}%`, background: color }}
@@ -24,7 +24,7 @@ export default function MetaCard({ meta }: { meta: MetaData }) {
   return (
     <div
       className="rounded-2xl border border-white/10 p-5"
-      style={{ background: 'rgba(255,255,255,0.04)' }}
+      style={{ background: 'var(--theme-surface)' }}
     >
       <h2 className="text-sm font-semibold text-white/70 mb-4">Metas</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

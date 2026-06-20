@@ -53,26 +53,26 @@ function FollowUpItem({
   return (
     <div
       className="flex items-start gap-3 p-3 rounded-xl transition-colors"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
       <div className="w-1 h-full min-h-[40px] rounded-full flex-shrink-0" style={{ background: color }} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>
+        <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
           {item.title}
         </p>
         <button
           onClick={() => onLeadClick(item.lead_id)}
           className="text-xs mt-0.5 hover:underline"
-          style={{ color: '#FFD080' }}
+          style={{ color: 'var(--theme-accent)' }}
         >
           {item.lead_name}
         </button>
         {item.description && (
-          <p className="text-xs mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--theme-text-subtle)' }}>
             {item.description}
           </p>
         )}
-        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.30)' }}>
+        <p className="text-xs mt-1" style={{ color: 'var(--theme-text-subtle)' }}>
           {formatDateTime(item.due_date)}
         </p>
       </div>
@@ -141,35 +141,35 @@ export function NotificationsDrawer({
     <>
       <div
         className="fixed inset-0 z-[60]"
-        style={{ background: 'rgba(0,0,0,0.5)' }}
+        style={{ background: 'var(--theme-overlay)' }}
         onClick={onClose}
       />
       <div
         className="fixed right-0 top-0 bottom-0 w-[380px] z-[61] flex flex-col"
         style={{
-          background: '#0f1424',
-          borderLeft: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--theme-drawer-bg)',
+          borderLeft: '1px solid var(--theme-card-border)',
           boxShadow: '-8px 0 32px rgba(0,0,0,0.4)',
         }}
       >
         {/* Header */}
         <div
           className="h-14 flex items-center justify-between px-5 flex-shrink-0"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ borderBottom: '1px solid var(--theme-border)' }}
         >
           <h2 className="text-sm font-bold text-white">Follow-ups Pendentes</h2>
           <button
             onClick={onClose}
             className="p-1 rounded-lg transition-colors hover:bg-white/10"
           >
-            <X size={16} style={{ color: 'rgba(255,255,255,0.40)' }} />
+            <X size={16} style={{ color: 'var(--theme-text-muted)' }} />
           </button>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {totalCount === 0 ? (
-            <p className="text-sm text-center py-8" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <p className="text-sm text-center py-8" style={{ color: 'var(--theme-text-subtle)' }}>
               Nenhum follow-up pendente.
             </p>
           ) : (
