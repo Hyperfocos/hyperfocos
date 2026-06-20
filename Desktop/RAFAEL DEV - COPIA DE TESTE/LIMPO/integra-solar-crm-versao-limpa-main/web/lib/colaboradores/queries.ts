@@ -1,6 +1,6 @@
 // web/lib/colaboradores/queries.ts
-import { createClient } from '@/lib/supabase/server'
 import { getCurrentUserData } from '@/lib/org/queries'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export type ModulePermission = {
   access: boolean
@@ -25,8 +25,8 @@ export async function getColaboradores(): Promise<Colaborador[]> {
   const orgId = user?.membership?.organization.id
   if (!orgId) return []
 
-  const supabase = await createClient()
-  const { data } = await (supabase as any)
+  const adminClient = createAdminClient()
+  const { data } = await (adminClient as any)
     .from('organization_members')
     .select(`
       id,

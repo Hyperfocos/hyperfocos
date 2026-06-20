@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import type { Colaborador } from '@/lib/colaboradores/queries'
-import { createColaborador, removeColaborador } from '@/lib/colaboradores/actions'
+import { createColaborador, removeColaborador, resetColaboradorPassword } from '@/lib/colaboradores/actions'
+import { Eye, EyeOff, Key } from 'lucide-react'
 
 const inputCls =
   'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
@@ -35,7 +36,6 @@ const PERM_COLS = [
 ] as const
 
 type PermKey = typeof PERM_COLS[number]['key']
-
 type PermRow = Record<PermKey, boolean>
 type Permissions = Record<string, PermRow>
 
@@ -50,23 +50,17 @@ const ROLE_LABELS: Record<string, string> = {
 
 const defaultPermissions = (): Permissions =>
   Object.fromEntries(
-    MODULES.map((m) => [
-      m.key,
-      { access: false, view_all: false, add: false, edit: false, delete: false },
-    ])
+    MODULES.map((m) => [m.key, { access: false, view_all: false, add: false, edit: false, delete: false }])
   )
 
 export default function AcessoTab({ colaboradores: initial }: { colaboradores: Colaborador[] }) {
   const [colaboradores, setColaboradores] = useState<Colaborador[]>(initial)
   const [removePending, startRemove] = useTransition()
+  const [resetResult, setResetResult] = useState<{ userId: string; password: string } | null>(null)
+  const [resetPending, startReset] = useTransition()
 
-  // Add form
-  const [form, setForm] = useState({
-    full_name: '',
-    email: '',
-    password: '',
-    role: 'vendedor',
-  })
+  const [form, setForm] = useState({ full_name: '', email: '', password: '', role: 'vendedor' })
+  const [showPassword, setShowPassword] = useState(false)
   const [permissions, setPermissions] = useState<Permissions>(defaultPermissions())
   const [addPending, startAdd] = useTransition()
   const [addResult, setAddResult] = useState<{ error?: string; success?: string } | null>(null)
@@ -75,25 +69,27 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
     if (!window.confirm('Remover colaborador?')) return
     startRemove(async () => {
       const res = await removeColaborador(id, user_id)
-      if (res.success) {
-        setColaboradores((prev) => prev.filter((c) => c.id !== id))
-      }
+      if (res.success) setColaboradores((prev) => prev.filter((c) => c.id !== id))
+    })
+  }
+
+  function handleResetPassword(userId: string) {
+    if (!window.confirm('Redefinir a senha deste colaborador? Uma nova senha temporária será gerada.')) return
+    setResetResult(null)
+    startReset(async () => {
+      const res = await resetColaboradorPassword(userId)
+      if (res.newPassword) setResetResult({ userId, password: res.newPassword })
     })
   }
 
   function togglePerm(moduleKey: string, permKey: PermKey, value: boolean) {
-    setPermissions((prev) => ({
-      ...prev,
-      [moduleKey]: { ...prev[moduleKey], [permKey]: value },
-    }))
+    setPermissions((prev) => ({ ...prev, [moduleKey]: { ...prev[moduleKey], [permKey]: value } }))
   }
 
   function toggleAllInCol(permKey: PermKey, value: boolean) {
     setPermissions((prev) => {
       const next = { ...prev }
-      MODULES.forEach((m) => {
-        next[m.key] = { ...next[m.key], [permKey]: value }
-      })
+      MODULES.forEach((m) => { next[m.key] = { ...next[m.key], [permKey]: value } })
       return next
     })
   }
@@ -105,13 +101,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
   function handleAdd() {
     setAddResult(null)
     startAdd(async () => {
-      const res = await createColaborador({
-        full_name: form.full_name,
-        email: form.email,
-        password: form.password,
-        role: form.role,
-        permissions,
-      })
+      const res = await createColaborador({ full_name: form.full_name, email: form.email, password: form.password, role: form.role, permissions })
       setAddResult(res)
       if (res.success) {
         setForm({ full_name: '', email: '', password: '', role: 'vendedor' })
@@ -123,7 +113,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
 
   return (
     <div className="space-y-6">
-      {/* ── Lista de Colaboradores ─────────────────────────────────────── */}
+      {/* Lista de Colaboradores */}
       <div className={cardCls} style={cardStyle}>
         <h2 className="text-base font-semibold text-white">Colaboradores</h2>
 
@@ -143,20 +133,35 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
               <tbody>
                 {colaboradores.map((c) => (
                   <tr key={c.id} className="border-b border-white/5">
-                    <td className="py-2.5 pr-4 text-white">{c.full_name ?? '—'}</td>
-                    <td className="py-2.5 pr-4 text-white/70">{c.email}</td>
-                    <td className="py-2.5 pr-4 text-white/70">
-                      {ROLE_LABELS[c.role] ?? c.role}
-                    </td>
+                    <td className="py-2.5 pr-4 text-white">{c.full_name || '—'}</td>
+                    <td className="py-2.5 pr-4 text-white/70">{c.email || '—'}</td>
+                    <td className="py-2.5 pr-4 text-white/70">{ROLE_LABELS[c.role] ?? c.role}</td>
                     <td className="py-2.5">
                       {c.role !== 'owner' && (
-                        <button
-                          className="text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-40"
-                          disabled={removePending}
-                          onClick={() => handleRemove(c.id, c.user_id)}
-                        >
-                          Remover
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => handleResetPassword(c.user_id)}
+                            disabled={resetPending}
+                            className="flex items-center gap-1 text-xs text-white/40 hover:text-white/70 transition-colors disabled:opacity-40"
+                            title="Redefinir senha"
+                          >
+                            <Key size={12} /> Senha
+                          </button>
+                          <button
+                            className="text-xs text-red-400 hover:text-red-300 transition-colors disabled:opacity-40"
+                            disabled={removePending}
+                            onClick={() => handleRemove(c.id, c.user_id)}
+                          >
+                            Remover
+                          </button>
+                        </div>
+                      )}
+                      {resetResult?.userId === c.user_id && (
+                        <div className="mt-1.5 px-2 py-1.5 rounded-lg text-xs" style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)' }}>
+                          <span className="text-white/50">Nova senha: </span>
+                          <span className="font-mono font-semibold text-green-400 select-all">{resetResult.password}</span>
+                          <p className="text-white/30 mt-0.5">Copie e envie ao colaborador. Esta senha não será exibida novamente.</p>
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -167,44 +172,41 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
         )}
       </div>
 
-      {/* ── Adicionar Colaborador ──────────────────────────────────────── */}
+      {/* Adicionar Colaborador */}
       <div className={cardCls} style={cardStyle}>
         <h2 className="text-base font-semibold text-white">Adicionar Colaborador</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className={labelCls}>Nome completo</label>
-            <input
-              className={inputCls}
-              value={form.full_name}
-              onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))}
-            />
+            <input className={inputCls} value={form.full_name} onChange={(e) => setForm((p) => ({ ...p, full_name: e.target.value }))} />
           </div>
           <div>
             <label className={labelCls}>E-mail</label>
-            <input
-              className={inputCls}
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-            />
+            <input className={inputCls} type="email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} />
           </div>
           <div>
             <label className={labelCls}>Senha</label>
-            <input
-              className={inputCls}
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-            />
+            <div className="relative">
+              <input
+                className={inputCls}
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+                style={{ paddingRight: 36 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-white/10 transition-colors"
+              >
+                {showPassword ? <EyeOff size={14} style={{ color: 'rgba(255,255,255,0.35)' }} /> : <Eye size={14} style={{ color: 'rgba(255,255,255,0.35)' }} />}
+              </button>
+            </div>
           </div>
           <div>
             <label className={labelCls}>Função</label>
-            <select
-              className={inputCls}
-              value={form.role}
-              onChange={(e) => setForm((p) => ({ ...p, role: e.target.value }))}
-            >
+            <select className={inputCls} value={form.role} onChange={(e) => setForm((p) => ({ ...p, role: e.target.value }))}>
               <option value="admin">Administrador</option>
               <option value="gerente">Gerente</option>
               <option value="vendedor">Vendedor</option>
@@ -224,13 +226,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
                   <th key={col.key} className="py-2 px-3 text-white/50 font-medium text-center">
                     <div className="flex flex-col items-center gap-1">
                       <span>{col.label}</span>
-                      <input
-                        type="checkbox"
-                        checked={isColChecked(col.key)}
-                        onChange={(e) => toggleAllInCol(col.key, e.target.checked)}
-                        className="accent-yellow-400"
-                        title="Marcar todos"
-                      />
+                      <input type="checkbox" checked={isColChecked(col.key)} onChange={(e) => toggleAllInCol(col.key, e.target.checked)} className="accent-yellow-400" title="Marcar todos" />
                     </div>
                   </th>
                 ))}
@@ -242,12 +238,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
                   <td className="py-2 pr-4 text-white/70">{m.label}</td>
                   {PERM_COLS.map((col) => (
                     <td key={col.key} className="py-2 px-3 text-center">
-                      <input
-                        type="checkbox"
-                        checked={permissions[m.key][col.key]}
-                        onChange={(e) => togglePerm(m.key, col.key, e.target.checked)}
-                        className="accent-yellow-400"
-                      />
+                      <input type="checkbox" checked={permissions[m.key][col.key]} onChange={(e) => togglePerm(m.key, col.key, e.target.checked)} className="accent-yellow-400" />
                     </td>
                   ))}
                 </tr>
@@ -265,12 +256,8 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
           >
             {addPending ? 'Criando...' : 'Criar Colaborador'}
           </button>
-          {addResult?.error && (
-            <p className="text-red-400 text-xs">{addResult.error}</p>
-          )}
-          {addResult?.success && (
-            <p className="text-green-400 text-xs">{addResult.success}</p>
-          )}
+          {addResult?.error && <p className="text-red-400 text-xs">{addResult.error}</p>}
+          {addResult?.success && <p className="text-green-400 text-xs">{addResult.success}</p>}
         </div>
       </div>
     </div>

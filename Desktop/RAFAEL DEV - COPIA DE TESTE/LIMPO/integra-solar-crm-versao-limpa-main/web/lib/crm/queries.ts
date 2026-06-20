@@ -30,12 +30,16 @@ export async function getLeadSources(): Promise<LeadSource[]> {
 export async function getOrgMembers() {
   const user = await getCurrentUserData()
   if (!user?.membership) return []
-  const supabase = await createClient()
-  const { data } = await supabase
+  const adminClient = (await import('@/lib/supabase/admin')).createAdminClient()
+  const { data } = await (adminClient as any)
     .from('organization_members')
-    .select('user_id, profiles:profiles(id, full_name, email)')
+    .select('user_id, profiles!user_id(id, full_name, email)')
     .eq('organization_id', user.membership.organization.id)
-  return (data ?? []).map((m: any) => m.profiles).filter(Boolean)
+  return (data ?? []).map((m: any) => ({
+    id: m.profiles?.id ?? m.user_id,
+    full_name: m.profiles?.full_name ?? null,
+    email: m.profiles?.email ?? '',
+  })).filter((m: any) => m.id)
 }
 
 export async function getLeads(): Promise<Lead[]> {

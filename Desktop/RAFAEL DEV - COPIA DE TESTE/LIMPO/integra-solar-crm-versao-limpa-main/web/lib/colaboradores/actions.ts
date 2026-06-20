@@ -24,6 +24,8 @@ export async function createColaborador(data: CreateColaboradorData): Promise<Ac
   }
 
   const adminClient = createAdminClient()
+
+  // 1. Criar auth user
   const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
     email: data.email,
     password: data.password,
@@ -32,10 +34,9 @@ export async function createColaborador(data: CreateColaboradorData): Promise<Ac
   })
 
   if (authError) return { error: authError.message }
-
   const newUserId = authData.user.id
 
-  // Usar admin client para inserir profile (RLS bloqueia insert de outro user)
+  // 2. Inserir profile (via admin para bypass RLS)
   const { error: profileError } = await (adminClient as any).from('profiles').upsert({
     id: newUserId,
     email: data.email,
@@ -47,8 +48,8 @@ export async function createColaborador(data: CreateColaboradorData): Promise<Ac
     return { error: 'Erro ao criar perfil: ' + profileError.message }
   }
 
-  const supabase = await createClient()
-  const { error: memberError } = await (supabase as any).from('organization_members').insert({
+  // 3. Inserir organization_member (via admin para bypass RLS)
+  const { error: memberError } = await (adminClient as any).from('organization_members').insert({
     organization_id: orgId,
     user_id: newUserId,
     role: data.role,
@@ -56,20 +57,35 @@ export async function createColaborador(data: CreateColaboradorData): Promise<Ac
   })
 
   if (memberError) {
+    await (adminClient as any).from('profiles').delete().eq('id', newUserId)
     await adminClient.auth.admin.deleteUser(newUserId)
-    return { error: memberError.message }
+    return { error: 'Erro ao vincular à organização: ' + memberError.message }
   }
 
   revalidatePath('/configuracoes')
   return { success: 'Colaborador criado com sucesso.' }
 }
 
+export async function resetColaboradorPassword(
+  userId: string
+): Promise<ActionResult & { newPassword?: string }> {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'
+  let newPassword = ''
+  for (let i = 0; i < 10; i++) newPassword += chars[Math.floor(Math.random() * chars.length)]
+
+  const adminClient = createAdminClient()
+  const { error } = await adminClient.auth.admin.updateUserById(userId, { password: newPassword })
+
+  if (error) return { error: 'Erro ao redefinir senha: ' + error.message }
+  return { success: 'Senha redefinida.', newPassword }
+}
+
 export async function updateColaboradorPermissions(
   memberId: string,
   permissions: Record<string, unknown>
 ): Promise<ActionResult> {
-  const supabase = await createClient()
-  const { error } = await (supabase as any)
+  const adminClient = createAdminClient()
+  const { error } = await (adminClient as any)
     .from('organization_members')
     .update({ permissions })
     .eq('id', memberId)
@@ -80,15 +96,16 @@ export async function updateColaboradorPermissions(
 }
 
 export async function removeColaborador(memberId: string, userId: string): Promise<ActionResult> {
-  const supabase = await createClient()
-  const { error } = await (supabase as any)
+  const adminClient = createAdminClient()
+
+  const { error } = await (adminClient as any)
     .from('organization_members')
     .delete()
     .eq('id', memberId)
 
   if (error) return { error: error.message }
 
-  const adminClient = createAdminClient()
+  await (adminClient as any).from('profiles').delete().eq('id', userId)
   await adminClient.auth.admin.deleteUser(userId)
 
   revalidatePath('/configuracoes')
