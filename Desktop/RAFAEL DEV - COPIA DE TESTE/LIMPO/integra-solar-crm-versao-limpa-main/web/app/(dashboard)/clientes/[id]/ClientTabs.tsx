@@ -20,7 +20,7 @@ const TABS = [
   { key: 'tab5', label: 'Prazos' },
   { key: 'tab6', label: 'Anexos' },
   { key: 'tab7', label: 'Contrato' },
-  { key: 'tab8', label: 'Pasta Completa' },
+  { key: 'tab8', label: 'Todos os Dados' },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
