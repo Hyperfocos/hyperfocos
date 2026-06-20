@@ -37,6 +37,7 @@ export async function getEntregasObra(): Promise<EntregaObraClient[]> {
         name,
         city,
         contract_max_days,
+        delivery_start_date,
         pipeline_flags
       )
     `)
@@ -45,23 +46,10 @@ export async function getEntregasObra(): Promise<EntregaObraClient[]> {
 
   if (error || !data) return []
 
-  const clientIds: string[] = data.map((r: any) => r.client_id)
-  const { data: parcelas } = await (supabase as any)
-    .from('client_installments')
-    .select('client_id, confirmed_at')
-    .in('client_id', clientIds)
-    .eq('position', 1)
-    .not('confirmed_at', 'is', null)
-
-  const parcelaMap: Record<string, string> = {}
-  for (const p of parcelas ?? []) {
-    parcelaMap[p.client_id] = p.confirmed_at
-  }
-
   return data.map((r: any) => {
-    const confirmedAt = parcelaMap[r.client_id] ?? null
-    const diasUsados = confirmedAt
-      ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+    const startDate = r.clients.delivery_start_date ?? null
+    const diasUsados = startDate
+      ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
       : 0
     return {
       id: r.id,
@@ -95,7 +83,8 @@ export async function getEntregaObraById(clientId: string): Promise<EntregaObraC
       clients!inner (
         name,
         city,
-        contract_max_days
+        contract_max_days,
+        delivery_start_date
       )
     `)
     .eq('client_id', clientId)
@@ -103,17 +92,9 @@ export async function getEntregaObraById(clientId: string): Promise<EntregaObraC
 
   if (error || !data) return null
 
-  const { data: parcela } = await (supabase as any)
-    .from('client_installments')
-    .select('confirmed_at')
-    .eq('client_id', clientId)
-    .eq('position', 1)
-    .not('confirmed_at', 'is', null)
-    .maybeSingle()
-
-  const confirmedAt = parcela?.confirmed_at ?? null
-  const diasUsados = confirmedAt
-    ? Math.floor((Date.now() - new Date(confirmedAt).getTime()) / 86400000)
+  const startDate = data.clients.delivery_start_date ?? null
+  const diasUsados = startDate
+    ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
 
   return {
