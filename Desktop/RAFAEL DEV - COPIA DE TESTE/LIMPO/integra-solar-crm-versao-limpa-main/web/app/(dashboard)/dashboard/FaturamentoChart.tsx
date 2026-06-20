@@ -12,11 +12,9 @@ function formatCurrency(v: number) {
   return `R$ ${v.toFixed(0)}`
 }
 
-const now = new Date()
-const anoAtual = now.getFullYear()
-const anoAnterior = anoAtual - 1
-
 export default function FaturamentoChart({ data }: { data: FaturamentoMes[] }) {
+  const anoAtual = new Date().getFullYear()
+  const anoAnterior = anoAtual - 1
   return (
     <div
       className="rounded-2xl border border-white/10 p-5"
