@@ -72,6 +72,9 @@ export default function PosObraDetail({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <DatePicker label="Data de contato" value={form.data_contato || null} onChange={(iso) => setForm((f) => ({ ...f, data_contato: iso }))} />
+            <p className="text-[10px] mt-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              Data para verificar a primeira conta de energia do cliente
+            </p>
           </div>
           <div>
             <label className={labelCls}>NPS (0-10)</label>
@@ -79,11 +82,19 @@ export default function PosObraDetail({
               type="number"
               min={0}
               max={10}
+              step={1}
               value={form.nps}
-              onChange={(e) => setForm((f) => ({ ...f, nps: e.target.value }))}
+              onChange={(e) => {
+                const v = parseInt(e.target.value)
+                if (e.target.value === '') setForm((f) => ({ ...f, nps: '' }))
+                else if (!isNaN(v) && v >= 0 && v <= 10) setForm((f) => ({ ...f, nps: String(v) }))
+              }}
               className={inputCls}
               placeholder="0-10"
             />
+            <p className="text-[10px] mt-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              Nota de satisfação percebida pelo cliente
+            </p>
           </div>
           <div className="col-span-2">
             <label className={labelCls}>Observações gerais</label>
