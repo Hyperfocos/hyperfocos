@@ -67,6 +67,22 @@ body::after {
   50%       { transform: translate(-30px, 40px); }
 }
 
+/* Dropdowns: opções legíveis em tema escuro */
+select option {
+  background: #1a2744;
+  color: #E0E8F0;
+  padding: 8px 12px;
+}
+
+select option:checked {
+  background: #2a3a5c;
+  color: #FFD080;
+}
+
+select option:hover {
+  background: #253454;
+}
+
 /* Utilitário glass reutilizável */
 .glass {
   background: var(--glass-bg);
