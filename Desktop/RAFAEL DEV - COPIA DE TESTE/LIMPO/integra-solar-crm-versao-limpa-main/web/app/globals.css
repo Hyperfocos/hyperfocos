@@ -260,6 +260,12 @@ select option:hover {
   border-color: var(--theme-border-hover) !important;
 }
 
+/* Green theme sidebar logo area — light bg for logo visibility */
+[data-theme="green"] .sidebar-logo-area {
+  background: #f5f4f3 !important;
+  border-bottom-color: #e7e5e4 !important;
+}
+
 /* Green theme sidebar text overrides — sidebar has dark bg so keep light text */
 [data-theme="green"] aside .text-white {
   color: #E0E8F0 !important;

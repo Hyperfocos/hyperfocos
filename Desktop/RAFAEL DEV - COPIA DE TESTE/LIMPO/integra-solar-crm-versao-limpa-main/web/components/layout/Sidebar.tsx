@@ -109,7 +109,7 @@ export function Sidebar({ user, notificationCount = 0, onNotificationClick }: Si
     >
       {/* Logo */}
       <div
-        className="h-14 flex items-center justify-between px-4"
+        className="sidebar-logo-area h-14 flex items-center justify-between px-4"
         style={{ borderBottom: '1px solid var(--theme-sidebar-border)' }}
       >
         <Image
