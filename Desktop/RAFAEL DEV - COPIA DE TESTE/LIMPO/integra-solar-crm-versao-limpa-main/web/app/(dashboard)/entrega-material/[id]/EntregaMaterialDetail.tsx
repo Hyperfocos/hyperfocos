@@ -1,11 +1,12 @@
 // web/app/(dashboard)/entrega-material/[id]/EntregaMaterialDetail.tsx
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { EntregaMaterialClient } from '@/lib/entrega-material/queries'
-import { upsertDelivery } from '@/lib/entrega-material/actions'
+import { upsertDelivery, uploadDeliveryMedia } from '@/lib/entrega-material/actions'
 import { DatePicker } from '@/components/ui/inputs'
+import { Plus, ExternalLink, Trash2, Image as ImageIcon } from 'lucide-react'
 
 export default function EntregaMaterialDetail({
   entrega,
@@ -18,13 +19,24 @@ export default function EntregaMaterialDetail({
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const initialChecklist = {
+    foto_materiais: (entrega.checklist as any)?.foto_materiais ?? false,
+    verificar_avarias: (entrega.checklist as any)?.verificar_avarias ?? false,
+  }
 
   const [form, setForm] = useState({
     data_entrega: entrega.data_entrega ?? '',
-    termo_url: entrega.termo_url ?? '',
     status: entrega.status,
-    checklist: { ...entrega.checklist },
+    checklist: initialChecklist,
   })
+
+  const initialMedia: string[] = (() => {
+    try { return JSON.parse((entrega as any).media_urls ?? '[]') } catch { return [] }
+  })()
+  const [mediaUrls, setMediaUrls] = useState<string[]>(initialMedia)
 
   function handleCheckbox(key: keyof typeof form.checklist) {
     setForm((f) => ({ ...f, checklist: { ...f.checklist, [key]: !f.checklist[key] } }))
@@ -36,7 +48,6 @@ export default function EntregaMaterialDetail({
     startTransition(async () => {
       const result = await upsertDelivery(clientId, {
         data_entrega: form.data_entrega || null,
-        termo_url: form.termo_url || null,
         checklist: form.checklist,
         status: form.status,
       })
@@ -47,6 +58,24 @@ export default function EntregaMaterialDetail({
         if (form.status === 'concluida') router.push('/entrega-material')
       }
     })
+  }
+
+  async function handleUploadMedia(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setError(null)
+    const fd = new FormData()
+    fd.append('file', file)
+    const result = await uploadDeliveryMedia(clientId, fd)
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setSuccess(result.success!)
+      if (result.url) setMediaUrls((prev) => [...prev, result.url!])
+    }
+    setUploading(false)
+    if (fileRef.current) fileRef.current.value = ''
   }
 
   const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
@@ -71,12 +100,12 @@ export default function EntregaMaterialDetail({
         <span className="text-white font-semibold">{entrega.dias_usados} / {entrega.contract_max_days ?? '—'} dias</span>
       </div>
 
+      {/* Checklist */}
       <div className={cardCls} style={cardStyle}>
         <h2 className="text-sm font-semibold text-white/70">Checklist de Entrega</h2>
         {([
-          ['limpeza', 'Limpeza do local'],
-          ['manuais', 'Entrega dos manuais'],
-          ['orientacao_uso', 'Orientação de uso'],
+          ['foto_materiais', 'Foto dos materiais'],
+          ['verificar_avarias', 'Verificar possíveis avarias'],
         ] as [keyof typeof form.checklist, string][]).map(([key, label]) => (
           <label key={key} className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={form.checklist[key]} onChange={() => handleCheckbox(key)} className="w-4 h-4 accent-yellow-400" />
@@ -85,6 +114,7 @@ export default function EntregaMaterialDetail({
         ))}
       </div>
 
+      {/* Dados da entrega */}
       <div className={cardCls} style={cardStyle}>
         <h2 className="text-sm font-semibold text-white/70">Dados da Entrega</h2>
         <div className="grid grid-cols-2 gap-4">
@@ -98,16 +128,62 @@ export default function EntregaMaterialDetail({
               <option value="concluida">Concluída</option>
             </select>
           </div>
-          <div className="col-span-2">
-            <label className={labelCls}>URL do termo de entrega assinado</label>
-            <input type="url" value={form.termo_url} onChange={(e) => setForm((f) => ({ ...f, termo_url: e.target.value }))} className={inputCls} placeholder="https://..." />
-          </div>
-          {entrega.termo_url && (
-            <div className="col-span-2">
-              <a href={entrega.termo_url} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: '#FFD080' }}>Ver termo atual</a>
-            </div>
-          )}
         </div>
+      </div>
+
+      {/* Fotos e vídeos da entrega */}
+      <div className={cardCls} style={cardStyle}>
+        <h2 className="text-sm font-semibold text-white/70">Fotos e Vídeos da Entrega</h2>
+
+        {mediaUrls.length > 0 && (
+          <div className="grid grid-cols-3 gap-3">
+            {mediaUrls.map((url, i) => {
+              const isVideo = /\.(mp4|mov|avi|webm)$/i.test(url)
+              return (
+                <a
+                  key={i}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative rounded-xl overflow-hidden group"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', aspectRatio: '1' }}
+                >
+                  {isVideo ? (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-2xl">▶</span>
+                    </div>
+                  ) : (
+                    <img src={url} alt={`Entrega ${i + 1}`} className="w-full h-full object-cover" />
+                  )}
+                  <div
+                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: 'rgba(0,0,0,0.5)' }}
+                  >
+                    <ExternalLink size={18} style={{ color: '#FFD080' }} />
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+        )}
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*,video/*"
+          onChange={handleUploadMedia}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="flex items-center gap-2 text-xs px-4 py-2 rounded-xl transition-colors hover:bg-white/10"
+          style={{ color: 'rgba(255,255,255,0.40)', border: '1px dashed rgba(255,255,255,0.15)' }}
+        >
+          <Plus size={14} />
+          {uploading ? 'Enviando...' : 'Adicionar foto ou vídeo'}
+        </button>
       </div>
 
       {error && <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">{error}</p>}
