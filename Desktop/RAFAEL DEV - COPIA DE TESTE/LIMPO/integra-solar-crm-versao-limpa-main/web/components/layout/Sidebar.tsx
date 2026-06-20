@@ -10,7 +10,7 @@ import {
   LayoutDashboard, Users, UserCheck, FileText, DollarSign,
   Ruler, ShoppingCart, Banknote, Package, Wrench,
   CheckSquare, Star, Settings, BarChart2, GraduationCap,
-  Archive, LogOut,
+  Archive, LogOut, MessageCircle,
 } from 'lucide-react'
 
 type NavItem = {
@@ -40,6 +40,7 @@ const SUPPORT_ITEMS: NavItem[] = [
   { label: 'Relatórios',    href: '/relatorios',    icon: BarChart2,     moduleKey: 'relatorios' },
   { label: 'Treinamento',   href: '/treinamento',   icon: GraduationCap, moduleKey: 'treinamento' },
   { label: 'Configurações', href: '/configuracoes', icon: Settings,      moduleKey: 'configuracoes' },
+  { label: 'Contato',       href: '/contato',       icon: MessageCircle },
 ]
 
 interface SidebarProps {

@@ -69,6 +69,13 @@ export function Tab2EquVendidos({ client }: { client: Client }) {
         />
       </div>
 
+      <Input
+        name="inverter_extra_capacity"
+        label="Capacidade extra do inversor (placas adicionais)"
+        defaultValue={(client as any).inverter_extra_capacity ?? ''}
+        placeholder="Ex: 8 placas ou 4.88 kWp"
+      />
+
       <div
         className="flex flex-col gap-3 p-3 rounded-xl"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}

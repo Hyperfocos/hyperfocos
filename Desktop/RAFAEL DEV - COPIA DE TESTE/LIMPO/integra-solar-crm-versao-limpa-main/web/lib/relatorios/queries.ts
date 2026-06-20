@@ -348,3 +348,144 @@ export async function getTecnicoData(filter: RelatorioFilter): Promise<TecnicoSu
     total_kwh_projetados: total_kwh,
   }
 }
+
+// ── Pós-Venda ────────────────────────────────────────────────────
+
+export type ExpansaoClienteRow = {
+  nome: string
+  cidade: string | null
+  telefone: string | null
+  potencia_kwp: number | null
+  inversor_marca: string | null
+  capacidade_extra: string | null
+  contract_date: string | null
+}
+
+export type PosVendaSummary = {
+  clientes_expansao: ExpansaoClienteRow[]
+  nps_medio: number | null
+  total_pos_obra: number
+  concluidos: number
+}
+
+export async function getPosVendaData(filter: RelatorioFilter): Promise<PosVendaSummary> {
+  const orgId = await getOrgId()
+  if (!orgId) return { clientes_expansao: [], nps_medio: null, total_pos_obra: 0, concluidos: 0 }
+
+  const supabase = await createClient()
+
+  // Clientes com capacidade extra
+  let expQuery = (supabase as any)
+    .from('clients')
+    .select('name, city, phone, system_power_kwp, inverter_brand, inverter_extra_capacity, contract_date')
+    .eq('organization_id', orgId)
+    .not('inverter_extra_capacity', 'is', null)
+    .neq('inverter_extra_capacity', '')
+  if (filter.dateFrom) expQuery = expQuery.gte('contract_date', filter.dateFrom)
+  if (filter.dateTo) expQuery = expQuery.lte('contract_date', filter.dateTo)
+  const { data: expData } = await expQuery
+
+  const clientes_expansao = ((expData ?? []) as any[]).map((c) => ({
+    nome: c.name,
+    cidade: c.city,
+    telefone: c.phone,
+    potencia_kwp: c.system_power_kwp,
+    inversor_marca: c.inverter_brand,
+    capacidade_extra: c.inverter_extra_capacity,
+    contract_date: c.contract_date,
+  }))
+
+  // NPS médio
+  const { data: posData } = await (supabase as any)
+    .from('client_pos_obra')
+    .select('nps, status')
+    .eq('organization_id', orgId)
+    .not('nps', 'is', null)
+
+  const posArr = (posData ?? []) as any[]
+  const npsValues = posArr.filter((p) => p.nps != null).map((p) => Number(p.nps))
+  const nps_medio = npsValues.length > 0 ? npsValues.reduce((s, v) => s + v, 0) / npsValues.length : null
+  const total_pos_obra = posArr.length
+  const concluidos = posArr.filter((p) => p.status === 'concluida').length
+
+  return { clientes_expansao, nps_medio, total_pos_obra, concluidos }
+}
+
+// ── SLA / Tempos de Execução ─────────────────────────────────────
+
+export type SlaEtapa = {
+  etapa: string
+  tempo_medio_dias: number | null
+  total_registros: number
+}
+
+export type SlaSummary = {
+  etapas: SlaEtapa[]
+  prazo_medio_total: number | null
+}
+
+export async function getSlaData(): Promise<SlaSummary> {
+  const orgId = await getOrgId()
+  if (!orgId) return { etapas: [], prazo_medio_total: null }
+
+  const supabase = await createClient()
+
+  // Buscar clientes com delivery_start_date e pipeline_flags
+  const { data: clients } = await (supabase as any)
+    .from('clients')
+    .select('id, delivery_start_date, contract_max_days, pipeline_flags')
+    .eq('organization_id', orgId)
+    .not('delivery_start_date', 'is', null)
+
+  const arr = (clients ?? []) as any[]
+  const now = Date.now()
+
+  let totalDias = 0, totalCount = 0
+  for (const c of arr) {
+    const start = new Date(c.delivery_start_date).getTime()
+    const dias = Math.floor((now - start) / 86400000)
+    totalDias += dias
+    totalCount++
+  }
+
+  const prazo_medio_total = totalCount > 0 ? Math.round(totalDias / totalCount) : null
+
+  // Tempos médios por etapa (usando tabelas de pipeline)
+  const tables = [
+    { table: 'client_projects', etapa: 'Projetos', dateField: 'created_at' },
+    { table: 'client_purchases', etapa: 'Compras', dateField: 'created_at' },
+    { table: 'client_deliveries', etapa: 'Entrega Material', dateField: 'created_at' },
+    { table: 'client_obras', etapa: 'Obra', dateField: 'data_inicio' },
+    { table: 'client_obra_deliveries', etapa: 'Entrega da Obra', dateField: 'created_at' },
+    { table: 'client_pos_obra', etapa: 'Pós-Obra', dateField: 'created_at' },
+  ]
+
+  const etapas: SlaEtapa[] = []
+
+  for (const t of tables) {
+    const { data } = await (supabase as any)
+      .from(t.table)
+      .select(`client_id, ${t.dateField}, updated_at, status`)
+      .eq('organization_id', orgId)
+
+    const records = (data ?? []) as any[]
+    let somaDias = 0, count = 0
+
+    for (const r of records) {
+      const start = r[t.dateField] ? new Date(r[t.dateField]).getTime() : null
+      const end = r.updated_at ? new Date(r.updated_at).getTime() : now
+      if (start) {
+        const dias = Math.floor((end - start) / 86400000)
+        if (dias >= 0) { somaDias += dias; count++ }
+      }
+    }
+
+    etapas.push({
+      etapa: t.etapa,
+      tempo_medio_dias: count > 0 ? Math.round(somaDias / count) : null,
+      total_registros: records.length,
+    })
+  }
+
+  return { etapas, prazo_medio_total }
+}

@@ -5,6 +5,28 @@ import Link from 'next/link'
 import type { Client } from '@/lib/clients/types'
 import { SearchBar, filterBySearch } from '@/components/ui/SearchBar'
 
+function PrazoBadge({ client }: { client: Client }) {
+  const start = client.delivery_start_date ? new Date(client.delivery_start_date) : null
+  const max = client.contract_max_days ?? 0
+  if (!start || !max) return null
+
+  const dias = Math.floor((Date.now() - start.getTime()) / 86400000)
+  const pct = (dias / max) * 100
+  const finalizado = client.pipeline_stage === 'concluido' || client.pipeline_stage === 'pos_obra'
+
+  let color = '#10B981'
+  let bg = 'rgba(16,185,129,0.12)'
+  let border = 'rgba(16,185,129,0.25)'
+  if (pct > 100) { color = '#EF4444'; bg = 'rgba(239,68,68,0.12)'; border = 'rgba(239,68,68,0.25)' }
+  else if (pct >= 80) { color = '#FBBF24'; bg = 'rgba(251,191,36,0.12)'; border = 'rgba(251,191,36,0.25)' }
+
+  return (
+    <span className="text-xs px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: bg, color, border: `1px solid ${border}` }}>
+      {finalizado ? `${dias} dias` : `${dias} / ${max} dias`}
+    </span>
+  )
+}
+
 function ClientRow({ client }: { client: Client }) {
   const tabsDone = Object.values(client.completed_tabs).filter(Boolean).length
   return (
@@ -20,6 +42,7 @@ function ClientRow({ client }: { client: Client }) {
         </p>
       </div>
       <div className="flex items-center gap-3 flex-shrink-0">
+        <PrazoBadge client={client} />
         <span className="text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>{tabsDone}/8 abas</span>
         <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}>
           {client.pipeline_stage}

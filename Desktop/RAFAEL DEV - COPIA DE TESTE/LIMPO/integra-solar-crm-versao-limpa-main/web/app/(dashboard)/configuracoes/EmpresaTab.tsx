@@ -73,8 +73,9 @@ export default function EmpresaTab({
   const [bancoPending, startBanco] = useTransition()
   const [bancoResult, setBancoResult] = useState<{ error?: string; success?: string } | null>(null)
 
-  // ── Section 4: Meta Anual ─────────────────────────────────────────────────
+  // ── Section 4: Meta Anual + Prazo Padrão ──────────────────────────────────
   const [meta, setMeta] = useState<number>(config.meta_anual ?? 0)
+  const [prazoPadrao, setPrazoPadrao] = useState<number>((config as any).prazo_padrao_contrato ?? 60)
   const [metaPending, startMeta] = useTransition()
   const [metaResult, setMetaResult] = useState<{ error?: string; success?: string } | null>(null)
 
@@ -125,7 +126,7 @@ export default function EmpresaTab({
   function handleSaveMeta() {
     setMetaResult(null)
     startMeta(async () => {
-      const res = await saveOrgConfig({ meta_anual: meta || null })
+      const res = await saveOrgConfig({ meta_anual: meta || null, prazo_padrao_contrato: prazoPadrao || 60 })
       setMetaResult(res)
     })
   }
@@ -378,16 +379,28 @@ export default function EmpresaTab({
         </div>
       </div>
 
-      {/* ── 4. Meta Anual ────────────────────────────────────────────────── */}
+      {/* ── 4. Meta Anual + Prazo Padrão ─────────────────────────────────── */}
       <div className={cardCls} style={cardStyle}>
-        <h2 className="text-base font-semibold text-white">Meta Anual</h2>
+        <h2 className="text-base font-semibold text-white">Meta e Prazo</h2>
 
-        <div className="max-w-xs">
+        <div className="grid grid-cols-2 gap-4 max-w-lg">
           <CurrencyInput
             label="Meta anual (R$)"
             value={meta}
             onChange={(v) => setMeta(v)}
           />
+          <div>
+            <label className={labelCls}>Prazo padrão do contrato (dias)</label>
+            <input
+              type="number"
+              min="1"
+              value={prazoPadrao}
+              onChange={(e) => setPrazoPadrao(parseInt(e.target.value) || 60)}
+              className={inputCls}
+              placeholder="Ex: 60"
+            />
+            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.25)' }}>Usado como padrão em novos contratos</p>
+          </div>
         </div>
 
         {metaNum > 0 && (

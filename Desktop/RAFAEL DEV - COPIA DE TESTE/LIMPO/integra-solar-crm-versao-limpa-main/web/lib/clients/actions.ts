@@ -88,6 +88,7 @@ export async function updateTab2(
       panel_power_w: raw.panel_power_w ? Number(raw.panel_power_w) : null,
       inverter_brand: (raw.inverter_brand as string) || null,
       inverter_power_w: raw.inverter_power_w ? Number(raw.inverter_power_w) : null,
+      inverter_extra_capacity: (raw.inverter_extra_capacity as string) || null,
       specific_panels: raw.specific_panels === 'on',
       specific_inverter: raw.specific_inverter === 'on',
       direct_delivery: raw.direct_delivery === 'on',

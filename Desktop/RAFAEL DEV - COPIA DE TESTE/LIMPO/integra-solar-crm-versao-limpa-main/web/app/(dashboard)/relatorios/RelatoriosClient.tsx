@@ -4,14 +4,15 @@ import { useState, useTransition } from 'react'
 import { DatePicker } from '@/components/ui/inputs'
 import './print.css'
 import {
-  getComercialData, getLeadsData, getFinanceiroData, getTecnicoData,
+  getComercialData, getLeadsData, getFinanceiroData, getTecnicoData, getPosVendaData, getSlaData,
 } from '@/lib/relatorios/actions'
 import type {
   ComercialSummary, LeadOrigemRow, RankingVendedorRow,
-  FinanceiroSummary, TecnicoSummary, RelatorioFilter,
+  FinanceiroSummary, TecnicoSummary, PosVendaSummary, SlaSummary, RelatorioFilter,
 } from '@/lib/relatorios/queries'
+import { formatPhone } from '@/lib/format'
 
-type Tab = 'comercial' | 'leads' | 'financeiro' | 'tecnico'
+type Tab = 'comercial' | 'leads' | 'financeiro' | 'tecnico' | 'posvenda' | 'sla'
 
 function fmt(v: number) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
 function fmtNum(v: number, decimals = 0) { return v.toLocaleString('pt-BR', { maximumFractionDigits: decimals }) }
@@ -253,6 +254,8 @@ export default function RelatoriosClient() {
   const [leadsRanking, setLeadsRanking] = useState<RankingVendedorRow[] | null>(null)
   const [financeiroData, setFinanceiroData] = useState<FinanceiroSummary | null>(null)
   const [tecnicoData, setTecnicoData] = useState<TecnicoSummary | null>(null)
+  const [posVendaData, setPosVendaData] = useState<PosVendaSummary | null>(null)
+  const [slaData, setSlaData] = useState<SlaSummary | null>(null)
 
   const filter: RelatorioFilter = { dateFrom: dateFrom || null, dateTo: dateTo || null }
 
@@ -262,6 +265,8 @@ export default function RelatoriosClient() {
       else if (tab === 'leads') { const d = await getLeadsData(filter); setLeadsOrigens(d.origens); setLeadsRanking(d.ranking) }
       else if (tab === 'financeiro') setFinanceiroData(await getFinanceiroData(filter))
       else if (tab === 'tecnico') setTecnicoData(await getTecnicoData(filter))
+      else if (tab === 'posvenda') setPosVendaData(await getPosVendaData(filter))
+      else if (tab === 'sla') setSlaData(await getSlaData())
     })
   }
 
@@ -270,6 +275,8 @@ export default function RelatoriosClient() {
     { key: 'leads', label: 'Leads' },
     { key: 'financeiro', label: 'Financeiro' },
     { key: 'tecnico', label: 'Técnico' },
+    { key: 'posvenda', label: 'Pós-Venda' },
+    { key: 'sla', label: 'SLA' },
   ]
 
   return (
@@ -297,7 +304,69 @@ export default function RelatoriosClient() {
         {tab === 'leads' && <AbaLeads origens={leadsOrigens} ranking={leadsRanking} />}
         {tab === 'financeiro' && <AbaFinanceiro data={financeiroData} />}
         {tab === 'tecnico' && <AbaTecnico data={tecnicoData} />}
+        {tab === 'posvenda' && <AbaPosVenda data={posVendaData} />}
+        {tab === 'sla' && <AbaSla data={slaData} />}
       </div>
+    </div>
+  )
+}
+
+// ── Aba Pós-Venda ──────────────────────────────────────────────
+function AbaPosVenda({ data }: { data: PosVendaSummary | null }) {
+  if (!data) return <EmptyState />
+  return (
+    <div id="print-area" className="space-y-6">
+      <h2 className="text-white font-bold text-lg">Relatório Pós-Venda</h2>
+      <div className="grid grid-cols-3 gap-3">
+        <KpiCard label="NPS Médio" value={data.nps_medio != null ? `${data.nps_medio.toFixed(1)} / 10` : '—'} />
+        <KpiCard label="Pós-Obras Realizadas" value={`${data.concluidos} / ${data.total_pos_obra}`} />
+        <KpiCard label="Clientes com Expansão" value={String(data.clientes_expansao.length)} />
+      </div>
+
+      <h3 className="text-sm font-semibold text-white/70">Clientes com Potencial de Expansão</h3>
+      <TableWrapper>
+        <thead><tr><Th>Cliente</Th><Th>Cidade</Th><Th>Telefone</Th><Th>Potência</Th><Th>Inversor</Th><Th>Capacidade Extra</Th></tr></thead>
+        <tbody>
+          {data.clientes_expansao.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-white/30">Nenhum cliente com capacidade de expansão cadastrada</td></tr>}
+          {data.clientes_expansao.map((c, i) => (
+            <tr key={i}>
+              <Td>{c.nome}</Td>
+              <Td>{c.cidade ?? '—'}</Td>
+              <Td>{c.telefone ? formatPhone(c.telefone) : '—'}</Td>
+              <Td>{c.potencia_kwp ? `${c.potencia_kwp} kWp` : '—'}</Td>
+              <Td>{c.inversor_marca ?? '—'}</Td>
+              <Td highlight>{c.capacidade_extra}</Td>
+            </tr>
+          ))}
+        </tbody>
+      </TableWrapper>
+    </div>
+  )
+}
+
+// ── Aba SLA ────────────────────────────────────────────────────
+function AbaSla({ data }: { data: SlaSummary | null }) {
+  if (!data) return <EmptyState />
+  return (
+    <div id="print-area" className="space-y-6">
+      <h2 className="text-white font-bold text-lg">Indicadores de SLA</h2>
+      <div className="grid grid-cols-2 gap-3">
+        <KpiCard label="Prazo Médio Total (contrato)" value={data.prazo_medio_total != null ? `${data.prazo_medio_total} dias` : '—'} />
+      </div>
+
+      <h3 className="text-sm font-semibold text-white/70">Tempo Médio por Etapa</h3>
+      <TableWrapper>
+        <thead><tr><Th>Etapa</Th><Th>Tempo Médio</Th><Th>Total Registros</Th></tr></thead>
+        <tbody>
+          {data.etapas.map((e) => (
+            <tr key={e.etapa}>
+              <Td>{e.etapa}</Td>
+              <Td highlight>{e.tempo_medio_dias != null ? `${e.tempo_medio_dias} dias` : '—'}</Td>
+              <Td>{e.total_registros}</Td>
+            </tr>
+          ))}
+        </tbody>
+      </TableWrapper>
     </div>
   )
 }

@@ -152,16 +152,16 @@ export async function getPipelineCards(): Promise<PipelineCard[]> {
   ])
 
   return [
-    { label: 'Leads',             href: '/leads',             total: leadsTotal,       pending: leadsPending,       color: '#60a5fa' },
-    { label: 'Contratos',         href: '/contratos',         total: contratosTotal,   pending: contratosPending,   color: '#a78bfa' },
-    { label: 'Financeiro',        href: '/financeiro',        total: finClients,       pending: finPending,         color: '#34d399' },
-    { label: 'Projetos',          href: '/projetos',          total: projTotal,        pending: projPending,        color: '#fbbf24' },
-    { label: 'Compras',           href: '/compras',           total: compTotal,        pending: compPending,        color: '#f87171' },
-    { label: 'Comissões',         href: '/comissoes',         total: comTotal,         pending: comPending,         color: '#fb923c' },
-    { label: 'Entrega Material',  href: '/entrega-material',  total: entregaTotal,     pending: entregaPending,     color: '#38bdf8' },
-    { label: 'Obra',              href: '/obra',              total: obraTotal,        pending: obraPending,        color: '#4ade80' },
-    { label: 'Entrega da Obra',   href: '/entrega-obra',      total: entregaObraTotal, pending: entregaObraPending, color: '#c084fc' },
-    { label: 'Pós-Obra',          href: '/pos-obra',          total: posObraTotal,     pending: posObraPending,     color: '#FFD080' },
+    { label: 'Leads',             href: '/leads',             total: leadsTotal,       pending: leadsPending,       color: '#FFD080' },
+    { label: 'Contratos',         href: '/contratos',         total: contratosTotal,   pending: contratosPending,   color: '#E8B84D' },
+    { label: 'Financeiro',        href: '/financeiro',        total: finClients,       pending: finPending,         color: '#D4A03A' },
+    { label: 'Projetos',          href: '/projetos',          total: projTotal,        pending: projPending,        color: '#C08A28' },
+    { label: 'Compras',           href: '/compras',           total: compTotal,        pending: compPending,        color: '#FFD080' },
+    { label: 'Comissões',         href: '/comissoes',         total: comTotal,         pending: comPending,         color: '#E8B84D' },
+    { label: 'Entrega Material',  href: '/entrega-material',  total: entregaTotal,     pending: entregaPending,     color: '#D4A03A' },
+    { label: 'Obra',              href: '/obra',              total: obraTotal,        pending: obraPending,        color: '#C08A28' },
+    { label: 'Entrega da Obra',   href: '/entrega-obra',      total: entregaObraTotal, pending: entregaObraPending, color: '#FFD080' },
+    { label: 'Pós-Obra',          href: '/pos-obra',          total: posObraTotal,     pending: posObraPending,     color: '#E8B84D' },
   ]
 }
 

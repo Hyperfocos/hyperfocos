@@ -111,7 +111,11 @@ function ParcelaRow({
         <Button
           variant="secondary"
           className="text-xs py-1 px-2.5 flex-shrink-0"
-          onClick={() => onConfirm(p.id)}
+          onClick={() => {
+            if (window.confirm('Tem certeza que deseja confirmar este pagamento?\n\nATENÇÃO: Esta ação não poderá ser revertida. Certifique-se de que o pagamento foi realmente recebido.')) {
+              onConfirm(p.id)
+            }
+          }}
           loading={isPending}
           type="button"
         >
