@@ -9,10 +9,10 @@ const inputCls =
   'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
 const labelCls = 'block text-xs text-white/50 mb-1'
 const cardCls = 'rounded-2xl border border-white/10 p-5 space-y-4'
-const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+const cardStyle = { background: 'var(--theme-surface)' }
 const saveBtnCls =
   'px-5 py-2 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-50'
-const saveBtnStyle = { background: '#FFD080', color: '#0a0e1a' }
+const saveBtnStyle = { background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }
 
 function SectionFeedback({ result }: { result: { error?: string; success?: string } | null }) {
   if (!result) return null
@@ -399,7 +399,7 @@ export default function EmpresaTab({
               className={inputCls}
               placeholder="Ex: 60"
             />
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.25)' }}>Usado como padrão em novos contratos</p>
+            <p className="text-[10px] mt-1" style={{ color: 'var(--theme-text-subtle)' }}>Usado como padrão em novos contratos</p>
           </div>
         </div>
 

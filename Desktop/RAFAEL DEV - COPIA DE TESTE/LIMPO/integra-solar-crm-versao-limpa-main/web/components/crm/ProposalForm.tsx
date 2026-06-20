@@ -83,12 +83,12 @@ export function ProposalForm({ leadId, generationFactor, onSuccess, onCancel }: 
         style={{ background: 'rgba(255,200,100,0.06)', border: '1px solid rgba(255,200,100,0.15)' }}
       >
         <div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>Potência do sistema</p>
-          <p className="text-base font-semibold" style={{ color: '#FFD080' }}>{systemKwp.toFixed(2)} kWp</p>
+          <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>Potência do sistema</p>
+          <p className="text-base font-semibold" style={{ color: 'var(--theme-accent)' }}>{systemKwp.toFixed(2)} kWp</p>
         </div>
         <div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>Geração média/mês</p>
-          <p className="text-base font-semibold" style={{ color: '#FFD080' }}>{Math.round(monthlyGen)} kWh</p>
+          <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>Geração média/mês</p>
+          <p className="text-base font-semibold" style={{ color: 'var(--theme-accent)' }}>{Math.round(monthlyGen)} kWh</p>
         </div>
       </div>
 

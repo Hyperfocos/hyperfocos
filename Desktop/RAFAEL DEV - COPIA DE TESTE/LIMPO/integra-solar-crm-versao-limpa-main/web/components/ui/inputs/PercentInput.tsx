@@ -14,9 +14,9 @@ interface PercentInputProps {
 }
 
 const inputStyle = {
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  color: '#E0E8F0',
+  background: 'var(--theme-input-bg)',
+  border: '1px solid var(--theme-input-border)',
+  color: 'var(--theme-input-text)',
 }
 
 export function PercentInput({
@@ -47,7 +47,7 @@ export function PercentInput({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <label className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-muted)' }}>
           {label}{required && ' *'}
         </label>
       )}
@@ -67,7 +67,7 @@ export function PercentInput({
             cursor: disabled ? 'not-allowed' : 'text',
           }}
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'rgba(255,255,255,0.40)' }}>%</span>
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--theme-text-muted)' }}>%</span>
       </div>
       {name && <input type="hidden" name={name} value={isNaN(rawValue) ? '' : rawValue.toFixed(2)} />}
       {error && <p className="text-xs" style={{ color: '#FF9090' }}>{error}</p>}

@@ -40,12 +40,12 @@ export default function TreinamentoPage() {
           <div
             key={i}
             className="rounded-2xl border border-white/10 overflow-hidden"
-            style={{ background: 'rgba(255,255,255,0.04)' }}
+            style={{ background: 'var(--theme-surface)' }}
           >
             {/* Thumbnail */}
             <div
               className="relative aspect-video flex items-center justify-center"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
+              style={{ background: 'var(--theme-input-bg)' }}
             >
               {video.youtubeId ? (
                 <>
@@ -59,12 +59,12 @@ export default function TreinamentoPage() {
                       className="w-12 h-12 rounded-full flex items-center justify-center"
                       style={{ background: 'rgba(255,208,128,0.9)' }}
                     >
-                      <Play size={20} style={{ color: '#1A1A1A', marginLeft: 2 }} />
+                      <Play size={20} style={{ color: 'var(--theme-accent-text)', marginLeft: 2 }} />
                     </div>
                   </div>
                 </>
               ) : (
-                <Play size={32} style={{ color: 'rgba(255,255,255,0.15)' }} />
+                <Play size={32} style={{ color: 'var(--theme-text-subtle)' }} />
               )}
             </div>
 
@@ -76,7 +76,7 @@ export default function TreinamentoPage() {
                 onClick={() => video.youtubeId && setActiveVideo(video)}
                 disabled={!video.youtubeId}
                 className="px-4 py-2 rounded-xl text-xs font-semibold transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed"
-                style={{ background: '#FFD080', color: '#1A1A1A' }}
+                style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
               >
                 Assistir
               </button>

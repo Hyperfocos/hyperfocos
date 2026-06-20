@@ -9,7 +9,7 @@ const inputCls =
   'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
 const labelCls = 'block text-xs text-white/50 mb-1'
 const cardCls = 'rounded-2xl border border-white/10 p-5 space-y-4'
-const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+const cardStyle = { background: 'var(--theme-surface)' }
 
 const MODULES = [
   { key: 'dashboard', label: 'Dashboard' },
@@ -260,7 +260,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-white/10 transition-colors"
               >
-                {showPassword ? <EyeOff size={14} style={{ color: 'rgba(255,255,255,0.35)' }} /> : <Eye size={14} style={{ color: 'rgba(255,255,255,0.35)' }} />}
+                {showPassword ? <EyeOff size={14} style={{ color: 'var(--theme-text-subtle)' }} /> : <Eye size={14} style={{ color: 'var(--theme-text-subtle)' }} />}
               </button>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
               <option value="financeiro">Financeiro</option>
               <option value="compras">Compras / Logística</option>
             </select>
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <p className="text-[10px] mt-1" style={{ color: 'var(--theme-text-subtle)' }}>
               As permissões são preenchidas automaticamente ao selecionar a função. Você pode ajustá-las manualmente abaixo.
             </p>
           </div>
@@ -315,7 +315,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
         <div className="flex items-center gap-3 pt-2">
           <button
             className="px-5 py-2 rounded-lg font-semibold text-sm transition-opacity disabled:opacity-50"
-            style={{ background: '#FFD080', color: '#0a0e1a' }}
+            style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
             disabled={addPending}
             onClick={handleAdd}
           >

@@ -42,12 +42,12 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
       {/* Toolbar */}
       <div
         className="flex items-center gap-3 px-6 py-3 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ borderBottom: '1px solid var(--theme-border)' }}
       >
         {/* Toggle kanban/list */}
         <div
           className="flex rounded-xl overflow-hidden"
-          style={{ border: '1px solid rgba(255,255,255,0.10)' }}
+          style={{ border: '1px solid var(--theme-input-border)' }}
         >
           {(['kanban', 'list'] as const).map((v) => (
             <button
@@ -56,8 +56,8 @@ export function LeadsClient({ initialLeads, stages, sources, members }: LeadsCli
               className="px-3 py-1.5 text-xs font-medium transition-all"
               style={
                 view === v
-                  ? { background: 'rgba(255,200,100,0.15)', color: '#FFD080' }
-                  : { color: 'rgba(255,255,255,0.40)' }
+                  ? { background: 'rgba(255,200,100,0.15)', color: 'var(--theme-accent)' }
+                  : { color: 'var(--theme-text-muted)' }
               }
             >
               {v === 'kanban' ? '⊞ Kanban' : '☰ Lista'}

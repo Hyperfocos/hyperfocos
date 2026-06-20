@@ -29,7 +29,7 @@ export default function ComissaoDetail({ comissao }: { comissao: ComissaoItem })
   }
 
   const cardCls = 'rounded-2xl border border-white/10 p-5 space-y-3'
-  const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+  const cardStyle = { background: 'var(--theme-surface)' }
   const labelCls = 'text-xs text-white/50'
   const valueCls = 'text-sm text-white font-medium'
 
@@ -61,7 +61,7 @@ export default function ComissaoDetail({ comissao }: { comissao: ComissaoItem })
           </div>
           <div>
             <p className={labelCls}>Valor da Comissão</p>
-            <p className="text-xl font-bold" style={{ color: '#FFD080' }}>
+            <p className="text-xl font-bold" style={{ color: 'var(--theme-accent)' }}>
               {formatCurrency(comissao.valor_comissao)}
             </p>
           </div>
@@ -82,7 +82,7 @@ export default function ComissaoDetail({ comissao }: { comissao: ComissaoItem })
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs underline"
-            style={{ color: '#FFD080' }}
+            style={{ color: 'var(--theme-accent)' }}
           >
             Ver comprovante
           </a>
@@ -117,7 +117,7 @@ export default function ComissaoDetail({ comissao }: { comissao: ComissaoItem })
             onClick={handleMarkPaid}
             disabled={isPending}
             className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50"
-            style={{ background: '#FFD080', color: '#0a0e1a' }}
+            style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
           >
             {isPending ? 'Processando…' : 'Marcar como Paga'}
           </button>

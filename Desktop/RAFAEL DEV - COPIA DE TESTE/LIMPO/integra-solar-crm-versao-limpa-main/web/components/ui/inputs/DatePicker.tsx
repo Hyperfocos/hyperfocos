@@ -47,25 +47,25 @@ function CalendarGrid({
     <div style={{ width: 280, padding: '16px 14px' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.85)', textTransform: 'capitalize' }}>
+        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--theme-text)', textTransform: 'capitalize' }}>
           {format(month, 'MMMM yyyy', { locale: ptBR })}
         </span>
         <div style={{ display: 'flex', gap: 4 }}>
           <button
             type="button"
             onClick={() => onMonthChange(subMonths(month, 1))}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, color: 'rgba(255,255,255,0.35)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, color: 'var(--theme-text-subtle)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--theme-text-muted)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--theme-text-subtle)')}
           >
             <ChevronLeft size={16} />
           </button>
           <button
             type="button"
             onClick={() => onMonthChange(addMonths(month, 1))}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, color: 'rgba(255,255,255,0.35)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, color: 'var(--theme-text-subtle)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--theme-text-muted)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--theme-text-subtle)')}
           >
             <ChevronRight size={16} />
           </button>
@@ -77,7 +77,7 @@ function CalendarGrid({
         {WEEKDAYS.map((d) => (
           <span
             key={d}
-            style={{ fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.5px', padding: '4px 0' }}
+            style={{ fontSize: 10, fontWeight: 500, color: 'var(--theme-text-subtle)', letterSpacing: '0.5px', padding: '4px 0' }}
           >
             {d}
           </span>
@@ -92,16 +92,16 @@ function CalendarGrid({
           const isSelected = selected && isSameDay(day, selected)
 
           let bg = 'transparent'
-          let color = isCurrentMonth ? 'rgba(255,255,255,0.70)' : 'rgba(255,255,255,0.15)'
+          let color = isCurrentMonth ? 'var(--theme-text-muted)' : 'var(--theme-text-subtle)'
           let fontWeight: number = 400
 
           if (isSelected) {
-            bg = '#FFD080'
-            color = '#0a0e1a'
+            bg = 'var(--theme-accent)'
+            color = 'var(--theme-accent-text)'
             fontWeight = 500
           } else if (isToday) {
-            bg = 'rgba(255,255,255,0.12)'
-            color = 'rgba(255,255,255,0.90)'
+            bg = 'var(--theme-text-subtle)'
+            color = 'var(--theme-text)'
             fontWeight = 500
           }
 
@@ -122,11 +122,11 @@ function CalendarGrid({
                 transition: 'background 0.12s',
               }}
               onMouseEnter={(e) => {
-                if (!isSelected && isCurrentMonth) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+                if (!isSelected && isCurrentMonth) e.currentTarget.style.background = 'var(--theme-input-bg)'
               }}
               onMouseLeave={(e) => {
                 if (!isSelected && !isToday) e.currentTarget.style.background = 'transparent'
-                else if (isToday && !isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.12)'
+                else if (isToday && !isSelected) e.currentTarget.style.background = 'var(--theme-text-subtle)'
               }}
             >
               {day.getDate()}
@@ -195,7 +195,7 @@ export function DatePicker({
   return (
     <div className="flex flex-col gap-1.5 relative" ref={ref}>
       {label && (
-        <label className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <label className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-muted)' }}>
           {label}{required && ' *'}
         </label>
       )}
@@ -209,9 +209,9 @@ export function DatePicker({
         disabled={disabled}
         className="w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition-all"
         style={{
-          background: 'rgba(255,255,255,0.06)',
-          border: error ? '1px solid rgba(255,100,100,0.5)' : '1px solid rgba(255,255,255,0.10)',
-          color: '#E0E8F0',
+          background: 'var(--theme-input-bg)',
+          border: error ? '1px solid rgba(255,100,100,0.5)' : '1px solid var(--theme-input-border)',
+          color: 'var(--theme-input-text)',
           cursor: disabled ? 'not-allowed' : 'text',
         }}
       />
@@ -222,8 +222,8 @@ export function DatePicker({
         <div
           className="absolute z-50 top-full mt-1 rounded-xl overflow-hidden"
           style={{
-            background: '#0f1424',
-            border: '1px solid rgba(255,255,255,0.10)',
+            background: 'var(--theme-drawer-bg)',
+            border: '1px solid var(--theme-input-border)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           }}
         >

@@ -16,15 +16,15 @@ export default async function ConfigurarFunilPage() {
         <Link
           href="/leads"
           className="text-xs"
-          style={{ color: 'rgba(255,255,255,0.40)' }}
+          style={{ color: 'var(--theme-text-muted)' }}
         >
           ← CRM / Leads
         </Link>
-        <h1 className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.90)' }}>
+        <h1 className="text-lg font-semibold" style={{ color: 'var(--theme-text)' }}>
           Configurar funil
         </h1>
       </div>
-      <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.40)' }}>
+      <p className="text-sm mb-6" style={{ color: 'var(--theme-text-muted)' }}>
         Arraste para reordenar as etapas. Clique em &quot;editar&quot; para renomear ou trocar a cor.
       </p>
       <FunnelConfig initialStages={stages} />

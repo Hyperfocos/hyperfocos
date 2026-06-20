@@ -31,7 +31,7 @@ export default function PosObraClientComponent({ posObras }: { posObras: POClien
         </div>
         <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente ou cidade..." />
       </div>
-      <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'rgba(255,255,255,0.04)' }}>
+      <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'var(--theme-surface)' }}>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10 text-white/50">
@@ -64,7 +64,7 @@ export default function PosObraClientComponent({ posObras }: { posObras: POClien
                   <Link
                     href={`/pos-obra/${e.client_id}`}
                     className="text-xs px-3 py-1.5 rounded-lg border transition-colors"
-                    style={{ borderColor: 'rgba(255,208,128,0.4)', color: '#FFD080' }}
+                    style={{ borderColor: 'rgba(255,208,128,0.4)', color: 'var(--theme-accent)' }}
                   >
                     Ver
                   </Link>

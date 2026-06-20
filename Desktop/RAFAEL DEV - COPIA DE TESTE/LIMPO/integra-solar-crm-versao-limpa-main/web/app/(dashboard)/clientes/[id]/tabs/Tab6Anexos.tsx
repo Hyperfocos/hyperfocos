@@ -22,10 +22,10 @@ function AttachmentRow({ client, type, label }: { client: Client; type: string; 
   return (
     <div
       className="flex items-center gap-3 p-3 rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>{label}</p>
+        <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>{label}</p>
         {existing ? (
           <a
             href={existing.file_url}
@@ -37,15 +37,15 @@ function AttachmentRow({ client, type, label }: { client: Client; type: string; 
             Arquivo enviado — ver →
           </a>
         ) : (
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>Não enviado</p>
+          <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Não enviado</p>
         )}
       </div>
       <label
         className="flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
         style={{
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          color: 'rgba(255,255,255,0.60)',
+          background: 'var(--theme-input-bg)',
+          border: '1px solid var(--theme-input-border)',
+          color: 'var(--theme-text-muted)',
         }}
       >
         <input
@@ -79,10 +79,10 @@ export function Tab6Anexos({ client }: { client: Client }) {
   return (
     <div className="flex flex-col gap-4 max-w-lg">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-muted)' }}>
           Documentos e Fotos
         </p>
-        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <span className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
           {uploadedCount}/{ATTACHMENT_TYPES.length} enviados
         </span>
       </div>
@@ -100,7 +100,7 @@ export function Tab6Anexos({ client }: { client: Client }) {
         className="flex items-center justify-between p-3 rounded-xl mt-2"
         style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.15)' }}
       >
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.60)' }}>
+        <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
           {client.completed_tabs?.tab6 ? 'Anexos confirmados ✓' : 'Marcar esta aba como concluída'}
         </p>
         <Button

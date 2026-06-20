@@ -81,7 +81,7 @@ export default function EntregaMaterialDetail({
   const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
   const labelCls = 'block text-xs text-white/50 mb-1'
   const cardCls = 'rounded-2xl border border-white/10 p-5 space-y-4'
-  const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+  const cardStyle = { background: 'var(--theme-surface)' }
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto">
@@ -151,7 +151,7 @@ export default function EntregaMaterialDetail({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative rounded-xl overflow-hidden group"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', aspectRatio: '1' }}
+                  style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-card-border)', aspectRatio: '1' }}
                 >
                   {isVideo ? (
                     <div className="w-full h-full flex items-center justify-center">
@@ -164,7 +164,7 @@ export default function EntregaMaterialDetail({
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ background: 'rgba(0,0,0,0.5)' }}
                   >
-                    <ExternalLink size={18} style={{ color: '#FFD080' }} />
+                    <ExternalLink size={18} style={{ color: 'var(--theme-accent)' }} />
                   </div>
                 </a>
               )
@@ -184,7 +184,7 @@ export default function EntregaMaterialDetail({
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
           className="flex items-center gap-2 text-xs px-4 py-2 rounded-xl transition-colors hover:bg-white/10"
-          style={{ color: 'rgba(255,255,255,0.40)', border: '1px dashed rgba(255,255,255,0.15)' }}
+          style={{ color: 'var(--theme-text-muted)', border: '1px dashed var(--theme-border)' }}
         >
           <Plus size={14} />
           {uploading ? 'Enviando...' : 'Adicionar foto ou vídeo'}
@@ -193,7 +193,7 @@ export default function EntregaMaterialDetail({
 
       {error && <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">{error}</p>}
       {success && <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-2">{success}</p>}
-      <button onClick={handleSave} disabled={isPending} className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50" style={{ background: '#FFD080', color: '#0a0e1a' }}>
+      <button onClick={handleSave} disabled={isPending} className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50" style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}>
         {isPending ? 'Salvando…' : 'Salvar e liberar para Obra'}
       </button>
     </div>

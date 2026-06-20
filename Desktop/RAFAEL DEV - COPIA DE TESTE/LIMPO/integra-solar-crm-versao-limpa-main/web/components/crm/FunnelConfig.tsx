@@ -58,8 +58,8 @@ function StageRow({ stage, stages, onUpdate }: { stage: FunnelStage; stages: Fun
     <div ref={setNodeRef} style={style} className="mb-2">
       <div
         style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--theme-surface)',
+          border: '1px solid var(--theme-card-border)',
           borderRadius: 12,
           padding: '10px 12px',
           display: 'flex',
@@ -71,7 +71,7 @@ function StageRow({ stage, stages, onUpdate }: { stage: FunnelStage; stages: Fun
           {...attributes}
           {...listeners}
           className="cursor-grab text-sm flex-shrink-0"
-          style={{ color: 'rgba(255,255,255,0.25)' }}
+          style={{ color: 'var(--theme-text-subtle)' }}
         >
           ⠿
         </span>
@@ -87,7 +87,7 @@ function StageRow({ stage, stages, onUpdate }: { stage: FunnelStage; stages: Fun
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="flex-1 bg-transparent text-sm outline-none"
-              style={{ color: '#E0E8F0' }}
+              style={{ color: 'var(--theme-input-text)' }}
             />
             <div className="flex gap-1">
               {COLORS.map((c) => (
@@ -108,12 +108,12 @@ function StageRow({ stage, stages, onUpdate }: { stage: FunnelStage; stages: Fun
             <Button variant="ghost" className="text-xs py-1 px-2" onClick={() => setEditing(false)} type="button">×</Button>
           </div>
         ) : (
-          <span className="flex-1 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>{stage.name}</span>
+          <span className="flex-1 text-sm" style={{ color: 'var(--theme-text)' }}>{stage.name}</span>
         )}
 
         {!editing && (
           <div className="flex gap-2 ml-auto">
-            <button type="button" onClick={() => setEditing(true)} className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>editar</button>
+            <button type="button" onClick={() => setEditing(true)} className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>editar</button>
             <button type="button" onClick={handleDelete} disabled={isPending} className="text-xs" style={{ color: 'rgba(255,80,80,0.50)' }}>excluir</button>
           </div>
         )}
@@ -170,9 +170,9 @@ export function FunnelConfig({ initialStages }: { initialStages: FunnelStage[] }
           onKeyDown={(e) => e.key === 'Enter' && addStage()}
           className="flex-1 rounded-xl px-3.5 py-2.5 text-sm outline-none"
           style={{
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.10)',
-            color: '#E0E8F0',
+            background: 'var(--theme-input-bg)',
+            border: '1px solid var(--theme-input-border)',
+            color: 'var(--theme-input-text)',
           }}
         />
         <Button className="text-xs px-4" onClick={addStage} loading={isPending} type="button">

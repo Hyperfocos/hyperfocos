@@ -12,16 +12,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary: {
         background: 'linear-gradient(135deg, rgba(255,180,50,0.25), rgba(255,220,100,0.15))',
         border: '1px solid rgba(255,180,50,0.3)',
-        color: '#FFD080',
+        color: 'var(--theme-accent)',
       },
       secondary: {
-        background: 'rgba(255,255,255,0.07)',
-        border: '1px solid rgba(255,255,255,0.10)',
-        color: 'rgba(255,255,255,0.70)',
+        background: 'var(--theme-input-bg)',
+        border: '1px solid var(--theme-input-border)',
+        color: 'var(--theme-text-muted)',
       },
       ghost: {
         background: 'transparent',
-        color: 'rgba(255,255,255,0.60)',
+        color: 'var(--theme-text-muted)',
       },
     }
 

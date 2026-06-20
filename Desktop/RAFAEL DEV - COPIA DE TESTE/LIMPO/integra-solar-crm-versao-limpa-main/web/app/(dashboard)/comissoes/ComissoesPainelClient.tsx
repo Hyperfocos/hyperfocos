@@ -50,7 +50,7 @@ export default function ComissoesPainelClient({
     router.push(`${pathname}?${sp.toString()}`)
   }
 
-  const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+  const cardStyle = { background: 'var(--theme-surface)' }
 
   return (
     <div className="p-6 space-y-6">
@@ -96,7 +96,7 @@ export default function ComissoesPainelClient({
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-2xl border border-white/10 p-5" style={cardStyle}>
           <p className="text-xs text-white/50 mb-1">Total Pendente</p>
-          <p className="text-2xl font-bold" style={{ color: '#FFD080' }}>
+          <p className="text-2xl font-bold" style={{ color: 'var(--theme-accent)' }}>
             {formatCurrency(painel.total_pendente)}
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function ComissoesPainelClient({
                   <Link
                     href={`/comissoes/${c.id}`}
                     className="text-xs px-3 py-1.5 rounded-lg border transition-colors"
-                    style={{ borderColor: 'rgba(255,208,128,0.4)', color: '#FFD080' }}
+                    style={{ borderColor: 'rgba(255,208,128,0.4)', color: 'var(--theme-accent)' }}
                   >
                     Ver
                   </Link>

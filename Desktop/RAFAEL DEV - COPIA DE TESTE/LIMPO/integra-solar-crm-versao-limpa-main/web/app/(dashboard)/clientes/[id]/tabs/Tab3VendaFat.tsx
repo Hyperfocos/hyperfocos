@@ -27,9 +27,9 @@ type ProposalOption = {
 }
 
 const selectStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  color: '#E0E8F0',
+  background: 'var(--theme-input-bg)',
+  border: '1px solid var(--theme-input-border)',
+  color: 'var(--theme-input-text)',
   borderRadius: 12,
   padding: '10px 14px',
   fontSize: 14,
@@ -42,7 +42,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
-  color: 'rgba(255,255,255,0.40)',
+  color: 'var(--theme-text-muted)',
   marginBottom: 6,
   display: 'block',
 }
@@ -126,7 +126,7 @@ export function Tab3VendaFat({ client }: { client: Client }) {
     <form action={formAction} className="flex flex-col gap-5 max-w-lg">
       {/* Dados da venda */}
       <div className="flex flex-col gap-4">
-        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-muted)' }}>
           Dados da Venda
         </p>
 
@@ -157,7 +157,7 @@ export function Tab3VendaFat({ client }: { client: Client }) {
             style={{ background: 'rgba(255,200,100,0.04)', border: '1px solid rgba(255,200,100,0.10)' }}
           >
             <span className="text-xs text-white/50 uppercase tracking-wide">Valor da proposta</span>
-            <span className="text-sm font-semibold" style={{ color: '#FFD080' }}>{formatCurrency(proposalValue)}</span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--theme-accent)' }}>{formatCurrency(proposalValue)}</span>
           </div>
         )}
 
@@ -210,12 +210,12 @@ export function Tab3VendaFat({ client }: { client: Client }) {
       {/* Parcelas */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
+          <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-muted)' }}>
             Parcelas
           </p>
           <span
             className="text-xs"
-            style={{ color: installmentsMismatch ? '#EF4444' : 'rgba(255,255,255,0.35)' }}
+            style={{ color: installmentsMismatch ? '#EF4444' : 'var(--theme-text-subtle)' }}
           >
             Total: {formatCurrency(totalInstallments)}
           </span>
@@ -234,10 +234,10 @@ export function Tab3VendaFat({ client }: { client: Client }) {
           <div
             key={idx}
             className="rounded-xl p-3 flex flex-col gap-2"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold" style={{ color: idx === 0 ? '#FFD080' : 'rgba(255,255,255,0.50)' }}>
+              <span className="text-xs font-semibold" style={{ color: idx === 0 ? 'var(--theme-accent)' : 'var(--theme-text-muted)' }}>
                 {idx === 0 ? 'Parcela 1 (Entrada)' : `Parcela ${idx + 1}`}
               </span>
               {installments.length > 1 && (

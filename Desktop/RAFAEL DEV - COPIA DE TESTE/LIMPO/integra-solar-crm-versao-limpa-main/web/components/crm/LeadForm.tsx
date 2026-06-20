@@ -31,9 +31,9 @@ export function LeadForm({ lead, stages, sources, members, onSuccess }: LeadForm
   )
 
   const selectStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.10)',
-    color: '#E0E8F0',
+    background: 'var(--theme-input-bg)',
+    border: '1px solid var(--theme-input-border)',
+    color: 'var(--theme-input-text)',
     borderRadius: 12,
     padding: '10px 14px',
     fontSize: 14,
@@ -46,7 +46,7 @@ export function LeadForm({ lead, stages, sources, members, onSuccess }: LeadForm
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.06em',
-    color: 'rgba(255,255,255,0.40)',
+    color: 'var(--theme-text-muted)',
     marginBottom: 6,
     display: 'block',
   }

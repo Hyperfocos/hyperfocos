@@ -7,10 +7,10 @@ export function TopBar({ title }: TopBarProps) {
     <header
       className="fixed left-56 right-0 top-0 h-14 flex items-center px-6 z-40"
       style={{
-        background: 'rgba(255,255,255,0.05)',
+        background: 'var(--theme-surface)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid var(--theme-border)',
       }}
     >
       <h1 className="text-[15px] font-bold text-white/90">{title}</h1>

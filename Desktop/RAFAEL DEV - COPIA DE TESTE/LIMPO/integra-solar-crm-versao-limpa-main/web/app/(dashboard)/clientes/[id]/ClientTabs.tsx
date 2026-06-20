@@ -37,7 +37,7 @@ export function ClientTabs({ client }: { client: Client }) {
       {/* Tab nav */}
       <div
         className="flex gap-1 px-6 py-3 flex-shrink-0 overflow-x-auto"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ borderBottom: '1px solid var(--theme-border)' }}
       >
         {TABS.map((tab) => (
           <button
@@ -46,8 +46,8 @@ export function ClientTabs({ client }: { client: Client }) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex-shrink-0"
             style={
               active === tab.key
-                ? { background: 'rgba(255,200,100,0.12)', color: '#FFD080' }
-                : { color: 'rgba(255,255,255,0.40)' }
+                ? { background: 'rgba(255,200,100,0.12)', color: 'var(--theme-accent)' }
+                : { color: 'var(--theme-text-muted)' }
             }
           >
             {isDone(tab.key) && (

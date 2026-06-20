@@ -35,7 +35,7 @@ export default function AuditoriaTab({
     <div className="space-y-4">
       <div
         className="rounded-2xl border border-white/10 p-5 space-y-4"
-        style={{ background: 'rgba(255,255,255,0.04)' }}
+        style={{ background: 'var(--theme-surface)' }}
       >
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-white">Log de Auditoria</h2>

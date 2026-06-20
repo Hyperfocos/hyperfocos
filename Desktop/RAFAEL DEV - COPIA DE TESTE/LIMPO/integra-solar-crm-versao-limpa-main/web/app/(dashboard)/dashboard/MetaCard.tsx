@@ -32,7 +32,7 @@ export default function MetaCard({ meta }: { meta: MetaData }) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-white/50">Meta Mensal</span>
-            <span className="text-xs font-semibold" style={{ color: '#FFD080' }}>{pctMes.toFixed(0)}%</span>
+            <span className="text-xs font-semibold" style={{ color: 'var(--theme-accent)' }}>{pctMes.toFixed(0)}%</span>
           </div>
           <ProgressBar value={meta.realizado_mes} max={meta.meta_mensal} color="#FFD080" />
           <div className="flex items-center justify-between text-xs text-white/40">

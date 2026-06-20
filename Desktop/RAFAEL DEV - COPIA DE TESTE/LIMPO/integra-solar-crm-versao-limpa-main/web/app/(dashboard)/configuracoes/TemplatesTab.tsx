@@ -71,7 +71,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
         <button
           onClick={() => { setShowUpload(true); setError(null) }}
           className="px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all"
-          style={{ background: '#FFD080', color: '#1A1A1A' }}
+          style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
         >
           + Novo Template
         </button>
@@ -80,7 +80,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
       {showUpload && (
         <div
           className="rounded-2xl p-5 border border-white/10 space-y-4"
-          style={{ background: 'rgba(255,255,255,0.04)' }}
+          style={{ background: 'var(--theme-surface)' }}
         >
           <h3 className="text-sm font-semibold text-white">Enviar Template</h3>
           <div className="space-y-3">
@@ -124,7 +124,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
               onClick={handleUpload}
               disabled={isPending}
               className="flex-1 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 disabled:opacity-50 transition-all"
-              style={{ background: '#FFD080', color: '#1A1A1A' }}
+              style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
             >
               {isPending ? 'Enviando...' : 'Enviar'}
             </button>
@@ -141,7 +141,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
       {/* Placeholders disponíveis */}
       <div
         className="rounded-2xl p-5 border border-white/10 space-y-4"
-        style={{ background: 'rgba(255,255,255,0.03)' }}
+        style={{ background: 'var(--theme-surface)' }}
       >
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-white">Placeholders Disponíveis</h3>
@@ -181,14 +181,14 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
             ]},
           ].map(({ group, items }) => (
             <div key={group} className="mb-3">
-              <p className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: '#FFD080' }}>
+              <p className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'var(--theme-accent)' }}>
                 {group}
               </p>
               {items.map(([tag, desc]) => (
                 <div key={tag} className="flex items-baseline gap-2 py-0.5">
                   <code
                     className="text-xs px-1.5 py-0.5 rounded flex-shrink-0"
-                    style={{ background: 'rgba(255,208,128,0.1)', color: '#FFD080' }}
+                    style={{ background: 'rgba(255,208,128,0.1)', color: 'var(--theme-accent)' }}
                   >
                     {`{{${tag}}}`}
                   </code>
@@ -205,7 +205,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
           <div
             key={t.id}
             className="rounded-xl p-4 border border-white/10 flex items-center justify-between gap-4"
-            style={{ background: 'rgba(255,255,255,0.04)' }}
+            style={{ background: 'var(--theme-surface)' }}
           >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -213,7 +213,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
                 {t.is_default && (
                   <span
                     className="text-xs px-2 py-0.5 rounded-full"
-                    style={{ background: 'rgba(255,208,128,0.15)', color: '#FFD080', border: '1px solid rgba(255,208,128,0.3)' }}
+                    style={{ background: 'rgba(255,208,128,0.15)', color: 'var(--theme-accent)', border: '1px solid rgba(255,208,128,0.3)' }}
                   >
                     Padrão
                   </span>
@@ -234,7 +234,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
                   onClick={() => handleSetDefault(t)}
                   disabled={isPending}
                   className="text-xs px-3 py-1.5 rounded-lg text-white/50 hover:text-white transition-colors"
-                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                  style={{ background: 'var(--theme-input-bg)' }}
                 >
                   Definir padrão
                 </button>
@@ -243,7 +243,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
                 onClick={() => handleToggleActive(t)}
                 disabled={isPending}
                 className="text-xs px-3 py-1.5 rounded-lg text-white/50 hover:text-white transition-colors"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
+                style={{ background: 'var(--theme-input-bg)' }}
               >
                 {t.is_active ? 'Desativar' : 'Ativar'}
               </button>
@@ -268,7 +268,7 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
                 <button
                   onClick={() => setConfirmDelete(t.id)}
                   className="text-xs px-3 py-1.5 rounded-lg text-red-400/70 hover:text-red-400 transition-colors"
-                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                  style={{ background: 'var(--theme-input-bg)' }}
                 >
                   Excluir
                 </button>

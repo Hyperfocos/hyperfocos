@@ -66,7 +66,7 @@ export default function EntregaObraDetail({
   const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
   const labelCls = 'block text-xs text-white/50 mb-1'
   const cardCls = 'rounded-2xl border border-white/10 p-5 space-y-4'
-  const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+  const cardStyle = { background: 'var(--theme-surface)' }
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto">
@@ -152,7 +152,7 @@ export default function EntregaObraDetail({
 
       {error && <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">{error}</p>}
       {success && <p className="text-green-400 text-sm bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-2">{success}</p>}
-      <button onClick={handleSave} disabled={isPending} className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50" style={{ background: '#FFD080', color: '#0a0e1a' }}>
+      <button onClick={handleSave} disabled={isPending} className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50" style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}>
         {isPending ? 'Salvando…' : 'Salvar e liberar Pós-Obra'}
       </button>
     </div>

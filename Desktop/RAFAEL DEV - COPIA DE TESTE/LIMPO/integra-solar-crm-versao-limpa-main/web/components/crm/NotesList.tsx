@@ -46,9 +46,9 @@ export function NotesList({ lead }: { lead: Lead }) {
           rows={3}
           className="w-full rounded-xl px-3.5 py-2.5 text-sm outline-none resize-none"
           style={{
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.10)',
-            color: '#E0E8F0',
+            background: 'var(--theme-input-bg)',
+            border: '1px solid var(--theme-input-border)',
+            color: 'var(--theme-input-text)',
           }}
         />
         <Button
@@ -63,7 +63,7 @@ export function NotesList({ lead }: { lead: Lead }) {
 
       <div className="flex flex-col gap-2">
         {notes.length === 0 && (
-          <p className="text-sm text-center py-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-sm text-center py-4" style={{ color: 'var(--theme-text-subtle)' }}>
             Nenhuma anotação ainda.
           </p>
         )}
@@ -71,11 +71,11 @@ export function NotesList({ lead }: { lead: Lead }) {
           <div
             key={note.id}
             className="rounded-xl p-3"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
           >
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.80)' }}>{note.content}</p>
+            <p className="text-sm" style={{ color: 'var(--theme-text)' }}>{note.content}</p>
             <div className="flex items-center justify-between mt-2">
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>
+              <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
                 {note.author?.full_name ?? 'Usuário'} · {new Date(note.created_at).toLocaleString('pt-BR')}
               </p>
               <button

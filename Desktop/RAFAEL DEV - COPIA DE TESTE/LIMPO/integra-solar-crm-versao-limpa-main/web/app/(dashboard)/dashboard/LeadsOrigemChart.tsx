@@ -11,7 +11,7 @@ export default function LeadsOrigemChart({ data }: { data: LeadOrigemItem[] }) {
   return (
     <div
       className="rounded-2xl border border-white/10 p-5 h-full"
-      style={{ background: 'rgba(255,255,255,0.04)' }}
+      style={{ background: 'var(--theme-surface)' }}
     >
       <h2 className="text-sm font-semibold text-white/70 mb-1">Leads por Origem</h2>
       <p className="text-2xl font-bold text-white mb-4">{total}</p>
@@ -37,7 +37,7 @@ export default function LeadsOrigemChart({ data }: { data: LeadOrigemItem[] }) {
               </Pie>
               <Tooltip
                 formatter={(value, name) => [value, name]}
-                contentStyle={{ background: '#0a0e1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'white' }}
+                contentStyle={{ background: 'var(--theme-drawer-bg)', border: '1px solid var(--theme-border)', borderRadius: 8, color: 'white' }}
               />
             </PieChart>
           </ResponsiveContainer>

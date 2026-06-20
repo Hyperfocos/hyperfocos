@@ -32,21 +32,21 @@ export function LeadCard({ lead, onClick }: LeadCardProps) {
       <div
         className="rounded-xl p-3 cursor-pointer"
         style={{
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--theme-surface)',
+          border: '1px solid var(--theme-card-border)',
         }}
         onClick={() => onClick(lead)}
       >
-        <p className="text-sm font-medium mb-1" style={{ color: 'rgba(255,255,255,0.85)' }}>
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--theme-text)' }}>
           {lead.name}
         </p>
         {lead.city && (
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>
+          <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>
             {lead.city}
           </p>
         )}
         {lead.phone && (
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-muted)' }}>
             {formatPhone(lead.phone)}
           </p>
         )}

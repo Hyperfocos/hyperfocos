@@ -55,7 +55,7 @@ export function LeadDrawer({ lead, isNew, stages, sources, members, onClose }: L
         <>
           <div
             className="flex gap-1 mb-5 -mx-5 px-5 pb-3"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+            style={{ borderBottom: '1px solid var(--theme-border)' }}
           >
             {tabs.map((t) => (
               <button
@@ -64,8 +64,8 @@ export function LeadDrawer({ lead, isNew, stages, sources, members, onClose }: L
                 className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                 style={
                   tab === t.key
-                    ? { background: 'rgba(255,200,100,0.12)', color: '#FFD080' }
-                    : { color: 'rgba(255,255,255,0.40)' }
+                    ? { background: 'rgba(255,200,100,0.12)', color: 'var(--theme-accent)' }
+                    : { color: 'var(--theme-text-muted)' }
                 }
               >
                 {t.label}
@@ -84,7 +84,7 @@ export function LeadDrawer({ lead, isNew, stages, sources, members, onClose }: L
               />
               <div
                 className="mt-5 pt-4 flex gap-2"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+                style={{ borderTop: '1px solid var(--theme-border)' }}
               >
                 {!lead.converted && (
                   <Button

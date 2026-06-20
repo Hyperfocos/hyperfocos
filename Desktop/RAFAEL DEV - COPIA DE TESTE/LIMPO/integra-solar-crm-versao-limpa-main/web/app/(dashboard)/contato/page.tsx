@@ -7,7 +7,7 @@ export default async function ContatoPage() {
   const items = [
     { icon: MessageCircle, label: 'WhatsApp', value: config.telefone, href: config.telefone ? `https://wa.me/55${config.telefone.replace(/\D/g, '')}` : null, color: '#25D366' },
     { icon: Phone, label: 'Telefone', value: config.telefone, href: config.telefone ? `tel:${config.telefone}` : null, color: '#60a5fa' },
-    { icon: Mail, label: 'E-mail', value: config.email, href: config.email ? `mailto:${config.email}` : null, color: '#FFD080' },
+    { icon: Mail, label: 'E-mail', value: config.email, href: config.email ? `mailto:${config.email}` : null, color: 'var(--theme-accent)' },
   ]
 
   return (
@@ -28,7 +28,7 @@ export default async function ContatoPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-4 p-4 rounded-xl transition-all hover:border-white/20"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-card-border)' }}
             >
               <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${item.color}15` }}>
                 <Icon size={20} style={{ color: item.color }} />

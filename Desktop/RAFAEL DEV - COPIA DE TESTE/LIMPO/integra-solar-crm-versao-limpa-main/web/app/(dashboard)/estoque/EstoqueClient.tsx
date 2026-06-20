@@ -99,16 +99,16 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
         <button
           onClick={openCreate}
           className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-          style={{ background: '#FFD080', color: '#1A1A1A' }}
+          style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
         >
           + Adicionar Item
         </button>
       </div>
 
-      <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'rgba(255,255,255,0.03)' }}>
+      <div className="rounded-2xl border border-white/10 overflow-hidden" style={{ background: 'var(--theme-surface)' }}>
         <table className="w-full text-sm">
           <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <tr style={{ borderBottom: '1px solid var(--theme-border)' }}>
               {['Nome', 'Descrição', 'Quantidade', 'Valor Unit.', 'Valor Total', ''].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-white/40">{h}</th>
               ))}
@@ -121,18 +121,18 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
               </tr>
             )}
             {items.map((item) => (
-              <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <tr key={item.id} style={{ borderBottom: '1px solid var(--theme-border)' }}>
                 <td className="px-4 py-3 text-white font-medium">{item.name}</td>
                 <td className="px-4 py-3 text-white/50 max-w-xs truncate">{item.description ?? '—'}</td>
                 <td className="px-4 py-3 text-white/80">{item.quantity}</td>
                 <td className="px-4 py-3 text-white/80">{formatCurrency(item.unit_value)}</td>
-                <td className="px-4 py-3 font-semibold" style={{ color: '#FFD080' }}>{formatCurrency(item.total_value)}</td>
+                <td className="px-4 py-3 font-semibold" style={{ color: 'var(--theme-accent)' }}>{formatCurrency(item.total_value)}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2 justify-end">
                     <button
                       onClick={() => openEdit(item)}
                       className="text-xs px-3 py-1.5 rounded-lg text-white/60 hover:text-white transition-colors"
-                      style={{ background: 'rgba(255,255,255,0.06)' }}
+                      style={{ background: 'var(--theme-input-bg)' }}
                     >
                       Editar
                     </button>
@@ -157,7 +157,7 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
                       <button
                         onClick={() => setConfirmDelete(item.id)}
                         className="text-xs px-3 py-1.5 rounded-lg text-red-400/70 hover:text-red-400 transition-colors"
-                        style={{ background: 'rgba(255,255,255,0.06)' }}
+                        style={{ background: 'var(--theme-input-bg)' }}
                       >
                         Excluir
                       </button>
@@ -172,7 +172,7 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }}>
-          <div className="w-full max-w-md rounded-2xl p-6 border border-white/10" style={{ background: '#0f1424' }}>
+          <div className="w-full max-w-md rounded-2xl p-6 border border-white/10" style={{ background: 'var(--theme-drawer-bg)' }}>
             <h2 className="text-lg font-bold text-white mb-5">
               {editing ? 'Editar Item' : 'Novo Item'}
             </h2>
@@ -182,7 +182,7 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
                 <label className="text-xs text-white/50 mb-1 block">Nome *</label>
                 <input
                   className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30"
-                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                  style={{ background: 'var(--theme-input-bg)' }}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="Ex: Painel Solar 550W"
@@ -196,7 +196,7 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
                     min="0"
                     step="0.001"
                     className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}
+                    style={{ background: 'var(--theme-input-bg)' }}
                     value={form.quantity}
                     onChange={(e) => setForm({ ...form, quantity: e.target.value })}
                     placeholder="0"
@@ -215,7 +215,7 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
                 <textarea
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-xl text-sm text-white outline-none border border-white/10 focus:border-white/30 resize-none"
-                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                  style={{ background: 'var(--theme-input-bg)' }}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   placeholder="Descrição opcional..."
@@ -236,7 +236,7 @@ export default function EstoqueClient({ initialItems }: { initialItems: StockIte
                 onClick={handleSave}
                 disabled={isPending}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 disabled:opacity-50"
-                style={{ background: '#FFD080', color: '#1A1A1A' }}
+                style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
               >
                 {isPending ? 'Salvando...' : 'Salvar'}
               </button>

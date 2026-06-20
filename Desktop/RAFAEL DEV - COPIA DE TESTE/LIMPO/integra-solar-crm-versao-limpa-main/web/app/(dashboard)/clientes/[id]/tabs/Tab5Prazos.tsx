@@ -41,8 +41,8 @@ export function Tab5Prazos({ client }: { client: Client }) {
           className="rounded-xl p-3"
           style={{ background: 'rgba(255,200,100,0.06)', border: '1px solid rgba(255,200,100,0.15)' }}
         >
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.40)' }}>Prazo de entrega calculado</p>
-          <p className="text-sm font-semibold mt-1" style={{ color: '#FFD080' }}>
+          <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>Prazo de entrega calculado</p>
+          <p className="text-sm font-semibold mt-1" style={{ color: 'var(--theme-accent)' }}>
             {new Date(
               new Date(client.contract_date).getTime() + client.contract_max_days * 86400000
             ).toLocaleDateString('pt-BR')}

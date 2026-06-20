@@ -46,13 +46,13 @@ function ParcelaRow({
   return (
     <div
       className="flex items-center gap-3 p-3 rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.80)' }}>
+        <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
           {p.position === 1 ? 'Entrada' : `Parcela ${p.position}`}
         </p>
-        <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>
           Venc: {new Date(p.due_date).toLocaleDateString('pt-BR')}
           {p.confirmed_at
             ? ` · Pago em: ${new Date(p.confirmed_at).toLocaleDateString('pt-BR')}`
@@ -60,7 +60,7 @@ function ParcelaRow({
         </p>
       </div>
 
-      <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'rgba(255,255,255,0.75)' }}>
+      <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'var(--theme-text)' }}>
         {formatBRL(p.amount)}
       </p>
 
@@ -72,7 +72,7 @@ function ParcelaRow({
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors hover:bg-white/10"
-            style={{ color: '#FFD080' }}
+            style={{ color: 'var(--theme-accent)' }}
             title="Ver comprovante"
           >
             <ExternalLink size={12} />
@@ -92,7 +92,7 @@ function ParcelaRow({
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
               className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-colors hover:bg-white/10"
-              style={{ color: 'rgba(255,255,255,0.35)' }}
+              style={{ color: 'var(--theme-text-subtle)' }}
               title="Anexar comprovante"
             >
               <Paperclip size={12} />
@@ -163,16 +163,16 @@ export function ParcelasClient({
       <div className="grid grid-cols-2 gap-3">
         <div
           className="p-3 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
         >
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Total da venda</p>
-          <p className="text-base font-semibold mt-1" style={{ color: '#FFD080' }}>{formatBRL(total)}</p>
+          <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Total da venda</p>
+          <p className="text-base font-semibold mt-1" style={{ color: 'var(--theme-accent)' }}>{formatBRL(total)}</p>
         </div>
         <div
           className="p-3 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
         >
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Confirmado</p>
+          <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Confirmado</p>
           <p className="text-base font-semibold mt-1" style={{ color: '#10B981' }}>{formatBRL(confirmadas)}</p>
         </div>
       </div>
@@ -203,10 +203,10 @@ export function ParcelasClient({
           style={{ background: 'rgba(255,200,100,0.05)', border: '1px solid rgba(255,200,100,0.15)' }}
         >
           <div>
-            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
               Avançar para Projetos
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>
               Quando o financeiro estiver em ordem
             </p>
           </div>

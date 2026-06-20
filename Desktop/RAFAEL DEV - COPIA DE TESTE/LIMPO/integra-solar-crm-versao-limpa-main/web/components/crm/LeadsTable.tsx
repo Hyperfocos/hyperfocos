@@ -13,7 +13,7 @@ export function LeadsTable({ leads, onLeadClick }: LeadsTableProps) {
   if (leads.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.30)' }}>
+        <p className="text-sm" style={{ color: 'var(--theme-text-subtle)' }}>
           Nenhum lead cadastrado ainda.
         </p>
       </div>
@@ -24,12 +24,12 @@ export function LeadsTable({ leads, onLeadClick }: LeadsTableProps) {
     <div className="overflow-auto h-full px-6 py-4">
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <tr style={{ borderBottom: '1px solid var(--theme-border)' }}>
             {['Nome', 'Telefone', 'Cidade', 'Etapa', 'Responsável', 'Criado em'].map((h) => (
               <th
                 key={h}
                 className="text-left py-2 px-3 text-xs font-semibold uppercase tracking-wide"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                style={{ color: 'var(--theme-text-subtle)' }}
               >
                 {h}
               </th>
@@ -42,22 +42,22 @@ export function LeadsTable({ leads, onLeadClick }: LeadsTableProps) {
               key={lead.id}
               onClick={() => onLeadClick(lead)}
               className="cursor-pointer transition-colors"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+              style={{ borderBottom: '1px solid var(--theme-border)' }}
               onMouseEnter={(e) => {
                 ;(e.currentTarget as HTMLTableRowElement).style.background =
-                  'rgba(255,255,255,0.03)'
+                  'var(--theme-surface)'
               }}
               onMouseLeave={(e) => {
                 ;(e.currentTarget as HTMLTableRowElement).style.background = 'transparent'
               }}
             >
-              <td className="py-2.5 px-3 font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              <td className="py-2.5 px-3 font-medium" style={{ color: 'var(--theme-text)' }}>
                 {lead.name}
               </td>
-              <td className="py-2.5 px-3" style={{ color: 'rgba(255,255,255,0.50)' }}>
+              <td className="py-2.5 px-3" style={{ color: 'var(--theme-text-muted)' }}>
                 {formatPhone(lead.phone)}
               </td>
-              <td className="py-2.5 px-3" style={{ color: 'rgba(255,255,255,0.50)' }}>
+              <td className="py-2.5 px-3" style={{ color: 'var(--theme-text-muted)' }}>
                 {lead.city ?? '—'}
               </td>
               <td className="py-2.5 px-3">
@@ -76,10 +76,10 @@ export function LeadsTable({ leads, onLeadClick }: LeadsTableProps) {
                   '—'
                 )}
               </td>
-              <td className="py-2.5 px-3" style={{ color: 'rgba(255,255,255,0.50)' }}>
+              <td className="py-2.5 px-3" style={{ color: 'var(--theme-text-muted)' }}>
                 {lead.assigned_user?.full_name ?? lead.assigned_user?.email ?? '—'}
               </td>
-              <td className="py-2.5 px-3 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <td className="py-2.5 px-3 text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
                 {formatDate(lead.created_at)}
               </td>
             </tr>

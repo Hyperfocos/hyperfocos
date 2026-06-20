@@ -37,13 +37,13 @@ function ContratoRow({ client }: { client: ContratoClient }) {
     <Link
       href={`/contratos/${client.id}`}
       className="flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.85)' }}>
+        <p className="text-sm font-medium truncate" style={{ color: 'var(--theme-text)' }}>
           {client.name}
         </p>
-        <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-muted)' }}>
           {client.city ?? '—'}
           {client.contract_date
             ? ` · Contrato: ${formatDate(client.contract_date)}`
@@ -56,7 +56,7 @@ function ContratoRow({ client }: { client: ContratoClient }) {
       >
         {STATUS_LABELS[status] ?? status}
       </span>
-      <span style={{ color: 'rgba(255,255,255,0.25)' }}>→</span>
+      <span style={{ color: 'var(--theme-text-subtle)' }}>→</span>
     </Link>
   )
 }
@@ -69,13 +69,13 @@ export default function ContratosClient({ clients }: { clients: ContratoClient[]
     <div className="flex flex-col h-full">
       <div
         className="flex items-center justify-between px-6 py-4 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ borderBottom: '1px solid var(--theme-border)' }}
       >
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.90)' }}>
+          <h1 className="text-lg font-semibold" style={{ color: 'var(--theme-text)' }}>
             Contratos
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>
             {clients.length} clientes aguardando/assinando contrato
           </p>
         </div>
@@ -85,7 +85,7 @@ export default function ContratosClient({ clients }: { clients: ContratoClient[]
       <div className="flex-1 overflow-auto px-6 py-4">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            <p className="text-sm" style={{ color: 'var(--theme-text-subtle)' }}>
               {search ? 'Nenhum resultado encontrado.' : 'Nenhum cliente neste módulo ainda.'}
             </p>
           </div>

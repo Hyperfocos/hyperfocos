@@ -15,21 +15,21 @@ export default async function ClientePage({ params }: { params: { id: string } }
     <div className="flex flex-col h-full">
       <div
         className="flex items-center gap-3 px-6 py-4 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ borderBottom: '1px solid var(--theme-border)' }}
       >
         <a
           href="/clientes"
           className="text-xs"
-          style={{ color: 'rgba(255,255,255,0.35)' }}
+          style={{ color: 'var(--theme-text-subtle)' }}
         >
           ← Clientes
         </a>
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.90)' }}>
+          <h1 className="text-lg font-semibold" style={{ color: 'var(--theme-text)' }}>
             {client.name}
           </h1>
           {client.city && (
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>
               {client.city}
             </p>
           )}

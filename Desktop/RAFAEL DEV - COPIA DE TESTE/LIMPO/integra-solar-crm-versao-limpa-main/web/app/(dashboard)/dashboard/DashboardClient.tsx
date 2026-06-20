@@ -79,7 +79,7 @@ export default function DashboardClient({
             onClick={handleFilter}
             disabled={isPending}
             className="px-4 py-2 rounded-lg text-sm font-medium transition-opacity disabled:opacity-50"
-            style={{ background: '#FFD080', color: '#0a0e1a' }}
+            style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
           >
             {isPending ? '...' : 'Aplicar'}
           </button>

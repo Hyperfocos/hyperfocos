@@ -11,9 +11,9 @@ import type { Client, ActionResult } from '@/lib/clients/types'
 import { Plus, Trash2 } from 'lucide-react'
 
 const selectStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  color: '#E0E8F0',
+  background: 'var(--theme-input-bg)',
+  border: '1px solid var(--theme-input-border)',
+  color: 'var(--theme-input-text)',
   borderRadius: 12,
   padding: '10px 14px',
   fontSize: 14,
@@ -26,7 +26,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
-  color: 'rgba(255,255,255,0.40)',
+  color: 'var(--theme-text-muted)',
   marginBottom: 6,
   display: 'block',
 }
@@ -81,13 +81,13 @@ export function Tab4Vistoria({ client }: { client: Client }) {
           onChange={(e) => setHasAdaptation(e.target.checked)}
           className="w-4 h-4 rounded"
         />
-        <span className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>Possui obras de adaptação</span>
+        <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Possui obras de adaptação</span>
       </label>
 
       {hasAdaptation && (
         <div
           className="rounded-xl p-4 space-y-3"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
         >
           <p style={labelStyle}>Adaptações necessárias</p>
           {adaptations.map((a, idx) => (
@@ -99,9 +99,9 @@ export function Tab4Vistoria({ client }: { client: Client }) {
                 placeholder={`Adaptação ${idx + 1} — descreva aqui`}
                 className="flex-1 rounded-xl px-3.5 py-2.5 text-sm outline-none"
                 style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.10)',
-                  color: '#E0E8F0',
+                  background: 'var(--theme-input-bg)',
+                  border: '1px solid var(--theme-input-border)',
+                  color: 'var(--theme-input-text)',
                 }}
               />
               {adaptations.length > 1 && (
@@ -119,7 +119,7 @@ export function Tab4Vistoria({ client }: { client: Client }) {
             type="button"
             onClick={addAdaptation}
             className="flex items-center gap-1.5 text-xs transition-colors hover:text-white/70"
-            style={{ color: 'rgba(255,255,255,0.40)' }}
+            style={{ color: 'var(--theme-text-muted)' }}
           >
             <Plus size={13} /> Adicionar adaptação
           </button>
@@ -150,7 +150,7 @@ export function Tab4Vistoria({ client }: { client: Client }) {
 
       <label className="flex items-center gap-2.5 cursor-pointer">
         <input type="checkbox" name="inspection_done" defaultChecked={client.inspection_done} className="w-4 h-4 rounded" />
-        <span className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>Vistoria realizada</span>
+        <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Vistoria realizada</span>
       </label>
 
       <div className="flex flex-col gap-1.5">

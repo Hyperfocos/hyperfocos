@@ -33,21 +33,21 @@ function ClientRow({ client }: { client: Client }) {
     <Link
       href={`/clientes/${client.id}`}
       className="flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all cursor-pointer"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.85)' }}>{client.name}</p>
-        <p className="text-xs mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <p className="text-sm font-medium truncate" style={{ color: 'var(--theme-text)' }}>{client.name}</p>
+        <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--theme-text-muted)' }}>
           {client.city ?? ''}{client.city && client.phone ? ' · ' : ''}{client.phone ?? ''}
         </p>
       </div>
       <div className="flex items-center gap-3 flex-shrink-0">
         <PrazoBadge client={client} />
-        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>{tabsDone}/8 abas</span>
+        <span className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>{tabsDone}/8 abas</span>
         <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}>
           {client.pipeline_stage}
         </span>
-        <span style={{ color: 'rgba(255,255,255,0.25)' }}>→</span>
+        <span style={{ color: 'var(--theme-text-subtle)' }}>→</span>
       </div>
     </Link>
   )
@@ -59,10 +59,10 @@ export default function ClientesClient({ clients }: { clients: Client[] }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--theme-border)' }}>
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.90)' }}>Clientes</h1>
-          <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{clients.length} clientes com cadastro completo</p>
+          <h1 className="text-lg font-semibold" style={{ color: 'var(--theme-text)' }}>Clientes</h1>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>{clients.length} clientes com cadastro completo</p>
         </div>
         <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
       </div>
@@ -70,7 +70,7 @@ export default function ClientesClient({ clients }: { clients: Client[] }) {
       <div className="flex-1 overflow-auto px-6 py-4">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3">
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            <p className="text-sm" style={{ color: 'var(--theme-text-subtle)' }}>
               {search ? 'Nenhum cliente encontrado.' : 'Nenhum cliente com cadastro completo ainda.'}
             </p>
           </div>

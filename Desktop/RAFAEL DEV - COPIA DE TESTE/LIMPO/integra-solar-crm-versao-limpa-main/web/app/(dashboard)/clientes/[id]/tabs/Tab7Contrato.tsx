@@ -32,9 +32,9 @@ function UploadField({
   return (
     <div
       className="flex flex-col gap-3 p-4 rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
-      <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.80)' }}>{label}</p>
+      <p className="text-sm font-semibold" style={{ color: 'var(--theme-text)' }}>{label}</p>
 
       {currentUrl ? (
         <div className="flex items-center justify-between">
@@ -49,7 +49,7 @@ function UploadField({
           </a>
           <label
             className="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-medium"
-            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.60)' }}
+            style={{ background: 'var(--theme-input-bg)', border: '1px solid var(--theme-input-border)', color: 'var(--theme-text-muted)' }}
           >
             <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleChange} />
             {isPending ? 'Enviando...' : 'Substituir'}
@@ -59,8 +59,8 @@ function UploadField({
         <label
           className="flex items-center justify-center gap-2 cursor-pointer py-6 rounded-xl transition-all"
           style={{
-            border: '2px dashed rgba(255,255,255,0.10)',
-            color: 'rgba(255,255,255,0.35)',
+            border: '2px dashed var(--theme-input-border)',
+            color: 'var(--theme-text-subtle)',
           }}
         >
           <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleChange} />
@@ -96,14 +96,14 @@ export function Tab7Contrato({ client }: { client: Client }) {
           style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.20)' }}
         >
           <span style={{ color: '#10B981' }}>✓</span>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>
+          <p className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>
             Contrato enviado — cliente liberado no módulo <strong>Contratos</strong>
           </p>
         </div>
       )}
 
       {!contract?.contract_url && (
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>
+        <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
           O envio do contrato libera o cliente no módulo Contratos.
         </p>
       )}

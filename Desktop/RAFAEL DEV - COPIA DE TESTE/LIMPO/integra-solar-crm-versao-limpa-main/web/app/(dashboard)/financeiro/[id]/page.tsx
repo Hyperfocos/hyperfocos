@@ -25,17 +25,17 @@ export default async function FinanceiroClientePage({ params }: { params: { id: 
     <div className="flex flex-col h-full">
       <div
         className="flex items-center gap-3 px-6 py-4 flex-shrink-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ borderBottom: '1px solid var(--theme-border)' }}
       >
-        <a href="/financeiro" className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <a href="/financeiro" className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
           ← Financeiro
         </a>
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: 'rgba(255,255,255,0.90)' }}>
+          <h1 className="text-lg font-semibold" style={{ color: 'var(--theme-text)' }}>
             {(clientData as any).name}
           </h1>
           {(clientData as any).city && (
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>
               {(clientData as any).city}
             </p>
           )}

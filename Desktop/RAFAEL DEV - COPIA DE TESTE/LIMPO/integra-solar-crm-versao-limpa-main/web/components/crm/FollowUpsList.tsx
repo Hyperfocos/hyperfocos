@@ -51,7 +51,7 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
         <form
           action={formAction}
           className="flex flex-col gap-3 p-3 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+          style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-card-border)' }}
         >
           <Input name="title" label="Título *" placeholder="Ex: Ligar para o cliente" required />
           <Input name="description" label="Descrição" placeholder="Detalhes..." />
@@ -70,7 +70,7 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
       )}
 
       {pending.length === 0 && done.length === 0 && !showForm && (
-        <p className="text-sm text-center py-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        <p className="text-sm text-center py-4" style={{ color: 'var(--theme-text-subtle)' }}>
           Nenhum follow-up agendado.
         </p>
       )}
@@ -79,7 +79,7 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
         <div
           key={f.id}
           className="flex items-start gap-3 p-3 rounded-xl"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
         >
           <input
             type="checkbox"
@@ -94,12 +94,12 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
             disabled={isPending}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.80)' }}>{f.title}</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>{f.title}</p>
             {f.description && (
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.40)' }}>{f.description}</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-muted)' }}>{f.description}</p>
             )}
             {f.due_date && (
-              <p className="text-xs mt-1" style={{ color: '#FFD080' }}>
+              <p className="text-xs mt-1" style={{ color: 'var(--theme-accent)' }}>
                 {new Date(f.due_date).toLocaleString('pt-BR')}
               </p>
             )}
@@ -109,14 +109,14 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
 
       {done.length > 0 && (
         <>
-          <p className="text-xs uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-xs uppercase tracking-wide" style={{ color: 'var(--theme-text-subtle)' }}>
             Concluídos
           </p>
           {done.map((f) => (
             <div
               key={f.id}
               className="flex items-start gap-3 p-3 rounded-xl opacity-50"
-              style={{ background: 'rgba(255,255,255,0.02)' }}
+              style={{ background: 'var(--theme-surface)' }}
             >
               <input
                 type="checkbox"
@@ -129,7 +129,7 @@ export function FollowUpsList({ lead }: { lead: Lead }) {
                 }
                 className="mt-0.5 cursor-pointer"
               />
-              <p className="text-sm line-through" style={{ color: 'rgba(255,255,255,0.50)' }}>{f.title}</p>
+              <p className="text-sm line-through" style={{ color: 'var(--theme-text-muted)' }}>{f.title}</p>
             </div>
           ))}
         </>

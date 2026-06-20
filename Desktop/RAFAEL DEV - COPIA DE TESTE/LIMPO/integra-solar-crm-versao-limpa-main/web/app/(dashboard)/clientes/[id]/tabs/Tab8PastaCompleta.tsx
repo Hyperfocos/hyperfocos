@@ -10,8 +10,8 @@ import { ExternalLink } from 'lucide-react'
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#FFD080' }}>{title}</p>
-      <div className="rounded-xl p-4 flex flex-col gap-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-accent)' }}>{title}</p>
+      <div className="rounded-xl p-4 flex flex-col gap-2" style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}>
         {children}
       </div>
     </div>
@@ -23,8 +23,8 @@ function Row({ label, value }: { label: string; value?: string | number | boolea
   const display = typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : String(value)
   return (
     <div className="flex items-start gap-3">
-      <span className="text-xs flex-shrink-0 w-44" style={{ color: 'rgba(255,255,255,0.35)' }}>{label}</span>
-      <span className="text-sm flex-1" style={{ color: 'rgba(255,255,255,0.75)' }}>{display}</span>
+      <span className="text-xs flex-shrink-0 w-44" style={{ color: 'var(--theme-text-subtle)' }}>{label}</span>
+      <span className="text-sm flex-1" style={{ color: 'var(--theme-text)' }}>{display}</span>
     </div>
   )
 }
@@ -33,8 +33,8 @@ function DocLink({ label, url }: { label: string; url: string | null }) {
   if (!url) return null
   return (
     <div className="flex items-center justify-between py-1">
-      <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>{label}</span>
-      <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}>
+      <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>{label}</span>
+      <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}>
         <ExternalLink size={11} /> ver
       </a>
     </div>
@@ -44,8 +44,8 @@ function DocLink({ label, url }: { label: string; url: string | null }) {
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, { bg: string; color: string }> = {
     confirmada: { bg: 'rgba(16,185,129,0.12)', color: '#10B981' },
-    pendente: { bg: 'rgba(255,200,100,0.12)', color: '#FFD080' },
-    aguardando: { bg: 'rgba(255,200,100,0.12)', color: '#FFD080' },
+    pendente: { bg: 'rgba(255,200,100,0.12)', color: 'var(--theme-accent)' },
+    aguardando: { bg: 'rgba(255,200,100,0.12)', color: 'var(--theme-accent)' },
     enviado: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6' },
     aprovado: { bg: 'rgba(16,185,129,0.12)', color: '#10B981' },
     concluida: { bg: 'rgba(16,185,129,0.12)', color: '#10B981' },
@@ -53,7 +53,7 @@ function StatusBadge({ status }: { status: string }) {
     em_andamento: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6' },
     atrasada: { bg: 'rgba(239,68,68,0.12)', color: '#EF4444' },
   }
-  const c = colors[status] ?? { bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+  const c = colors[status] ?? { bg: 'var(--theme-input-bg)', color: 'var(--theme-text-muted)' }
   return <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: c.bg, color: c.color }}>{status}</span>
 }
 
@@ -127,17 +127,17 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
           <Row label="Obs. NF" value={client.sale.nf_notes} />
           {client.installments.length > 0 && (
             <div className="mt-2">
-              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Parcelas</span>
+              <span className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Parcelas</span>
               <div className="mt-1.5 space-y-1.5">
                 {client.installments.sort((a, b) => a.position - b.position).map((inst) => (
-                  <div key={inst.id} className="flex items-center gap-3 text-sm rounded-lg px-3 py-2" style={{ background: 'rgba(255,255,255,0.02)', color: 'rgba(255,255,255,0.65)' }}>
+                  <div key={inst.id} className="flex items-center gap-3 text-sm rounded-lg px-3 py-2" style={{ background: 'var(--theme-surface)', color: 'var(--theme-text-muted)' }}>
                     <span className="w-24 flex-shrink-0 font-medium">{inst.position === 1 ? 'Entrada' : `Parcela ${inst.position}`}</span>
                     <span className="w-24">Venc: {fmtDate(inst.due_date)}</span>
                     <span className="w-28">{formatCurrency(inst.amount)}</span>
                     <StatusBadge status={inst.status} />
                     {(inst as any).confirmed_at && <span className="text-xs text-white/30">Pago: {fmtDate((inst as any).confirmed_at)}</span>}
                     {(inst as any).receipt_url && (
-                      <a href={(inst as any).receipt_url} target="_blank" rel="noopener noreferrer" className="text-xs ml-auto" style={{ color: '#FFD080' }}>Comprovante</a>
+                      <a href={(inst as any).receipt_url} target="_blank" rel="noopener noreferrer" className="text-xs ml-auto" style={{ color: 'var(--theme-accent)' }}>Comprovante</a>
                     )}
                   </div>
                 ))}
@@ -155,7 +155,7 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
         <Row label="Dias decorridos" value={startDate ? `${diasDecorridos} dias` : null} />
         {diasRestantes !== null && (
           <div className="flex items-start gap-3">
-            <span className="text-xs flex-shrink-0 w-44" style={{ color: 'rgba(255,255,255,0.35)' }}>Dias restantes</span>
+            <span className="text-xs flex-shrink-0 w-44" style={{ color: 'var(--theme-text-subtle)' }}>Dias restantes</span>
             <span className="text-sm font-semibold" style={{ color: atrasado ? '#EF4444' : '#10B981' }}>
               {atrasado ? `${Math.abs(diasRestantes)} dias de atraso` : `${diasRestantes} dias`}
             </span>
@@ -224,10 +224,10 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
                   if (urls.length === 0) return null
                   return (
                     <div className="mt-2">
-                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Fotos / Vídeos</span>
+                      <span className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Fotos / Vídeos</span>
                       <div className="grid grid-cols-4 gap-2 mt-1.5">
                         {urls.map((url, i) => (
-                          <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                          <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="rounded-lg overflow-hidden" style={{ aspectRatio: '1', background: 'var(--theme-surface)', border: '1px solid var(--theme-card-border)' }}>
                             {/\.(mp4|mov|webm)$/i.test(url) ? (
                               <div className="w-full h-full flex items-center justify-center text-white/30">▶</div>
                             ) : (
@@ -253,7 +253,7 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
               {client.has_adaptation_works && (
                 <>
                   <div className="border-t border-white/[0.06] my-2" />
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Adaptações</span>
+                  <span className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Adaptações</span>
                   {(() => {
                     try {
                       const adaptations: string[] = JSON.parse((client as any).adaptation_details ?? '[]')
@@ -280,7 +280,7 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
               {(data.obraDelivery.monitor_app || data.obraDelivery.monitor_user) && (
                 <>
                   <div className="border-t border-white/[0.06] my-2" />
-                  <span className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.35)' }}>Monitoramento</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--theme-text-subtle)' }}>Monitoramento</span>
                   <Row label="App" value={data.obraDelivery.monitor_app} />
                   <Row label="Usuário" value={data.obraDelivery.monitor_user} />
                   <Row label="Senha" value={data.obraDelivery.monitor_pass} />
@@ -307,10 +307,10 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
           {client.attachments.map((att) => (
             <div key={att.id} className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
-                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}>Cadastro</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>{ATTACHMENT_TYPE_LABELS[att.type] ?? att.type}</span>
+                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--theme-input-bg)', color: 'var(--theme-text-muted)' }}>Cadastro</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>{ATTACHMENT_TYPE_LABELS[att.type] ?? att.type}</span>
               </div>
-              <a href={att.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}>
+              <a href={att.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}>
                 <ExternalLink size={11} /> ver
               </a>
             </div>
@@ -318,73 +318,73 @@ export function Tab8PastaCompleta({ client }: { client: Client }) {
           {client.contract?.contract_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
-                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}>Contrato</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>Contrato assinado</span>
+                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--theme-input-bg)', color: 'var(--theme-text-muted)' }}>Contrato</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Contrato assinado</span>
               </div>
-              <a href={client.contract.contract_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={client.contract.contract_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {client.contract?.power_of_attorney_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
-                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}>Contrato</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>Procuração</span>
+                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'var(--theme-input-bg)', color: 'var(--theme-text-muted)' }}>Contrato</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Procuração</span>
               </div>
-              <a href={client.contract.power_of_attorney_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={client.contract.power_of_attorney_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {data?.project?.art_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(59,130,246,0.12)', color: '#3B82F6' }}>Projeto</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>ART</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>ART</span>
               </div>
-              <a href={data.project.art_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={data.project.art_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {data?.project?.projeto_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(59,130,246,0.12)', color: '#3B82F6' }}>Projeto</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>Projeto elétrico</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Projeto elétrico</span>
               </div>
-              <a href={data.project.projeto_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={data.project.projeto_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {data?.project?.parecer_acesso_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(59,130,246,0.12)', color: '#3B82F6' }}>Projeto</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>Parecer de acesso</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Parecer de acesso</span>
               </div>
-              <a href={data.project.parecer_acesso_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={data.project.parecer_acesso_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {data?.purchase?.nf_equipamentos_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,160,60,0.12)', color: '#EF9F27' }}>Compras</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>NF Equipamentos</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>NF Equipamentos</span>
               </div>
-              <a href={data.purchase.nf_equipamentos_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={data.purchase.nf_equipamentos_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {data?.purchase?.romaneio_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,160,60,0.12)', color: '#EF9F27' }}>Compras</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>Romaneio</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Romaneio</span>
               </div>
-              <a href={data.purchase.romaneio_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={data.purchase.romaneio_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
           {data?.purchase?.comprovante_url && (
             <div className="flex items-center justify-between py-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,160,60,0.12)', color: '#EF9F27' }}>Compras</span>
-                <span className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>Comprovante</span>
+                <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>Comprovante</span>
               </div>
-              <a href={data.purchase.comprovante_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: '#FFD080' }}><ExternalLink size={11} /> ver</a>
+              <a href={data.purchase.comprovante_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs" style={{ color: 'var(--theme-accent)' }}><ExternalLink size={11} /> ver</a>
             </div>
           )}
         </Section>

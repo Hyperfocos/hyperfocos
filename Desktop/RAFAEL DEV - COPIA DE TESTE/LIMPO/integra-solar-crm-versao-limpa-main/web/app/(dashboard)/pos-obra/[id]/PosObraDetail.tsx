@@ -48,7 +48,7 @@ export default function PosObraDetail({
   const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-yellow-400/60'
   const labelCls = 'block text-xs text-white/50 mb-1'
   const cardCls = 'rounded-2xl border border-white/10 p-5 space-y-4'
-  const cardStyle = { background: 'rgba(255,255,255,0.04)' }
+  const cardStyle = { background: 'var(--theme-surface)' }
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto">
@@ -72,7 +72,7 @@ export default function PosObraDetail({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <DatePicker label="Data de contato" value={form.data_contato || null} onChange={(iso) => setForm((f) => ({ ...f, data_contato: iso }))} />
-            <p className="text-[10px] mt-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <p className="text-[10px] mt-1.5" style={{ color: 'var(--theme-text-subtle)' }}>
               Data para verificar a primeira conta de energia do cliente
             </p>
           </div>
@@ -92,7 +92,7 @@ export default function PosObraDetail({
               className={inputCls}
               placeholder="0-10"
             />
-            <p className="text-[10px] mt-1.5" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <p className="text-[10px] mt-1.5" style={{ color: 'var(--theme-text-subtle)' }}>
               Nota de satisfação percebida pelo cliente
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function PosObraDetail({
         onClick={handleSave}
         disabled={isPending}
         className="w-full py-3 rounded-xl font-semibold text-sm transition-opacity disabled:opacity-50"
-        style={{ background: '#FFD080', color: '#0a0e1a' }}
+        style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }}
       >
         {isPending ? 'Salvando…' : 'Salvar'}
       </button>

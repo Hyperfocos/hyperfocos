@@ -33,12 +33,12 @@ function Card({ label, value, accent }: { label: string; value: number; accent?:
   return (
     <div
       className="flex flex-col gap-1.5 p-4 rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
-      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
+      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-subtle)' }}>
         {label}
       </p>
-      <p className="text-xl font-semibold" style={{ color: accent ?? 'rgba(255,255,255,0.85)' }}>
+      <p className="text-xl font-semibold" style={{ color: accent ?? 'var(--theme-text)' }}>
         {formatCurrency(value)}
       </p>
     </div>
@@ -49,18 +49,18 @@ function InstallmentRow({ inst }: { inst: FinanceiroInstallment }) {
   return (
     <div
       className="flex items-center gap-3 px-4 py-3 rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
+      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate" style={{ color: 'rgba(255,255,255,0.80)' }}>
+        <p className="text-sm font-medium truncate" style={{ color: 'var(--theme-text)' }}>
           {inst.client_name}
         </p>
-        <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>
           {inst.position === 1 ? 'Entrada' : `Parcela ${inst.position}`} ·{' '}
           {formatDate(inst.due_date)}
         </p>
       </div>
-      <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'rgba(255,255,255,0.75)' }}>
+      <p className="text-sm font-semibold flex-shrink-0" style={{ color: 'var(--theme-text)' }}>
         {formatCurrency(inst.amount)}
       </p>
       <StatusBadge status={inst.status} />
@@ -93,9 +93,9 @@ export function FinanceiroPainelClient({
   const filteredInstallments = filterBySearch(painel.installments, search, ['client_name'])
 
   const selectStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.10)',
-    color: '#E0E8F0',
+    background: 'var(--theme-input-bg)',
+    border: '1px solid var(--theme-input-border)',
+    color: 'var(--theme-input-text)',
     borderRadius: 10,
     padding: '7px 12px',
     fontSize: 13,
@@ -159,11 +159,11 @@ export function FinanceiroPainelClient({
 
       {/* Lista de parcelas */}
       <div className="flex flex-col gap-2">
-        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-subtle)' }}>
           Parcelas do período ({filteredInstallments.length})
         </p>
         {filteredInstallments.length === 0 ? (
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-sm" style={{ color: 'var(--theme-text-subtle)' }}>
             Nenhuma parcela no período selecionado.
           </p>
         ) : (

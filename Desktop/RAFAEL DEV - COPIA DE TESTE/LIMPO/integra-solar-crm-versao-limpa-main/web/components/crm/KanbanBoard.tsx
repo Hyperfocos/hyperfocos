@@ -98,7 +98,7 @@ export function KanbanBoard({ leads: externalLeads, stages, onLeadClick }: Kanba
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
             }}
           >
-            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <p className="text-sm font-medium" style={{ color: 'var(--theme-text)' }}>
               {activeLead.name}
             </p>
           </div>

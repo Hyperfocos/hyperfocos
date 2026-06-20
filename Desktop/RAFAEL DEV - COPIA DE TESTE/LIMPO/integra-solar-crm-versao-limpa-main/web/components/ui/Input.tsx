@@ -14,7 +14,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={id}
             className="text-xs font-bold uppercase tracking-wide"
-            style={{ color: 'rgba(255,255,255,0.40)' }}
+            style={{ color: 'var(--theme-text-muted)' }}
           >
             {label}
           </label>
@@ -27,11 +27,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           style={{
-            background: 'rgba(255,255,255,0.06)',
+            background: 'var(--theme-input-bg)',
             border: error
               ? '1px solid rgba(255,100,100,0.5)'
-              : '1px solid rgba(255,255,255,0.10)',
-            color: '#E0E8F0',
+              : '1px solid var(--theme-input-border)',
+            color: 'var(--theme-input-text)',
             ...(style ?? {}),
           }}
           {...props}

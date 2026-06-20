@@ -16,7 +16,7 @@ const checkboxRow = (name: string, label: string, checked: boolean) => (
       defaultChecked={checked}
       className="w-4 h-4 rounded cursor-pointer"
     />
-    <span className="text-sm" style={{ color: 'rgba(255,255,255,0.70)' }}>{label}</span>
+    <span className="text-sm" style={{ color: 'var(--theme-text-muted)' }}>{label}</span>
   </label>
 )
 
@@ -78,7 +78,7 @@ export function Tab2EquVendidos({ client }: { client: Client }) {
 
       <div
         className="flex flex-col gap-3 p-3 rounded-xl"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
       >
         {checkboxRow('specific_panels', 'Painéis específicos (marca/modelo definido)', client.specific_panels)}
         {checkboxRow('specific_inverter', 'Inversor específico (marca/modelo definido)', client.specific_inverter)}

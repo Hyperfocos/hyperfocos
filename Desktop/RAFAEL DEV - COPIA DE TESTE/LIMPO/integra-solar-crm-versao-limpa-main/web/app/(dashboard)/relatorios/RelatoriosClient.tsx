@@ -38,15 +38,15 @@ function TableWrapper({ children }: { children: React.ReactNode }) {
   return <div className="rounded-xl overflow-hidden border border-white/[0.08]"><table className="w-full text-sm">{children}</table></div>
 }
 function Th({ children }: { children: React.ReactNode }) {
-  return <th className="px-4 py-2.5 text-left text-xs font-semibold text-white/40" style={{ background: 'rgba(255,255,255,0.06)' }}>{children}</th>
+  return <th className="px-4 py-2.5 text-left text-xs font-semibold text-white/40" style={{ background: 'var(--theme-input-bg)' }}>{children}</th>
 }
 function Td({ children, highlight }: { children: React.ReactNode; highlight?: boolean }) {
-  return <td className="px-4 py-2.5 font-medium" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', color: highlight ? '#FFD080' : 'rgba(255,255,255,0.8)' }}>{children}</td>
+  return <td className="px-4 py-2.5 font-medium" style={{ borderBottom: '1px solid var(--theme-border)', color: highlight ? 'var(--theme-accent)' : 'var(--theme-text)' }}>{children}</td>
 }
 
 function KpiCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+    <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
       <p className="text-xs text-white/40 mb-1">{label}</p>
       <p className="text-lg font-bold text-white">{value}</p>
       {sub && <p className="text-xs mt-1" style={{ color: sub.startsWith('-') ? '#EF4444' : '#10B981' }}>{sub}</p>}
@@ -134,15 +134,15 @@ function AbaFinanceiro({ data }: { data: FinanceiroSummary | null }) {
 
       {/* Comparativos */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
           <p className="text-xs text-white/40 mb-1">Média últimos 3 meses</p>
           <p className="text-base font-bold text-white">{fmt(data.media_3m)}</p>
         </div>
-        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
           <p className="text-xs text-white/40 mb-1">Média últimos 12 meses</p>
           <p className="text-base font-bold text-white">{fmt(data.media_12m)}</p>
         </div>
-        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
           <p className="text-xs text-white/40 mb-1">Variação vs mês anterior</p>
           <p className="text-base font-bold"><VariacaoTag value={data.variacao_mensal} /></p>
         </div>
@@ -150,15 +150,15 @@ function AbaFinanceiro({ data }: { data: FinanceiroSummary | null }) {
 
       {/* Crescimento */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
           <p className="text-xs text-white/40 mb-1">Crescimento Mensal</p>
           <VariacaoTag value={data.crescimento_mensal} />
         </div>
-        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
           <p className="text-xs text-white/40 mb-1">Crescimento Trimestral</p>
           <VariacaoTag value={data.crescimento_trimestral} />
         </div>
-        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="rounded-xl p-4 border border-white/10" style={{ background: 'var(--theme-surface)' }}>
           <p className="text-xs text-white/40 mb-1">Crescimento Anual</p>
           <VariacaoTag value={data.crescimento_anual} />
         </div>
@@ -283,15 +283,15 @@ export default function RelatoriosClient() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Relatórios</h1>
-        <button className="no-print px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all" style={{ background: '#FFD080', color: '#1A1A1A' }} onClick={() => window.print()}>
+        <button className="no-print px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition-all" style={{ background: 'var(--theme-accent)', color: 'var(--theme-accent-text)' }} onClick={() => window.print()}>
           Baixar PDF
         </button>
       </div>
 
-      <div className="no-print flex gap-1 mb-6 p-1 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)', width: 'fit-content' }}>
+      <div className="no-print flex gap-1 mb-6 p-1 rounded-xl" style={{ background: 'var(--theme-surface)', width: 'fit-content' }}>
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-            style={tab === t.key ? { background: 'rgba(255,200,100,0.12)', color: '#FFD080', fontWeight: 600 } : { color: 'rgba(255,255,255,0.4)' }}>
+            style={tab === t.key ? { background: 'rgba(255,200,100,0.12)', color: 'var(--theme-accent)', fontWeight: 600 } : { color: 'var(--theme-text-muted)' }}>
             {t.label}
           </button>
         ))}
@@ -299,7 +299,7 @@ export default function RelatoriosClient() {
 
       <FilterBar dateFrom={dateFrom} dateTo={dateTo} onChange={(f, t) => { setDateFrom(f); setDateTo(t) }} onApply={handleApply} isPending={isPending} />
 
-      <div className="rounded-2xl border border-white/10 p-5" style={{ background: 'rgba(255,255,255,0.03)' }}>
+      <div className="rounded-2xl border border-white/10 p-5" style={{ background: 'var(--theme-surface)' }}>
         {tab === 'comercial' && <AbaComercial data={comercialData} />}
         {tab === 'leads' && <AbaLeads origens={leadsOrigens} ranking={leadsRanking} />}
         {tab === 'financeiro' && <AbaFinanceiro data={financeiroData} />}

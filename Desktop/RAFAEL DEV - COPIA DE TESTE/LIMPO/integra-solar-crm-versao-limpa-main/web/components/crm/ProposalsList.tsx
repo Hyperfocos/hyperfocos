@@ -18,11 +18,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  draft: 'rgba(255,255,255,0.40)',
+  draft: 'var(--theme-text-muted)',
   sent: '#3B82F6',
   approved: '#10B981',
   rejected: '#EF4444',
-  cancelled: 'rgba(255,255,255,0.25)',
+  cancelled: 'var(--theme-text-subtle)',
 }
 
 export function ProposalsList({ lead }: { lead: Lead }) {
@@ -94,7 +94,7 @@ export function ProposalsList({ lead }: { lead: Lead }) {
       )}
 
       {proposals.length === 0 && !showForm && (
-        <p className="text-sm text-center py-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        <p className="text-sm text-center py-4" style={{ color: 'var(--theme-text-subtle)' }}>
           Nenhuma proposta criada ainda.
         </p>
       )}
@@ -103,10 +103,10 @@ export function ProposalsList({ lead }: { lead: Lead }) {
         <div
           key={p.id}
           className="rounded-xl p-4"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+          style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-card-border)' }}
         >
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'var(--theme-text)' }}>
               {p.name}
             </p>
             <span
@@ -122,22 +122,22 @@ export function ProposalsList({ lead }: { lead: Lead }) {
           </div>
           <div className="grid grid-cols-3 gap-2 mt-3">
             <div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Sistema</p>
-              <p className="text-sm font-medium" style={{ color: '#FFD080' }}>
+              <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Sistema</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--theme-accent)' }}>
                 {p.total_power_kwp.toFixed(2)} kWp
               </p>
             </div>
             <div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Geração/mês</p>
-              <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.70)' }}>
+              <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>Geração/mês</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--theme-text-muted)' }}>
                 {p.monthly_generation_kwh.toFixed(0)} kWh
               </p>
             </div>
             <div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
                 {p.preco_total ? 'Preço Total' : 'Valor kit'}
               </p>
-              <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.70)' }}>
+              <p className="text-sm font-medium" style={{ color: 'var(--theme-text-muted)' }}>
                 {p.preco_total
                   ? formatCurrency(p.preco_total)
                   : p.kit_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
@@ -145,7 +145,7 @@ export function ProposalsList({ lead }: { lead: Lead }) {
             </div>
           </div>
           {p.supplier && (
-            <p className="text-xs mt-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs mt-2" style={{ color: 'var(--theme-text-subtle)' }}>
               Fornecedor: {p.supplier.name}
             </p>
           )}
@@ -157,7 +157,7 @@ export function ProposalsList({ lead }: { lead: Lead }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs px-3 py-1.5 rounded-lg font-semibold transition-all hover:opacity-90"
-                  style={{ background: 'rgba(255,208,128,0.15)', color: '#FFD080', border: '1px solid rgba(255,208,128,0.3)' }}
+                  style={{ background: 'rgba(255,208,128,0.15)', color: 'var(--theme-accent)', border: '1px solid rgba(255,208,128,0.3)' }}
                 >
                   ↓ PDF
                 </a>
@@ -165,7 +165,7 @@ export function ProposalsList({ lead }: { lead: Lead }) {
               <button
                 onClick={() => setReviewProposal(p)}
                 className="text-xs px-3 py-1.5 rounded-lg text-white/60 hover:text-white transition-colors"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
+                style={{ background: 'var(--theme-input-bg)' }}
               >
                 {p.pdf_url ? 'Regerar Orçamento' : 'Gerar Orçamento'}
               </button>

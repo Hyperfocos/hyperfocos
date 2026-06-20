@@ -82,7 +82,7 @@ function FollowUpItem({
         className="p-1.5 rounded-lg transition-colors hover:bg-white/10 flex-shrink-0"
         title="Marcar como concluído"
       >
-        <Check size={14} style={{ color: isPending ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.40)' }} />
+        <Check size={14} style={{ color: isPending ? 'var(--theme-text-subtle)' : 'var(--theme-text-muted)' }} />
       </button>
     </div>
   )
@@ -193,7 +193,7 @@ export function NotificationsDrawer({
               <Section
                 title="Próximos 7 dias"
                 icon={Calendar}
-                color="rgba(255,255,255,0.50)"
+                color="var(--theme-text-muted)"
                 items={grouped.upcoming}
                 onLeadClick={onLeadClick}
                 onCompleted={onCompleted}

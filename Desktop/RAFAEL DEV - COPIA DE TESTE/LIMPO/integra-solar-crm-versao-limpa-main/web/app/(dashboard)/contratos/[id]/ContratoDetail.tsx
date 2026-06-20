@@ -8,9 +8,9 @@ import type { ContratoClient } from '@/lib/contratos/queries'
 import type { ContractStatus } from '@/lib/contratos/actions'
 
 const selectStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  color: '#E0E8F0',
+  background: 'var(--theme-input-bg)',
+  border: '1px solid var(--theme-input-border)',
+  color: 'var(--theme-input-text)',
   borderRadius: 12,
   padding: '10px 14px',
   fontSize: 14,
@@ -23,7 +23,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase' as const,
   letterSpacing: '0.06em',
-  color: 'rgba(255,255,255,0.40)',
+  color: 'var(--theme-text-muted)',
   marginBottom: 6,
   display: 'block',
 }
@@ -49,9 +49,9 @@ export function ContratoDetail({ client }: { client: ContratoClient }) {
       {/* Arquivos */}
       <div
         className="flex flex-col gap-3 p-4 rounded-xl"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
       >
-        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.40)' }}>
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--theme-text-muted)' }}>
           Documentos
         </p>
         {contract?.contract_url ? (
@@ -65,7 +65,7 @@ export function ContratoDetail({ client }: { client: ContratoClient }) {
             Ver contrato assinado →
           </a>
         ) : (
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.30)' }}>
+          <p className="text-sm" style={{ color: 'var(--theme-text-subtle)' }}>
             Nenhum contrato enviado.
           </p>
         )}
@@ -117,7 +117,7 @@ export function ContratoDetail({ client }: { client: ContratoClient }) {
       </Button>
 
       {status === 'assinado' && (
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>
           Ao confirmar, o cliente avança automaticamente para o módulo Financeiro.
         </p>
       )}
