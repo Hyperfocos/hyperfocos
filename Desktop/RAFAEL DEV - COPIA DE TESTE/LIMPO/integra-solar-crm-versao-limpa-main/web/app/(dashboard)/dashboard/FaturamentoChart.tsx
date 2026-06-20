@@ -40,10 +40,10 @@ export default function FaturamentoChart({ data }: { data: FaturamentoMes[] }) {
           <YAxis tickFormatter={formatCurrency} tick={{ fill: 'var(--theme-text-muted)', fontSize: 10 }} axisLine={false} tickLine={false} width={60} />
           <Tooltip
             formatter={(value) => [formatCurrency(Number(value)), '']}
-            contentStyle={{ background: 'var(--theme-drawer-bg)', border: '1px solid var(--theme-border)', borderRadius: 8, color: 'white' }}
+            contentStyle={{ background: 'var(--theme-drawer-bg)', border: '1px solid var(--theme-border)', borderRadius: 8, color: 'var(--theme-text)' }}
             labelStyle={{ color: 'var(--theme-text-muted)' }}
           />
-          <Bar dataKey="ano_atual" name={String(anoAtual)} fill="#FFD080" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="ano_atual" name={String(anoAtual)} fill="var(--theme-accent)" radius={[4, 4, 0, 0]} />
           <Bar dataKey="ano_anterior" name={String(anoAnterior)} fill="var(--theme-text-subtle)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>

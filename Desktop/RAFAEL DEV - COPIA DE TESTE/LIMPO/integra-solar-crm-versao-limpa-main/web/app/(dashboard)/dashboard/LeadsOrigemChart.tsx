@@ -37,7 +37,7 @@ export default function LeadsOrigemChart({ data }: { data: LeadOrigemItem[] }) {
               </Pie>
               <Tooltip
                 formatter={(value, name) => [value, name]}
-                contentStyle={{ background: 'var(--theme-drawer-bg)', border: '1px solid var(--theme-border)', borderRadius: 8, color: 'white' }}
+                contentStyle={{ background: 'var(--theme-drawer-bg)', border: '1px solid var(--theme-border)', borderRadius: 8, color: 'var(--theme-text)' }}
               />
             </PieChart>
           </ResponsiveContainer>

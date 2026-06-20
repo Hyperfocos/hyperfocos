@@ -19,11 +19,11 @@ export default function PipelineCards({ cards }: { cards: PipelineCard[] }) {
           <span className="text-3xl font-bold text-white">{card.total}</span>
           <div className="flex items-center gap-1.5">
             {card.pending > 0 ? (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-300">
                 {card.pending} pendente{card.pending !== 1 ? 's' : ''}
               </span>
             ) : (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-300">
                 Em dia
               </span>
             )}

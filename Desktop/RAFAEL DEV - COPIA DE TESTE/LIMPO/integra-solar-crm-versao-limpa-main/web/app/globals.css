@@ -229,7 +229,16 @@ select option:hover {
 [data-theme="green"] .text-white\/20 {
   color: var(--theme-text-subtle) !important;
 }
+[data-theme="green"] .text-white\/60 {
+  color: var(--theme-text-muted) !important;
+}
+[data-theme="green"] .text-white\/15 {
+  color: var(--theme-text-subtle) !important;
+}
 [data-theme="green"] .border-white\/10 {
+  border-color: var(--theme-border) !important;
+}
+[data-theme="green"] .border-white\/\[0\.06\] {
   border-color: var(--theme-border) !important;
 }
 [data-theme="green"] .border-white\/20 {
