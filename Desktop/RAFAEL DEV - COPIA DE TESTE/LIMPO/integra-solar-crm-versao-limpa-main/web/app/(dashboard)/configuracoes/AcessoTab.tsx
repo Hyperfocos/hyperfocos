@@ -46,12 +46,67 @@ const ROLE_LABELS: Record<string, string> = {
   vendedor: 'Vendedor',
   instalador: 'Instalador',
   projetista: 'Projetista',
+  financeiro: 'Financeiro',
+  compras: 'Compras / Logística',
+}
+
+const ALL: PermRow = { access: true, view_all: true, add: true, edit: true, delete: true }
+const VIEW: PermRow = { access: true, view_all: true, add: false, edit: false, delete: false }
+const VIEW_EDIT: PermRow = { access: true, view_all: true, add: false, edit: true, delete: false }
+const VIEW_ADD: PermRow = { access: true, view_all: true, add: true, edit: false, delete: false }
+const ACCESS: PermRow = { access: true, view_all: false, add: false, edit: false, delete: false }
+const NONE: PermRow = { access: false, view_all: false, add: false, edit: false, delete: false }
+
+const ROLE_PROFILES: Record<string, Permissions> = {
+  admin: Object.fromEntries(MODULES.map((m) => [m.key, ALL])),
+  gerente: {
+    dashboard: ALL, leads: ALL, clientes: ALL, contratos: ALL,
+    financeiro: VIEW, projetos: ALL, compras: ALL, comissoes: ALL,
+    entrega_material: ALL, obra: ALL, entrega_obra: ALL, pos_obra: ALL,
+    configuracoes: NONE,
+  },
+  vendedor: {
+    dashboard: ACCESS, leads: ALL, clientes: VIEW_EDIT, contratos: VIEW_ADD,
+    financeiro: NONE, projetos: NONE, compras: NONE, comissoes: VIEW,
+    entrega_material: VIEW, obra: VIEW, entrega_obra: VIEW, pos_obra: VIEW,
+    configuracoes: NONE,
+  },
+  projetista: {
+    dashboard: ACCESS, leads: VIEW, clientes: VIEW, contratos: VIEW,
+    financeiro: NONE, projetos: ALL, compras: VIEW, comissoes: NONE,
+    entrega_material: VIEW, obra: VIEW, entrega_obra: VIEW, pos_obra: VIEW,
+    configuracoes: NONE,
+  },
+  instalador: {
+    dashboard: ACCESS, leads: NONE, clientes: VIEW, contratos: VIEW,
+    financeiro: NONE, projetos: VIEW, compras: VIEW, comissoes: NONE,
+    entrega_material: VIEW, obra: ALL, entrega_obra: ALL, pos_obra: VIEW,
+    configuracoes: NONE,
+  },
+  financeiro: {
+    dashboard: ACCESS, leads: VIEW, clientes: VIEW, contratos: VIEW,
+    financeiro: ALL, projetos: VIEW, compras: VIEW, comissoes: ALL,
+    entrega_material: VIEW, obra: VIEW, entrega_obra: VIEW, pos_obra: VIEW,
+    configuracoes: NONE,
+  },
+  compras: {
+    dashboard: ACCESS, leads: VIEW, clientes: VIEW, contratos: VIEW,
+    financeiro: VIEW, projetos: VIEW, compras: ALL, comissoes: NONE,
+    entrega_material: ALL, obra: VIEW, entrega_obra: VIEW, pos_obra: VIEW,
+    configuracoes: NONE,
+  },
 }
 
 const defaultPermissions = (): Permissions =>
   Object.fromEntries(
-    MODULES.map((m) => [m.key, { access: false, view_all: false, add: false, edit: false, delete: false }])
+    MODULES.map((m) => [m.key, { ...NONE }])
   )
+
+function getProfilePermissions(role: string): Permissions {
+  const profile = ROLE_PROFILES[role]
+  if (!profile) return defaultPermissions()
+  return Object.fromEntries(MODULES.map((m) => [m.key, { ...(profile[m.key] ?? NONE) }]))
+}
 
 export default function AcessoTab({ colaboradores: initial }: { colaboradores: Colaborador[] }) {
   const [colaboradores, setColaboradores] = useState<Colaborador[]>(initial)
@@ -61,7 +116,12 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
 
   const [form, setForm] = useState({ full_name: '', email: '', password: '', role: 'vendedor' })
   const [showPassword, setShowPassword] = useState(false)
-  const [permissions, setPermissions] = useState<Permissions>(defaultPermissions())
+  const [permissions, setPermissions] = useState<Permissions>(getProfilePermissions('vendedor'))
+
+  function handleRoleChange(role: string) {
+    setForm((p) => ({ ...p, role }))
+    setPermissions(getProfilePermissions(role))
+  }
   const [addPending, startAdd] = useTransition()
   const [addResult, setAddResult] = useState<{ error?: string; success?: string } | null>(null)
 
@@ -105,7 +165,7 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
       setAddResult(res)
       if (res.success) {
         setForm({ full_name: '', email: '', password: '', role: 'vendedor' })
-        setPermissions(defaultPermissions())
+        setPermissions(getProfilePermissions('vendedor'))
         window.location.reload()
       }
     })
@@ -206,13 +266,18 @@ export default function AcessoTab({ colaboradores: initial }: { colaboradores: C
           </div>
           <div>
             <label className={labelCls}>Função</label>
-            <select className={inputCls} value={form.role} onChange={(e) => setForm((p) => ({ ...p, role: e.target.value }))}>
+            <select className={inputCls} value={form.role} onChange={(e) => handleRoleChange(e.target.value)}>
               <option value="admin">Administrador</option>
               <option value="gerente">Gerente</option>
               <option value="vendedor">Vendedor</option>
-              <option value="instalador">Instalador</option>
               <option value="projetista">Projetista</option>
+              <option value="instalador">Instalador</option>
+              <option value="financeiro">Financeiro</option>
+              <option value="compras">Compras / Logística</option>
             </select>
+            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.25)' }}>
+              As permissões são preenchidas automaticamente ao selecionar a função. Você pode ajustá-las manualmente abaixo.
+            </p>
           </div>
         </div>
 
