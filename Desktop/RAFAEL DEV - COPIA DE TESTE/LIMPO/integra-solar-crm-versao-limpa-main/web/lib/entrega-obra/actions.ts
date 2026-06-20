@@ -7,14 +7,18 @@ import type { ActionResult } from '@/lib/crm/types'
 
 type UpsertObraDeliveryData = {
   data_entrega?: string | null
-  termo_url?: string | null
   observacoes?: string | null
   checklist: {
     vistoria: boolean
     fotos: boolean
     cliente_ok: boolean
+    monitoramento_configurado: boolean
+    sistema_ligado: boolean
   }
   status: string
+  monitor_app?: string | null
+  monitor_user?: string | null
+  monitor_pass?: string | null
 }
 
 export async function upsertObraDelivery(
@@ -37,10 +41,12 @@ export async function upsertObraDelivery(
     client_id: clientId,
     organization_id: orgId,
     data_entrega: data.data_entrega ?? null,
-    termo_url: data.termo_url ?? null,
     observacoes: data.observacoes ?? null,
     checklist: data.checklist,
     status: data.status,
+    monitor_app: data.monitor_app ?? null,
+    monitor_user: data.monitor_user ?? null,
+    monitor_pass: data.monitor_pass ?? null,
     updated_at: new Date().toISOString(),
   }
 
