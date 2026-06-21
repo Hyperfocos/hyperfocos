@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
-          (function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)})()
+          (function(){var t=localStorage.getItem('theme')||'green';document.documentElement.setAttribute('data-theme',t)})()
         `}} />
       </head>
       <body className="antialiased">{children}</body>
