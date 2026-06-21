@@ -176,14 +176,14 @@ export default function CompraDetail({
         </span>
       </div>
 
-      {/* Prazo global */}
+      {/* Dias em Compras */}
       <div
         className="rounded-xl border border-white/10 px-4 py-3 flex items-center gap-3"
         style={{ background: 'var(--theme-surface)' }}
       >
-        <span className="text-white/50 text-sm">Prazo global:</span>
+        <span className="text-white/50 text-sm">Dias em Compras:</span>
         <span className="text-white font-semibold">
-          {compra.dias_usados} / {compra.contract_max_days ?? '—'} dias
+          {compra.dias_em_compras} dias
         </span>
       </div>
 

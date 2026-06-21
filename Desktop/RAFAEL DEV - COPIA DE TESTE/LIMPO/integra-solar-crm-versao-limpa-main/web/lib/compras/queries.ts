@@ -13,6 +13,7 @@ export type CompraClient = {
   nf_url: string | null
   comprovante_url: string | null
   dias_usados: number
+  dias_em_compras: number
   contract_max_days: number | null
   primeira_parcela_confirmed_at: string | null
 }
@@ -62,6 +63,9 @@ export async function getCompras(): Promise<CompraClient[]> {
     const diasUsados = startDate
       ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
       : 0
+    const diasEmCompras = r.created_at
+      ? Math.floor((Date.now() - new Date(r.created_at).getTime()) / 86400000)
+      : 0
 
     return {
       id: r.id,
@@ -75,6 +79,7 @@ export async function getCompras(): Promise<CompraClient[]> {
       nf_url: r.nf_url ?? null,
       comprovante_url: r.comprovante_url ?? null,
       dias_usados: diasUsados,
+      dias_em_compras: diasEmCompras,
       contract_max_days: r.clients.contract_max_days ?? null,
       primeira_parcela_confirmed_at: startDate,
     }
@@ -111,6 +116,9 @@ export async function getCompraById(clientId: string): Promise<CompraClient | nu
   const diasUsados = startDate
     ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
+  const diasEmCompras = data.created_at
+    ? Math.floor((Date.now() - new Date(data.created_at).getTime()) / 86400000)
+    : 0
 
   return {
     id: data.id,
@@ -124,6 +132,7 @@ export async function getCompraById(clientId: string): Promise<CompraClient | nu
     nf_url: data.nf_url ?? null,
     comprovante_url: data.comprovante_url ?? null,
     dias_usados: diasUsados,
+    dias_em_compras: diasEmCompras,
     contract_max_days: data.clients.contract_max_days ?? null,
     primeira_parcela_confirmed_at: startDate,
   }

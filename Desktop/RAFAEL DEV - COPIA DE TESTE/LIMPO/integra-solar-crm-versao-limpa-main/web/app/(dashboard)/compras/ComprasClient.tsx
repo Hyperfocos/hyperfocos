@@ -47,7 +47,7 @@ export default function ComprasClient({ compras }: { compras: CompraClient[] }) 
               <th className="text-left px-4 py-3 font-medium">Fornecedor</th>
               <th className="text-left px-4 py-3 font-medium">Valor</th>
               <th className="text-left px-4 py-3 font-medium">Data Prevista</th>
-              <th className="text-left px-4 py-3 font-medium">Prazo</th>
+              <th className="text-left px-4 py-3 font-medium">Dias em Compras</th>
               <th className="text-left px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3" />
             </tr>
@@ -69,9 +69,7 @@ export default function ComprasClient({ compras }: { compras: CompraClient[] }) 
                   {c.data_prevista ? formatDate(c.data_prevista) : '—'}
                 </td>
                 <td className="px-4 py-3 text-white/60">
-                  {c.contract_max_days
-                    ? `${c.dias_usados} / ${c.contract_max_days} dias`
-                    : `${c.dias_usados} dias`}
+                  {c.dias_em_compras} dias
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={c.status} />
