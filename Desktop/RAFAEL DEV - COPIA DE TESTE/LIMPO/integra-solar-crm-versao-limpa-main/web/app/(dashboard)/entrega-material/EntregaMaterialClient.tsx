@@ -8,9 +8,11 @@ import { SearchBar, filterBySearch } from '@/components/ui/SearchBar'
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     pendente: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
+    atrasada: 'bg-red-500/20 text-red-300 border-red-500/40',
+    entregue: 'bg-green-500/20 text-green-300 border-green-500/40',
     concluida: 'bg-green-500/20 text-green-300 border-green-500/40',
   }
-  const labels: Record<string, string> = { pendente: 'Pendente', concluida: 'Concluída' }
+  const labels: Record<string, string> = { pendente: 'Pendente', atrasada: 'Atrasada', entregue: 'Entregue', concluida: 'Concluída' }
   return (
     <span className={`px-2 py-0.5 rounded-full text-xs border ${map[status] ?? 'bg-gray-500/20 text-gray-300 border-gray-500/40'}`}>
       {labels[status] ?? status}
