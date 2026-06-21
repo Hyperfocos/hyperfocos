@@ -41,6 +41,8 @@
   --theme-success: #10B981;
   --theme-danger: #EF4444;
   --theme-warning: #FBBF24;
+  --theme-highlight-bg: rgba(255,200,100,0.06);
+  --theme-highlight-border: rgba(255,200,100,0.15);
 }
 
 [data-theme="green"] {
@@ -69,6 +71,8 @@
   --theme-warning: #d97706;
   --theme-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
   --theme-shadow-md: 0 4px 14px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+  --theme-highlight-bg: #def2e5;
+  --theme-highlight-border: #b0e8c0;
 
   --accent: #28944a;
   --accent-hover: #1d7035;

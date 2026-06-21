@@ -80,7 +80,7 @@ export function ProposalForm({ leadId, generationFactor, onSuccess, onCancel }: 
 
       <div
         className="rounded-xl p-4 grid grid-cols-2 gap-4"
-        style={{ background: 'rgba(255,200,100,0.06)', border: '1px solid rgba(255,200,100,0.15)' }}
+        style={{ background: 'var(--theme-highlight-bg)', border: '1px solid var(--theme-highlight-border)' }}
       >
         <div>
           <p className="text-xs" style={{ color: 'var(--theme-text-muted)' }}>Potência do sistema</p>
