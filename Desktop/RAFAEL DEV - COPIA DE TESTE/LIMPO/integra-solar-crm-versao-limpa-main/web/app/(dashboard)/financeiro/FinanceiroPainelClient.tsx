@@ -151,7 +151,7 @@ export function FinanceiroPainelClient({
 
       {/* Cards */}
       <div className="grid grid-cols-3 gap-3">
-        <Card label="Faturamento total" value={painel.faturamento_total} accent="#FFD080" />
+        <Card label="Faturamento total" value={painel.faturamento_total} accent="#10B981" />
         <Card label="A receber" value={painel.a_receber} accent="#3B82F6" />
         <Card label="Em atraso" value={painel.em_atraso} accent="#EF4444" />
 
