@@ -229,6 +229,15 @@ export default function TemplatesTab({ initialTemplates }: { initialTemplates: P
               )}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
+              <a
+                href={`/api/templates/${t.id}/download`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs px-3 py-1.5 rounded-lg text-white/50 hover:text-white transition-colors"
+                style={{ background: 'var(--theme-input-bg)' }}
+              >
+                ↓ Baixar
+              </a>
               {!t.is_default && (
                 <button
                   onClick={() => handleSetDefault(t)}
