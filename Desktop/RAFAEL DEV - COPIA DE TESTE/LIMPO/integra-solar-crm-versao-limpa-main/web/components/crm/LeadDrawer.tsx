@@ -53,6 +53,30 @@ export function LeadDrawer({ lead, isNew, stages, sources, members, onClose }: L
     <Drawer open={isOpen} onClose={onClose} title={title} width="50vw">
       {!isNew && lead && (
         <>
+          {/* Header actions — Converter + Excluir */}
+          <div
+            className="flex items-center justify-end gap-2 -mt-2 mb-3 -mx-5 px-5 pb-3"
+            style={{ borderBottom: '1px solid var(--theme-border)' }}
+          >
+            {!lead.converted && (
+              <Button
+                className="text-xs py-1.5 px-4"
+                onClick={handleConvert}
+                loading={converting}
+              >
+                {converting ? 'Convertendo...' : 'Converter em Cliente'}
+              </Button>
+            )}
+            <button
+              className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+              style={{ color: 'var(--theme-danger)' }}
+              onClick={handleDelete}
+            >
+              Excluir
+            </button>
+          </div>
+
+          {/* Tabs */}
           <div
             className="flex gap-1 mb-5 -mx-5 px-5 pb-3"
             style={{ borderBottom: '1px solid var(--theme-border)' }}
@@ -74,36 +98,13 @@ export function LeadDrawer({ lead, isNew, stages, sources, members, onClose }: L
           </div>
 
           {tab === 'dados' && (
-            <>
-              <LeadForm
-                lead={lead}
-                stages={stages}
-                sources={sources}
-                members={members}
-                onSuccess={onClose}
-              />
-              <div
-                className="mt-5 pt-4 flex gap-2"
-                style={{ borderTop: '1px solid var(--theme-border)' }}
-              >
-                {!lead.converted && (
-                  <Button
-                    className="flex-1 text-xs"
-                    onClick={handleConvert}
-                    loading={converting}
-                  >
-                    {converting ? 'Convertendo...' : 'Converter em Cliente'}
-                  </Button>
-                )}
-                <button
-                  className="text-xs px-3 py-1.5 rounded-lg transition-colors"
-                  style={{ color: '#FF6060' }}
-                  onClick={handleDelete}
-                >
-                  Excluir
-                </button>
-              </div>
-            </>
+            <LeadForm
+              lead={lead}
+              stages={stages}
+              sources={sources}
+              members={members}
+              onSuccess={onClose}
+            />
           )}
 
           {tab === 'notas' && <NotesList lead={lead} />}
