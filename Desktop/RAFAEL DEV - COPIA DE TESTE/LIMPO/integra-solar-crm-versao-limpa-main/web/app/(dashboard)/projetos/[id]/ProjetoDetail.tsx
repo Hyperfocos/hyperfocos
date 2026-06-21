@@ -187,14 +187,14 @@ export default function ProjetoDetail({
         </span>
       </div>
 
-      {/* Prazo global */}
+      {/* Dias em Projetos */}
       <div
         className="rounded-xl border border-white/10 px-4 py-3 flex items-center gap-3"
         style={{ background: 'var(--theme-surface)' }}
       >
-        <span className="text-white/50 text-sm">Prazo global:</span>
+        <span className="text-white/50 text-sm">Dias em Projetos:</span>
         <span className="text-white font-semibold">
-          {projeto.dias_usados} / {projeto.contract_max_days ?? '—'} dias
+          {projeto.dias_em_projetos} dias
         </span>
       </div>
 

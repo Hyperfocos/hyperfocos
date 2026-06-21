@@ -47,7 +47,7 @@ export default function ProjetosClient({ projetos }: { projetos: ProjetoClient[]
               <th className="text-left px-4 py-3 font-medium">Cliente</th>
               <th className="text-left px-4 py-3 font-medium">Cidade</th>
               <th className="text-left px-4 py-3 font-medium">Responsável</th>
-              <th className="text-left px-4 py-3 font-medium">Prazo</th>
+              <th className="text-left px-4 py-3 font-medium">Dias em Projetos</th>
               <th className="text-left px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3" />
             </tr>
@@ -66,9 +66,7 @@ export default function ProjetosClient({ projetos }: { projetos: ProjetoClient[]
                 <td className="px-4 py-3 text-white/60">{p.client_city ?? '—'}</td>
                 <td className="px-4 py-3 text-white/60">{p.responsavel_name ?? '—'}</td>
                 <td className="px-4 py-3 text-white/60">
-                  {p.contract_max_days
-                    ? `${p.dias_usados} / ${p.contract_max_days} dias`
-                    : `${p.dias_usados} dias`}
+                  {p.dias_em_projetos} dias
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={p.status} />

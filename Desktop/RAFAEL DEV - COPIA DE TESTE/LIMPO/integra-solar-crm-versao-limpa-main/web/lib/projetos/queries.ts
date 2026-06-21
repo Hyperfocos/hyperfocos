@@ -23,6 +23,7 @@ export type ProjetoClient = {
   status: string
   checklist: ProjetoChecklist
   dias_usados: number
+  dias_em_projetos: number
   contract_max_days: number | null
   primeira_parcela_confirmed_at: string | null
   art_url: string | null
@@ -99,6 +100,9 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
     const diasUsados = startDate
       ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
       : 0
+    const diasEmProjetos = r.created_at
+      ? Math.floor((Date.now() - new Date(r.created_at).getTime()) / 86400000)
+      : 0
 
     return {
       id: r.id,
@@ -115,6 +119,7 @@ export async function getProjetos(): Promise<ProjetoClient[]> {
       status: r.status,
       checklist: r.checklist ?? { memorial_calculo: false, art: false, homologacao: false },
       dias_usados: diasUsados,
+      dias_em_projetos: diasEmProjetos,
       contract_max_days: r.clients.contract_max_days ?? null,
       primeira_parcela_confirmed_at: startDate,
       art_url: r.art_url ?? null,
@@ -160,6 +165,9 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
   const diasUsados = startDate
     ? Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000)
     : 0
+  const diasEmProjetos = data.created_at
+    ? Math.floor((Date.now() - new Date(data.created_at).getTime()) / 86400000)
+    : 0
 
   return {
     id: data.id,
@@ -176,6 +184,7 @@ export async function getProjetoById(clientId: string): Promise<ProjetoClient | 
     status: data.status,
     checklist: data.checklist ?? { memorial_calculo: false, art: false, homologacao: false },
     dias_usados: diasUsados,
+    dias_em_projetos: diasEmProjetos,
     contract_max_days: data.clients.contract_max_days ?? null,
     primeira_parcela_confirmed_at: startDate,
     art_url: data.art_url ?? null,
