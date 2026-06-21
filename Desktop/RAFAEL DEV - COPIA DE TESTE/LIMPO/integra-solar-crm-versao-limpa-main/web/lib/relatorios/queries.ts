@@ -198,16 +198,20 @@ export async function getFinanceiroData(filter: RelatorioFilter): Promise<Financ
 
   const { data: allContracts } = await (supabase as any)
     .from('clients')
-    .select('id, contract_date, responsible_id, profiles!responsible_id(full_name, email), client_sale(sale_value, commission_pct)')
+    .select('id, contract_date, created_at, responsible_id, profiles!responsible_id(full_name, email), client_sale(sale_value, commission_pct)')
     .eq('organization_id', orgId)
-    .not('contract_date', 'is', null)
-    .order('contract_date', { ascending: true })
+    .order('created_at', { ascending: true })
 
-  const todos = (allContracts ?? []) as any[]
+  const todos = ((allContracts ?? []) as any[]).filter((c: any) => {
+    const sale = Array.isArray(c.client_sale) ? c.client_sale[0] : c.client_sale
+    return sale?.sale_value != null && sale.sale_value > 0
+  })
 
   const filtrados = todos.filter((c: any) => {
-    if (filter.dateFrom && c.contract_date < filter.dateFrom) return false
-    if (filter.dateTo && c.contract_date > filter.dateTo) return false
+    const date = c.contract_date ?? c.created_at?.split('T')[0]
+    if (!date) return false
+    if (filter.dateFrom && date < filter.dateFrom) return false
+    if (filter.dateTo && date > filter.dateTo) return false
     return true
   })
 
@@ -232,7 +236,9 @@ export async function getFinanceiroData(filter: RelatorioFilter): Promise<Financ
   for (const c of todos) {
     const sale = Array.isArray(c.client_sale) ? c.client_sale[0] : c.client_sale
     const valor = sale?.sale_value ?? 0
-    const key = c.contract_date.substring(0, 7)
+    const dateStr = c.contract_date ?? c.created_at?.split('T')[0] ?? null
+    if (!dateStr) continue
+    const key = dateStr.substring(0, 7)
     if (!mesBucket[key]) mesBucket[key] = { qtd: 0, valor: 0 }
     mesBucket[key].qtd++
     mesBucket[key].valor += valor
