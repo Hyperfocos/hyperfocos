@@ -29,11 +29,12 @@ function PrazoBadge({ client }: { client: Client }) {
 
 function ClientRow({ client }: { client: Client }) {
   const tabsDone = Object.values(client.completed_tabs).filter(Boolean).length
+  const isIncomplete = tabsDone < 6
   return (
     <Link
       href={`/clientes/${client.id}`}
       className="flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all cursor-pointer"
-      style={{ background: 'var(--theme-surface)', border: '1px solid var(--theme-border)' }}
+      style={{ background: 'var(--theme-surface)', border: `1px solid ${isIncomplete ? 'var(--theme-warning)' : 'var(--theme-border)'}` }}
     >
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate" style={{ color: 'var(--theme-text)' }}>{client.name}</p>
@@ -44,9 +45,15 @@ function ClientRow({ client }: { client: Client }) {
       <div className="flex items-center gap-3 flex-shrink-0">
         <PrazoBadge client={client} />
         <span className="text-xs" style={{ color: 'var(--theme-text-subtle)' }}>{tabsDone}/8 abas</span>
-        <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981', border: '1px solid rgba(16,185,129,0.25)' }}>
-          {client.pipeline_stage}
-        </span>
+        {isIncomplete ? (
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(251,191,36,0.12)', color: 'var(--theme-warning)' }}>
+            Cadastro pendente
+          </span>
+        ) : (
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>
+            {client.pipeline_stage}
+          </span>
+        )}
         <span style={{ color: 'var(--theme-text-subtle)' }}>→</span>
       </div>
     </Link>
@@ -62,7 +69,7 @@ export default function ClientesClient({ clients }: { clients: Client[] }) {
       <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--theme-border)' }}>
         <div>
           <h1 className="text-lg font-semibold" style={{ color: 'var(--theme-text)' }}>Clientes</h1>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>{clients.length} clientes com cadastro completo</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--theme-text-subtle)' }}>{clients.length} clientes</p>
         </div>
         <SearchBar value={search} onChange={setSearch} placeholder="Buscar cliente..." />
       </div>

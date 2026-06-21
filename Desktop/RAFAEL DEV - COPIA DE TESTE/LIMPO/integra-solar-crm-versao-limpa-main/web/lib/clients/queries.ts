@@ -11,7 +11,7 @@ const CLIENT_SELECT = `
   contract:client_contracts(id, client_id, contract_url, power_of_attorney_url, signed, signed_at)
 `
 
-// Only clients where tabs 1-6 are completed (appear in the /clientes pipeline module)
+// All clients (including those with incomplete registration)
 export async function getClients(): Promise<Client[]> {
   const user = await getCurrentUserData()
   if (!user?.membership) return []
@@ -20,7 +20,6 @@ export async function getClients(): Promise<Client[]> {
     .from('clients')
     .select(CLIENT_SELECT)
     .eq('organization_id', user.membership.organization.id)
-    .contains('completed_tabs', { tab1: true, tab2: true, tab3: true, tab4: true, tab5: true, tab6: true })
     .order('created_at', { ascending: false })
   return (data ?? []).map(normalizeClient) as Client[]
 }
